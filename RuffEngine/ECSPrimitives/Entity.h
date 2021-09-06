@@ -7,11 +7,13 @@
 
 namespace ecs
 {
-	using ComponentVector = std::vector<std::shared_ptr<ComponentBase>>;
+	using ComponentVector = std::vector<ComponentBase*>;
 
 	class Entity
 	{
+		friend class ComponentBank;
 	public:
+		~Entity();
 	private:
 		ComponentVector m_components;
 	};

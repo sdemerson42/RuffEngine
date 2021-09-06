@@ -13,6 +13,8 @@ namespace unit_tests
 		void SetUp() override;
 		void TearDown() override;
 
-		ecs::Entity m_entity;
+		ecs::Entity m_entity1;
+		ecs::Entity m_entity2;
+		ecs::Entity m_entity3;
 	};
 }

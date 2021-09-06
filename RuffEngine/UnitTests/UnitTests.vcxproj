@@ -46,13 +46,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PrimitiveTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Components\Components.vcxproj">
+      <Project>{3977e017-f21f-4c21-925c-66a4c640aeef}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ECSPrimitives\ECSPrimitives.vcxproj">
       <Project>{290d71c4-be4c-4f65-a0ce-03c88e75cf94}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Logging\Logging.vcxproj">
+      <Project>{d6164676-12e7-4a16-87aa-de14d59c3fa0}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />

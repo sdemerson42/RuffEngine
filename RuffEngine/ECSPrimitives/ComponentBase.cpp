@@ -4,6 +4,10 @@
 
 namespace ecs
 {
+	ComponentBase::ComponentBase() :
+		m_parent{ nullptr }
+	{}
+
 	Entity* const ComponentBase::GetParent()
 	{
 		return m_parent;

@@ -7,14 +7,27 @@ namespace ecs
 {
 	// Static members
 
-	std::vector<RenderComponent> ComponentBank::m_renderComponents{ globals::TOTAL_COMPONENTS };
+	std::vector<components::RenderComponent> ComponentBank::m_renderComponents{ globals::TOTAL_COMPONENTS };
 	int ComponentBank::m_renderComponentsSize = 0;
 
 	// Static methods
 
-	std::vector<RenderComponent>& ComponentBank::GetRenderComponents()
+	bool ComponentBank::DisconnectAllFromEntity(Entity* entity)
 	{
-		return m_renderComponents;
+		while (DISCONNECT_COMP(entity, RenderComponent))
+		{
+		}
+
+		return true;
 	}
 
+	bool ComponentBank::ConnectRenderComponent(Entity* entity)
+	{
+		return ConnectToEntity(entity, m_renderComponents, m_renderComponentsSize);
+	}
+
+	bool ComponentBank::DisconnectRenderComponent(Entity* entity)
+	{
+		return DisconnectFromEntity(entity, m_renderComponents, m_renderComponentsSize);
+	}
 }

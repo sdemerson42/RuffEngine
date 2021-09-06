@@ -2,10 +2,9 @@
 
 #include "../ECSPrimitives/ComponentBase.h"
 
-namespace ecs
+namespace components
 {
-	
-	class RenderComponent : public ComponentBase
+	class RenderComponent : public ecs::ComponentBase
 	{
 		
 	};

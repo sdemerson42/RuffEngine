@@ -6,7 +6,9 @@ namespace ecs
 
 	class ComponentBase
 	{
+		friend class ComponentBank;
 	public:
+		ComponentBase();
 		virtual ~ComponentBase()
 		{}
 		Entity* const GetParent();
