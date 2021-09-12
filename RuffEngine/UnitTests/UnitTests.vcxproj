@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\packages\gmock.1.11.0\lib\native\src\gtest\src\gtest_main.cc" />
+    <ClCompile Include="DataTests.cpp" />
     <ClCompile Include="ECSPrimitivesTests.cpp" />
     <ClCompile Include="EntityTest.cpp" />
     <ClCompile Include="pch.cpp">
@@ -54,6 +55,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Components\Components.vcxproj">
       <Project>{3977e017-f21f-4c21-925c-66a4c640aeef}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Data.vcxproj">
+      <Project>{c62e0762-ce08-4b80-b98c-ac9cc241d34e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ECSPrimitives\ECSPrimitives.vcxproj">
       <Project>{290d71c4-be4c-4f65-a0ce-03c88e75cf94}</Project>

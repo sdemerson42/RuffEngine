@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+
 #include "EntityTest.h"
 #include "../Components/Components.h"
 #include "../Components/ComponentBank.h"
