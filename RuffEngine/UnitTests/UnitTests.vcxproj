@@ -65,6 +65,9 @@
     <ProjectReference Include="..\Logging\Logging.vcxproj">
       <Project>{d6164676-12e7-4a16-87aa-de14d59c3fa0}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Systems\Systems.vcxproj">
+      <Project>{9b09e1cc-729f-4d8a-a896-26046e52133b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

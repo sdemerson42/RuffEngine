@@ -48,4 +48,37 @@ namespace unit_tests
 		EXPECT_FALSE(CONNECT_COMP(&m_entity1, RenderComponent));
 	}
 
+	TEST_F(EntityTest, EntityComponentRetrieval)
+	{
+		RenderComponent* rcReference = m_entity1.GetComponent<RenderComponent>();
+		EXPECT_EQ(rcReference, nullptr);
+
+		auto rcCollection = m_entity1.GetComponents<RenderComponent>();
+		EXPECT_EQ(rcCollection.size(), 0);
+
+		EXPECT_TRUE(CONNECT_COMP(&m_entity1, RenderComponent));
+		rcReference = m_entity1.GetComponent<RenderComponent>();
+		EXPECT_NE(rcReference, nullptr);
+		rcCollection = m_entity1.GetComponents<RenderComponent>();
+		EXPECT_EQ(rcCollection.size(), 1);
+
+		EXPECT_TRUE(CONNECT_COMP(&m_entity1, RenderComponent));
+		rcReference = m_entity1.GetComponent<RenderComponent>();
+		EXPECT_NE(rcReference, nullptr);
+		rcCollection = m_entity1.GetComponents<RenderComponent>();
+		EXPECT_EQ(rcCollection.size(), 2);
+
+		EXPECT_TRUE(DISCONNECT_COMP(&m_entity1, RenderComponent));
+		rcReference = m_entity1.GetComponent<RenderComponent>();
+		EXPECT_NE(rcReference, nullptr);
+		rcCollection = m_entity1.GetComponents<RenderComponent>();
+		EXPECT_EQ(rcCollection.size(), 1);
+
+		EXPECT_TRUE(DISCONNECT_COMP(&m_entity1, RenderComponent));
+		rcReference = m_entity1.GetComponent<RenderComponent>();
+		EXPECT_EQ(rcReference, nullptr);
+		rcCollection = m_entity1.GetComponents<RenderComponent>();
+		EXPECT_EQ(rcCollection.size(), 0);
+	}
+
 }

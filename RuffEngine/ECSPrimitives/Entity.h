@@ -35,6 +35,23 @@ namespace ecs
 
 			return static_cast<T*>(*cIter);
 		}
+
+		template<typename T>
+		std::vector<T*> GetComponents()
+		{
+			std::vector<T*> returnComponents;
+			std::type_index tIndex{ typeid(T) };
+
+			for (auto cPtr : m_components)
+			{
+				if (std::type_index{ typeid(*cPtr) } == tIndex)
+				{
+					returnComponents.push_back(static_cast<T*>(cPtr));
+				}
+			}
+
+			return returnComponents;
+		}
 	private:
 		ComponentVector m_components;
 	};
