@@ -5,6 +5,7 @@
 #include <typeindex>
 
 #include "ComponentBase.h"
+#include "SFML/System/Vector2.hpp"
 
 namespace ecs
 {
@@ -15,6 +16,22 @@ namespace ecs
 		friend class ComponentBank;
 	public:
 		~Entity();
+		
+		const sf::Vector2f& GetPosition() const
+		{
+			return m_position;
+		}
+
+		void SetPosition(float x, float y)
+		{
+			m_position.x = x;
+			m_position.y = y;
+		}
+		void SetPosition(const sf::Vector2f& position)
+		{
+			m_position = position;
+		}
+
 		template<typename T>
 		T* const GetComponent()
 		{
@@ -54,5 +71,6 @@ namespace ecs
 		}
 	private:
 		ComponentVector m_components;
+		sf::Vector2f m_position;
 	};
 }

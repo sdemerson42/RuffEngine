@@ -14,11 +14,18 @@
 #define DISCONNECT_COMP(entityPtr, componentType) \
 	ecs::ComponentBank::Disconnect##componentType##(entityPtr)
 
+namespace systems
+{
+	// Forward declare
+	class RenderSystem;
+}
+
 namespace ecs
 {
 
 	class ComponentBank
 	{
+		friend class systems::RenderSystem;
 	public:
 		static bool DisconnectAllFromEntity(Entity* entity);
 		static bool ConnectRenderComponent(Entity* entity);

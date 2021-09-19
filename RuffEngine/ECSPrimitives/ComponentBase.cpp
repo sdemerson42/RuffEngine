@@ -12,4 +12,9 @@ namespace ecs
 	{
 		return m_parent;
 	}
+
+	const sf::Vector2f& ComponentBase::GetParentPosition() const
+	{
+		return m_parent->GetPosition();
+	}
 }
