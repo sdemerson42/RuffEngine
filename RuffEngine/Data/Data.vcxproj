@@ -163,11 +163,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Blueprint.h" />
+    <ClInclude Include="EntityFactory.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="SqlQuery.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Blueprint.cpp" />
+    <ClCompile Include="EntityFactory.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="SqlQuery.cpp" />
   </ItemGroup>
