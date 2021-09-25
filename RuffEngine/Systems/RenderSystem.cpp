@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "RenderSystem.h"
-#include "../Logging/Logger.h"
+#include "../Util/Logger.h"
 #include "../Components/ComponentBank.h"
 
 #include <algorithm>

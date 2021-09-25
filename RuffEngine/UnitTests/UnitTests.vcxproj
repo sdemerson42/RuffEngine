@@ -62,11 +62,11 @@
     <ProjectReference Include="..\ECSPrimitives\ECSPrimitives.vcxproj">
       <Project>{290d71c4-be4c-4f65-a0ce-03c88e75cf94}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Logging\Logging.vcxproj">
-      <Project>{d6164676-12e7-4a16-87aa-de14d59c3fa0}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Systems\Systems.vcxproj">
       <Project>{9b09e1cc-729f-4d8a-a896-26046e52133b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Util\Util.vcxproj">
+      <Project>{d6164676-12e7-4a16-87aa-de14d59c3fa0}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />

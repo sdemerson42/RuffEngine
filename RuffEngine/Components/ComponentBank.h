@@ -6,7 +6,7 @@
 
 #include "Components.h"
 #include "../ECSPrimitives/Entity.h"
-#include "../Logging/Logger.h"
+#include "../Util/Logger.h"
 
 #define CONNECT_COMP(entityPtr, componentType) \
 	ecs::ComponentBank::Connect##componentType##(entityPtr)

@@ -1,5 +1,5 @@
 #include "EntityFactory.h"
-#include "../Logging/Logger.h"
+#include "../Util/Logger.h"
 #include "../Components/ComponentBank.h"
 #include "../Components/Components.h"
 

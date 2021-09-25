@@ -1,5 +1,5 @@
 #include "Blueprint.h"
-#include "../Logging/Logger.h"
+#include "../Util/Logger.h"
 
 namespace data
 {

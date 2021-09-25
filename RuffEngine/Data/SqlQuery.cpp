@@ -1,7 +1,7 @@
 #include "SqlQuery.h"
 #include "sqlite3.h"
 
-#include "../Logging/Logger.h"
+#include "../Util/Logger.h"
 
 namespace data
 {
