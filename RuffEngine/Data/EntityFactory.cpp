@@ -42,6 +42,7 @@ namespace data
 
 		// Add components
 		AddRenderComponents(*blueprintIter, entity);
+		AddAnimationComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -88,6 +89,51 @@ namespace data
 					std::stoi(queryResult.at("color_g")[i]),
 					std::stoi(queryResult.at("color_b")[i]),
 					std::stoi(queryResult.at("color_a")[i]));
+			}
+		}
+	}
+
+	void EntityFactory::AddAnimationComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		bool hasAnimationComponent = false;
+
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("animation_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect a single animation component
+			if (!hasAnimationComponent)
+			{
+				if (!CONNECT_COMP(&entity, AnimationComponent))
+				{
+					util::Logger::Log("Warning: Failed to connect AnimationComponent to entity.");
+					return;
+				}
+				hasAnimationComponent = true;
+			}
+
+			AnimationComponent* animationComponent = entity.GetComponent<AnimationComponent>();
+
+			int totalAnimations = queryResult.at("animation_id").size();
+			for (int i = 0; i < totalAnimations; ++i)
+			{
+				animationComponent->AddAnimation(
+					queryResult.at("name")[i],
+					ecs::Box2f
+					{
+						std::stof(queryResult.at("start_center_x")[i]),
+						std::stof(queryResult.at("start_center_y")[i]),
+						std::stof(queryResult.at("half_x")[i]),
+						std::stof(queryResult.at("half_y")[i])
+					},
+					std::stoi(queryResult.at("frames_per_row")[i]),
+					std::stoi(queryResult.at("total_frames")[i]),
+					std::stoi(queryResult.at("render_index")[i]));
 			}
 		}
 	}

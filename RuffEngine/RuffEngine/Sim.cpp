@@ -5,6 +5,9 @@
 
 #include <cassert>
 
+// Temporary test headers
+#include "../Components/AnimationComponent.h"
+
 namespace ruff_engine
 {
 
@@ -43,6 +46,8 @@ namespace ruff_engine
 	bool Sim::MakeSystems()
 	{
 		m_systems.push_back(
+			std::make_unique<systems::AnimationSystem>());
+		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_gameData->renderLayers));
 
 		return true;
@@ -62,6 +67,10 @@ namespace ruff_engine
 			300.0f,
 			entity);
 
+		components::AnimationComponent* animationComponent = 
+			entity.GetComponent <components::AnimationComponent>();
+		animationComponent->PlayAnimation("walk", 8.0f, true);
+		
 		return true;
 	}
 

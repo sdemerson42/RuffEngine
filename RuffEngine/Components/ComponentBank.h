@@ -18,6 +18,7 @@ namespace systems
 {
 	// Forward declare
 	class RenderSystem;
+	class AnimationSystem;
 }
 
 namespace ecs
@@ -26,13 +27,20 @@ namespace ecs
 	class ComponentBank
 	{
 		friend class systems::RenderSystem;
+		friend class systems::AnimationSystem;
 	public:
 		static bool DisconnectAllFromEntity(Entity* entity);
+
 		static bool ConnectRenderComponent(Entity* entity);
 		static bool DisconnectRenderComponent(Entity* entity);
+
+		static bool ConnectAnimationComponent(Entity* entity);
+		static bool DisconnectAnimationComponent(Entity* entity);
 	private:
 		static std::vector<components::RenderComponent> m_renderComponents;
 		static int m_renderComponentsSize;
+		static std::vector<components::AnimationComponent> m_animationComponents;
+		static int m_animationComponentsSize;
 
 		template<typename T>
 		static bool ConnectToEntity(

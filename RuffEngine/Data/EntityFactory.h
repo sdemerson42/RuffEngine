@@ -22,5 +22,9 @@ namespace data
 		void AddRenderComponents(
 			const data::Blueprint& blueprint, 
 			/*out*/ecs::Entity& entity);
+
+		void AddAnimationComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
 	};
 }
