@@ -10,7 +10,7 @@
 
 namespace ruff_engine
 {
-	struct GameData
+	struct SimData
 	{
 		std::string name;
 		std::vector<std::string> renderLayers;
@@ -27,9 +27,9 @@ namespace ruff_engine
 		std::vector<std::unique_ptr<ecs::ISystem>> m_systems;
 		std::vector<std::unique_ptr<ecs::Entity>> m_entities;
 		std::unique_ptr<data::EntityFactory> m_entityFactory;
-		std::unique_ptr<GameData> m_gameData;
+		std::unique_ptr<SimData> m_simData;
 
-		bool LoadGameData();
+		bool LoadSimData();
 		bool MakeSystems();
 		bool LoadScene(const std::string& sceneName);
 	};

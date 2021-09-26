@@ -20,25 +20,35 @@ namespace ruff_engine
 	{
 		util::Logger::Log("Sim initializing...");
 
-		assert(LoadGameData());
+		bool result = LoadSimData();
+		if (!result)
+		{
+			util::Logger::Log("Warning: Sim data failed to load.");
+			return false;
+		}
 
-		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_gameData->name);
+		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_simData->name);
 		m_entityFactory = std::make_unique<data::EntityFactory>();
 		m_entityFactory->Initialize("Demo/Data/Entities.db");
 
-		assert(MakeSystems());
+		result = MakeSystems();
+		if (!result)
+		{
+			util::Logger::Log("Warning: Sim systems were not created successfully.");
+			return false;
+		}
 		
 		util::Logger::Log("Sim initialized successfully.");
 
 		return true;
 	}
 
-	bool Sim::LoadGameData()
+	bool Sim::LoadSimData()
 	{
 		// TO DO: Load from db table
-		m_gameData = std::make_unique<GameData>();
-		m_gameData->name = "Demo";
-		m_gameData->renderLayers.push_back("default");
+		m_simData = std::make_unique<SimData>();
+		m_simData->name = "Demo";
+		m_simData->renderLayers.push_back("default");
 
 		return true;
 	}
@@ -48,7 +58,7 @@ namespace ruff_engine
 		m_systems.push_back(
 			std::make_unique<systems::AnimationSystem>());
 		m_systems.push_back(
-			std::make_unique<systems::RenderSystem>(m_window, m_gameData->renderLayers));
+			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 
 		return true;
 	}
