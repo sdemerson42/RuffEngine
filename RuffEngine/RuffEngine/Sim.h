@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "../ECSPrimitives/ISystem.h"
 #include "../Data/EntityFactory.h"
+#include "angelscript.h"
 
 #include <memory>
 #include <vector>
@@ -13,6 +14,8 @@ namespace ruff_engine
 	struct SimData
 	{
 		std::string name;
+		std::string entitiesDbPath;
+		std::string scriptsPath;
 		std::vector<std::string> renderLayers;
 	};
 
@@ -28,9 +31,14 @@ namespace ruff_engine
 		std::vector<std::unique_ptr<ecs::Entity>> m_entities;
 		std::unique_ptr<data::EntityFactory> m_entityFactory;
 		std::unique_ptr<SimData> m_simData;
+		asIScriptEngine* m_scriptEngine;
 
 		bool LoadSimData();
 		bool MakeSystems();
 		bool LoadScene(const std::string& sceneName);
+		bool PrepareScriptEngine();
+		bool RegisterScriptApi();
+		bool CompileScripts();
+		bool ValidateScriptStep(int result, const std::string& msg);
 	};
 };

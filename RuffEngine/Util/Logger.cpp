@@ -20,7 +20,7 @@ namespace util
 	{
 		const auto chronoTime = std::chrono::system_clock::now();
 		const auto cTime = std::chrono::system_clock::to_time_t(chronoTime);
-		const std::string formatMsg = msg + '\n';
+		const std::string formatMsg = "> " + msg + '\n';
 
 		//std::ofstream logStream{ logFileName, std::ios_base::app };
 		//logStream << formatMsg;

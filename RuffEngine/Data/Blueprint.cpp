@@ -46,6 +46,16 @@ namespace data
 			}
 			mutableQueryResult.clear();
 
+			// Script components
+			SqlQuery::SubmitQuery(dbPath,
+				"SELECT * FROM Script_Data WHERE entity_id = " + std::to_string(blueprint.id) + ";",
+				mutableQueryResult);
+			if (mutableQueryResult.size() != 0)
+			{
+				blueprint.componentData.push_back(mutableQueryResult);
+			}
+			mutableQueryResult.clear();
+
 			blueprints.push_back(blueprint);
 			++entityIndex;
 		}

@@ -33,6 +33,9 @@
     <ClInclude Include="AnimationComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -42,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

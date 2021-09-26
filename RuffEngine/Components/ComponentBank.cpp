@@ -13,6 +13,9 @@ namespace ecs
 	std::vector<components::AnimationComponent> ComponentBank::m_animationComponents{ globals::TOTAL_COMPONENTS };
 	int ComponentBank::m_animationComponentsSize = 0;
 
+	std::vector<components::ScriptComponent> ComponentBank::m_scriptComponents{ globals::TOTAL_COMPONENTS };
+	int ComponentBank::m_scriptComponentsSize = 0;
+
 	// Static methods
 
 	bool ComponentBank::DisconnectAllFromEntity(Entity* entity)
@@ -42,5 +45,15 @@ namespace ecs
 	bool ComponentBank::DisconnectAnimationComponent(Entity* entity)
 	{
 		return DisconnectFromEntity(entity, m_animationComponents, m_animationComponentsSize);
+	}
+
+	bool ComponentBank::ConnectScriptComponent(Entity* entity)
+	{
+		return ConnectToEntity(entity, m_scriptComponents, m_scriptComponentsSize);
+	}
+
+	bool ComponentBank::DisconnectScriptComponent(Entity* entity)
+	{
+		return DisconnectFromEntity(entity, m_scriptComponents, m_scriptComponentsSize);
 	}
 }
