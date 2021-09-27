@@ -1,6 +1,7 @@
 void Wizard_Main(ScriptComponent@ api)
 {
 	api.Log("I am a mighty wizard! Tremble in fear as I move around!");
+	api.PlayAnimation("walk", 4.5f, true, true);
 	const float pxPerSecond = 40.0f;
 	int cycleCounter = 0;
 	const int cycleLimit = 30000;

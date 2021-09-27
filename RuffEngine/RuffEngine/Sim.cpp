@@ -12,9 +12,6 @@
 
 #include <cassert>
 
-// Temporary test headers
-#include "../Components/AnimationComponent.h"
-
 namespace ruff_engine
 {
 
@@ -104,10 +101,6 @@ namespace ruff_engine
 			300.0f,
 			entity);
 
-		components::AnimationComponent* animationComponent =
-			entity.GetComponent <components::AnimationComponent>();
-		animationComponent->PlayAnimation("walk", 8.0f, true);
-
 		util::Logger::Log("Scene loaded successfully.");
 
 		return true;
@@ -183,6 +176,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "float DeltaTime()",
 			asMETHOD(components::ScriptComponent, DeltaTime), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void PlayAnimation(const string &in, float, bool, bool)",
+			asMETHOD(components::ScriptComponent, PlayAnimation), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void StopAnimation()",
+			asMETHOD(components::ScriptComponent, StopAnimation), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

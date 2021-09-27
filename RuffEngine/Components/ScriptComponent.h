@@ -20,6 +20,12 @@ namespace components
 		float DeltaTime() const;
 		const sf::Vector2f& GetPosition() const;
 		void SetPosition(float x, float y);
+		void PlayAnimation(
+			const std::string& name,
+			float framesPerSecond,
+			bool isPingPong,
+			bool isLooping);
+		void StopAnimation();
 	private:
 		asIScriptContext* m_scriptContext{ nullptr };
 		int m_suspendCycleCounter;

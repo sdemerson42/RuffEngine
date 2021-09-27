@@ -41,6 +41,7 @@ namespace components
 	bool AnimationComponent::PlayAnimation(
 		const std::string& name, 
 		float framesPerSecond, 
+		bool isPingPong,
 		bool isLooping)
 	{
 		if (framesPerSecond <= 0.0f)
@@ -69,6 +70,8 @@ namespace components
 		m_timeCounter = 0.0f;
 		m_timePerFrame = 1.0f / framesPerSecond;
 		m_isLooping = isLooping;
+		m_pingPongState = isPingPong && m_currentAnimation->totalFrames > 2 ?
+			PingPongStates::FORWARD : PingPongStates::NONE;
 
 		SetFrame(m_currentAnimation->startFrame, m_currentAnimation->renderIndex);
 
@@ -92,15 +95,50 @@ namespace components
 		{
 			return;
 		}
-
 		m_timeCounter -= m_timePerFrame;
-		m_currentAnimationFrame =
-			(m_currentAnimationFrame + 1) % m_currentAnimation->totalFrames;
 
-		if (m_currentAnimationFrame == 0 && !m_isLooping)
+		if (m_pingPongState == PingPongStates::REVERSE)
 		{
-			m_currentAnimation = nullptr;
-			return;
+			if (m_currentAnimationFrame == 0)
+			{
+				m_currentAnimationFrame = -1;
+			}
+			else
+			{
+				m_currentAnimationFrame =
+					(m_currentAnimationFrame - 1) % m_currentAnimation->totalFrames;
+			}
+		}
+		else
+		{
+			m_currentAnimationFrame =
+				(m_currentAnimationFrame + 1) % m_currentAnimation->totalFrames;
+		}
+
+		if (m_currentAnimationFrame == 0)
+		{
+			if (m_pingPongState == PingPongStates::FORWARD)
+			{
+				m_pingPongState = PingPongStates::REVERSE;
+				m_currentAnimationFrame = m_currentAnimation->totalFrames - 2;
+			}
+			else if (m_pingPongState == PingPongStates::NONE && !m_isLooping)
+			{
+				StopAnimation();
+				return;
+			}
+		}
+
+		if (m_currentAnimationFrame == -1)
+		{
+			if (!m_isLooping)
+			{
+				StopAnimation();
+				return;
+			}
+
+			m_currentAnimationFrame = 1;
+			m_pingPongState = PingPongStates::FORWARD;
 		}
 
 		const int rowPosition = m_currentAnimationFrame % m_currentAnimation->framesPerRow;

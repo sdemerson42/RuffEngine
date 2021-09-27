@@ -33,13 +33,23 @@ namespace components
 	class AnimationComponent : public ecs::ComponentBase
 	{
 	public:
+		enum class PingPongStates {
+			NONE,
+			FORWARD,
+			REVERSE
+		};
+
 		void AddAnimation(
 			const std::string& name,
 			const ecs::Box2f& startFrame,
 			int framesPerRow,
 			int totalFrames,
 			int renderIndex);
-		bool PlayAnimation(const std::string& name, float framesPerSecond, bool isLooping);
+		bool PlayAnimation(
+			const std::string& name,
+			float framesPerSecond,
+			bool isPingPong,
+			bool isLooping);
 		void StopAnimation();
 		void Update();
 		void SetFrame(
@@ -55,5 +65,6 @@ namespace components
 		float m_timePerFrame;
 		float m_timeCounter;
 		bool m_isLooping;
+		PingPongStates m_pingPongState;
 	};
 }

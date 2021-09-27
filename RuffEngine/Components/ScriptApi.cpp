@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ScriptComponent.h"
+#include "Components.h"
 #include "../Util/Logger.h"
 #include "../ECSPrimitives/Entity.h"
 #include "../Util/Time.h"
@@ -31,5 +31,21 @@ namespace components
 	void ScriptComponent::SetPosition(float x, float y)
 	{
 		m_parent->SetPosition(x, y);
+	}
+
+	void ScriptComponent::PlayAnimation(
+		const std::string& name,
+		float framesPerSecond,
+		bool isPingPong,
+		bool isLooping)
+	{
+		auto animationComponent = m_parent->GetComponent<AnimationComponent>();
+		animationComponent->PlayAnimation(name, framesPerSecond, isPingPong, isLooping);
+	}
+
+	void ScriptComponent::StopAnimation()
+	{
+		auto animationComponent = m_parent->GetComponent<AnimationComponent>();
+		animationComponent->StopAnimation();
 	}
 }
