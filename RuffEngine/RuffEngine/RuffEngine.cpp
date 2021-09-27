@@ -5,6 +5,8 @@
 
 int main()
 {
+	util::Logger::Log("Starting RuffEngine session.");
+
 	std::unique_ptr<ruff_engine::Sim> sim =
 		std::make_unique<ruff_engine::Sim>();
 
@@ -17,5 +19,7 @@ int main()
 
 	sim->Execute();
 	
+	util::Logger::Log("RuffEngine session complete.");
+
 	return 0;
 }

@@ -19,6 +19,6 @@ void Wizard_Main(ScriptComponent@ api)
 			dir *= -1.0f;
 		}
 
-		api.Suspend(0);
+		api.Suspend();
 	}
 }

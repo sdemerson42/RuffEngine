@@ -58,6 +58,8 @@ namespace ruff_engine
 
 	bool Sim::LoadSimData()
 	{
+		util::Logger::Log("Loading Sim data...");
+
 		// TO DO: Load from data
 		m_simData = std::make_unique<SimData>();
 		m_simData->name = "Demo";
@@ -65,12 +67,15 @@ namespace ruff_engine
 		m_simData->scriptsPath = "Demo/Scripts/";
 		m_simData->renderLayers.push_back("default");
 
+		util::Logger::Log("Sim data loaded successfully.");
 
 		return true;
 	}
 
 	bool Sim::MakeSystems()
 	{
+		util::Logger::Log("Creating Systems...");
+
 		m_systems.push_back(
 			std::make_unique<systems::ScriptSystem>());
 		m_systems.push_back(
@@ -78,11 +83,15 @@ namespace ruff_engine
 		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 		
+		util::Logger::Log("Systems created successfully.");
+
 		return true;
 	}
 
 	bool Sim::LoadScene(const std::string& sceneName)
 	{
+		util::Logger::Log("Loading scene " + sceneName + "...");
+
 		// TO DO: For now just create some test entities
 
 		m_entities.push_back(
@@ -98,6 +107,8 @@ namespace ruff_engine
 		components::AnimationComponent* animationComponent =
 			entity.GetComponent <components::AnimationComponent>();
 		animationComponent->PlayAnimation("walk", 8.0f, true);
+
+		util::Logger::Log("Scene loaded successfully.");
 
 		return true;
 	}
@@ -161,7 +172,7 @@ namespace ruff_engine
 			"ScriptComponent", "void Log(const string &in)",
 			asMETHOD(components::ScriptComponent, Log), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
-			"ScriptComponent", "void Suspend(int)",
+			"ScriptComponent", "void Suspend(int = 0)",
 			asMETHOD(components::ScriptComponent, Suspend), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "const Vector2f& GetPosition()",
