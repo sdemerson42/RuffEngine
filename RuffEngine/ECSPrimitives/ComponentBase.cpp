@@ -13,8 +13,8 @@ namespace ecs
 		return m_parent;
 	}
 
-	const sf::Vector2f& ComponentBase::GetParentPosition() const
+	const Transform& ComponentBase::GetParentTransform() const
 	{
-		return m_parent->GetPosition();
+		return m_parent->GetTransform();
 	}
 }

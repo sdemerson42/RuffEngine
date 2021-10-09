@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SFML/System/Vector2.hpp"
+#include "../ECSPrimitives/Transform.h"
 
 namespace ecs
 {
@@ -14,7 +15,7 @@ namespace ecs
 		virtual ~ComponentBase()
 		{}
 		Entity* const GetParent();
-		const sf::Vector2f& GetParentPosition() const;
+		const Transform& GetParentTransform() const;
 	protected:
 		Entity* m_parent;
 	};

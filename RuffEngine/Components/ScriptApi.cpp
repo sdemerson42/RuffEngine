@@ -48,4 +48,24 @@ namespace components
 		auto animationComponent = m_parent->GetComponent<AnimationComponent>();
 		animationComponent->StopAnimation();
 	}
+
+	float ScriptComponent::GetRotation() const
+	{
+		return GetParentTransform().rotation;
+	}
+
+	void ScriptComponent::SetRotation(float value)
+	{
+		m_parent->SetRotation(value);
+	}
+
+	const sf::Vector2f& ScriptComponent::GetScale() const
+	{
+		return GetParentTransform().scale;
+	}
+
+	void ScriptComponent::SetScale(float x, float y)
+	{
+		m_parent->SetScale(x, y);
+	}
 }

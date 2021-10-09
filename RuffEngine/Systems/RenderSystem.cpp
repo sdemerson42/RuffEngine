@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RenderSystem.h"
 #include "../Util/Logger.h"
+#include "../Util/Math.h"
 #include "../Components/ComponentBank.h"
 
 #include <algorithm>
@@ -48,51 +49,74 @@ namespace systems
 		/*out*/LayerGroup& layerGroup)
 	{
 		const auto& componentLayer = renderComponent.GetRenderLayer();
-		
+
 		// Don't render this component if it's on an invalid layer
 		if (!ValidateRenderLayer(componentLayer)) return;
 
 		auto& vaGroup = layerGroup[componentLayer];
 		const auto& componentTexturePath = renderComponent.GetTexturePath();
 
-		if (vaGroup.find(componentTexturePath) == std::end(vaGroup))
+		if (vaGroup.find(componentTexturePath) == vaGroup.end())
 		{
-			// Initialize a new VertexArray if necessary
-			vaGroup[componentTexturePath].setPrimitiveType(sf::Quads);
+			vaGroup[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 
 		// Add vertices to the array
 		sf::VertexArray& vertexArray = vaGroup[componentTexturePath];
-		
+
 		const auto& textureBox = renderComponent.GetTextureBox();
 		float texLeft = textureBox.GetLeft();
 		float texRight = textureBox.GetRight();
 		float texTop = textureBox.GetTop();
 		float texBottom = textureBox.GetBottom();
 
-		const auto& entityPosition = renderComponent.GetParentPosition();
+		const auto& transform = renderComponent.GetParentTransform();
 		const auto& drawBox = renderComponent.GetDrawBox();
-		float drawLeft = drawBox.GetLeft() + entityPosition.x;
-		float drawRight = drawBox.GetRight() + entityPosition.x;
-		float drawTop = drawBox.GetTop() + entityPosition.y;
-		float drawBottom = drawBox.GetBottom() + entityPosition.y;
+
+		float drawLeft = drawBox.GetLeft() * transform.scale.x;
+		float drawRight = drawBox.GetRight() * transform.scale.x;
+		float drawTop = drawBox.GetTop() * transform.scale.y;
+		float drawBottom = drawBox.GetBottom() * transform.scale.y;
+
+		sf::Vector2f drawTopLeft{ drawLeft, drawTop };
+		sf::Vector2f drawTopRight{ drawRight, drawTop };
+		sf::Vector2f drawBottomLeft{ drawLeft, drawBottom };
+		sf::Vector2f drawBottomRight{ drawRight, drawBottom };
+
+		if (transform.rotation != 0.0f)
+		{
+			double radians = util::Math::DegreesToRadians(double(transform.rotation));
+			drawTopLeft =
+				util::Math::Rotate(sf::Vector2f{ drawLeft, drawTop }, radians);
+			drawTopRight =
+				util::Math::Rotate(sf::Vector2f{ drawRight, drawTop }, radians);
+			drawBottomLeft =
+				util::Math::Rotate(sf::Vector2f{ drawLeft, drawBottom}, radians);
+			drawBottomRight =
+				util::Math::Rotate(sf::Vector2f{ drawRight, drawBottom }, radians);
+		}
+
+		drawTopLeft += transform.position;
+		drawTopRight += transform.position;
+		drawBottomLeft += transform.position;
+		drawBottomRight += transform.position;
 
 		sf::Vertex mutableVertex;
 
 		mutableVertex.color = renderComponent.GetColor();
-		mutableVertex.position = sf::Vector2f{ drawLeft, drawTop };
+		mutableVertex.position = drawTopLeft;
 		mutableVertex.texCoords = sf::Vector2f{ texLeft, texTop };
 		vertexArray.append(mutableVertex);
 
-		mutableVertex.position = sf::Vector2f{ drawRight, drawTop };
+		mutableVertex.position = drawTopRight;
 		mutableVertex.texCoords = sf::Vector2f{ texRight, texTop };
 		vertexArray.append(mutableVertex);
 
-		mutableVertex.position = sf::Vector2f{ drawRight, drawBottom };
+		mutableVertex.position = drawBottomRight;
 		mutableVertex.texCoords = sf::Vector2f{ texRight, texBottom };
 		vertexArray.append(mutableVertex);
 
-		mutableVertex.position = sf::Vector2f{ drawLeft, drawBottom };
+		mutableVertex.position = drawBottomLeft;
 		mutableVertex.texCoords = sf::Vector2f{ texLeft, texBottom };
 		vertexArray.append(mutableVertex);
 	}

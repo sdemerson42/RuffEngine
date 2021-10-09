@@ -5,7 +5,7 @@
 #include <typeindex>
 
 #include "ComponentBase.h"
-#include "SFML/System/Vector2.hpp"
+#include "Transform.h"
 
 namespace ecs
 {
@@ -15,21 +15,55 @@ namespace ecs
 	{
 		friend class ComponentBank;
 	public:
+		Entity();
+
 		~Entity();
 		
-		const sf::Vector2f& GetPosition() const
+		inline const sf::Vector2f& GetPosition() const
 		{
-			return m_position;
+			return m_transform.position;
 		}
 
-		void SetPosition(float x, float y)
+		inline void SetPosition(float x, float y)
 		{
-			m_position.x = x;
-			m_position.y = y;
+			m_transform.position.x = x;
+			m_transform.position.y = y;
 		}
-		void SetPosition(const sf::Vector2f& position)
+		
+		inline void SetPosition(const sf::Vector2f& position)
 		{
-			m_position = position;
+			m_transform.position = position;
+		}
+
+		inline float GetRotation() const
+		{
+			return m_transform.rotation;
+		}
+
+		inline void SetRotation(float rotation)
+		{
+			m_transform.rotation = rotation;
+		}
+
+		inline const sf::Vector2f& GetScale() const
+		{
+			return m_transform.scale;
+		}
+
+		inline void SetScale(float x, float y)
+		{
+			m_transform.scale.x = x;
+			m_transform.scale.y = y;
+		}
+
+		inline void SetScale(const sf::Vector2f& scale)
+		{
+			m_transform.scale = scale;
+		}
+
+		inline const Transform& GetTransform() const
+		{
+			return m_transform;
 		}
 
 		template<typename T>
@@ -71,6 +105,6 @@ namespace ecs
 		}
 	private:
 		ComponentVector m_components;
-		sf::Vector2f m_position;
+		Transform m_transform;
 	};
 }

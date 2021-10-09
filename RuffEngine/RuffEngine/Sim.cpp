@@ -182,6 +182,18 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void StopAnimation()",
 			asMETHOD(components::ScriptComponent, StopAnimation), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "float GetRotation()",
+			asMETHOD(components::ScriptComponent, GetRotation), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetRotation(float)",
+			asMETHOD(components::ScriptComponent, SetRotation), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "const Vector2f& GetScale()",
+			asMETHOD(components::ScriptComponent, GetScale), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetScale(float, float)",
+			asMETHOD(components::ScriptComponent, SetScale), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

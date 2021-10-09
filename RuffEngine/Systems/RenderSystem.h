@@ -1,20 +1,22 @@
 #pragma once
 
 #include "../ECSPrimitives/ISystem.h"
+#include "../ECSPrimitives/Transform.h"
 #include "../Components/ComponentBank.h"
 #include "SFML/Graphics.hpp"
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 namespace systems
 {
-	using VertexArrayGroup = std::unordered_map<std::string, sf::VertexArray>;
-	using LayerGroup = std::unordered_map<std::string, VertexArrayGroup>;
-
 	//TO DO: Texture preload
 	class RenderSystem : public ecs::ISystem
 	{
+		using VertexGroup = std::unordered_map<std::string, sf::VertexArray>;
+		using LayerGroup = std::unordered_map<std::string, VertexGroup>;
+
 	public:
 		RenderSystem(
 			const std::shared_ptr<sf::RenderWindow>& windowPtr,
