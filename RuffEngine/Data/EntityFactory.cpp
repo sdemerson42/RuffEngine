@@ -22,6 +22,26 @@ namespace data
 		return true;
 	}
 
+	std::vector<std::string> EntityFactory::ProcessMultiValueField(const std::string& values) const
+	{
+		std::vector<std::string> valueVector;
+		std::string s;
+
+		for (char c : values)
+		{
+			if (c == ',')
+			{
+				valueVector.push_back(s);
+				s.clear();
+				continue;
+			}
+			s += c;
+		}
+		valueVector.push_back(s);
+
+		return valueVector;
+	}
+
 	bool EntityFactory::BuildEntityFromBlueprint(
 		const std::string& blueprintName,
 		float positionX,
@@ -46,6 +66,7 @@ namespace data
 		AddRenderComponents(*blueprintIter, entity);
 		AddAnimationComponents(*blueprintIter, entity);
 		AddScriptComponents(*blueprintIter, entity);
+		AddPhysicsComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -165,6 +186,55 @@ namespace data
 				ScriptComponent* scriptComponent = entity.GetComponents<ScriptComponent>().back();
 				std::string scriptPrefix = queryResult.at("main_prefix")[i];
 				scriptComponent->PrepareScriptContext(m_scriptEngine, scriptPrefix);
+			}
+		}
+	}
+
+	void EntityFactory::AddPhysicsComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("physics_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect render components
+			int totalComponents = queryResult.at("physics_id").size();
+			for (int i = 0; i < totalComponents; ++i)
+			{
+				if (!CONNECT_COMP(&entity, PhysicsComponent))
+				{
+					util::Logger::Log("Warning: Failed to connect RenderComponent to entity.");
+					continue;
+				}
+
+				PhysicsComponent* physicsComponent = entity.GetComponents<PhysicsComponent>().back();
+				//queryResult.at("texture_path")[i]
+				physicsComponent->SetVelocity(
+					std::stof(queryResult.at("velocity_x")[i]),
+					std::stof(queryResult.at("velocity_y")[i]));
+				physicsComponent->SetSpeed(std::stof(queryResult.at("speed")[i]));
+				physicsComponent->SetMass(std::stof(queryResult.at("mass")[i]));
+				physicsComponent->SetDrag(std::stof(queryResult.at("drag")[i]));
+				physicsComponent->SetAABB(
+					std::stof(queryResult.at("aabb_center_x")[i]),
+					std::stof(queryResult.at("aabb_center_y")[i]),
+					std::stof(queryResult.at("aabb_half_x")[i]),
+					std::stof(queryResult.at("aabb_half_y")[i]));
+				physicsComponent->SetIsSolid(
+					std::stoi(queryResult.at("solid")[i]));
+				physicsComponent->SetIsIgnoreGravity(
+					std::stoi(queryResult.at("ignore_gravity")[i]));
+
+				auto collisionLayers =
+					ProcessMultiValueField(queryResult.at("collision_layers")[i]);
+				for (const auto& layer : collisionLayers)
+				{
+					physicsComponent->AddActiveCollisionLayer(layer);
+				}
 			}
 		}
 	}

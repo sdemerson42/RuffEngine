@@ -166,6 +166,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ScriptComponent.h" />
   </ItemGroup>

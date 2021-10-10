@@ -16,6 +16,9 @@ namespace ecs
 	std::vector<components::ScriptComponent> ComponentBank::m_scriptComponents{ globals::TOTAL_COMPONENTS };
 	int ComponentBank::m_scriptComponentsSize = 0;
 
+	std::vector<components::PhysicsComponent> ComponentBank::m_physicsComponents{ globals::TOTAL_COMPONENTS };
+	int ComponentBank::m_physicsComponentsSize = 0;
+
 	// Static methods
 
 	bool ComponentBank::DisconnectAllFromEntity(Entity* entity)
@@ -55,5 +58,15 @@ namespace ecs
 	bool ComponentBank::DisconnectScriptComponent(Entity* entity)
 	{
 		return DisconnectFromEntity(entity, m_scriptComponents, m_scriptComponentsSize);
+	}
+
+	bool ComponentBank::ConnectPhysicsComponent(Entity* entity)
+	{
+		return ConnectToEntity(entity, m_physicsComponents, m_physicsComponentsSize);
+	}
+
+	bool ComponentBank::DisconnectPhysicsComponent(Entity* entity)
+	{
+		return DisconnectFromEntity(entity, m_physicsComponents, m_physicsComponentsSize);
 	}
 }

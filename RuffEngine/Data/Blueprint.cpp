@@ -22,44 +22,34 @@ namespace data
 			Blueprint blueprint;
 			blueprint.name = entityQueryResult["name"][entityIndex];
 			blueprint.id = std::stoi(entityQueryResult["id"][entityIndex]);
-			
-			// Load component data
-			SqlQueryResult mutableQueryResult;
 
-			// Render components
-			SqlQuery::SubmitQuery(dbPath,
-				"SELECT * FROM Render_Data WHERE entity_id = " + std::to_string(blueprint.id) + ";",
-				mutableQueryResult);
-			if (mutableQueryResult.size() != 0)
-			{
-				blueprint.componentData.push_back(mutableQueryResult);
-			}
-			mutableQueryResult.clear();
+			// Add component data
 
-			// Animation components
-			SqlQuery::SubmitQuery(dbPath,
-				"SELECT * FROM Animation_Data WHERE entity_id = " + std::to_string(blueprint.id) + ";",
-				mutableQueryResult);
-			if (mutableQueryResult.size() != 0)
-			{
-				blueprint.componentData.push_back(mutableQueryResult);
-			}
-			mutableQueryResult.clear();
-
-			// Script components
-			SqlQuery::SubmitQuery(dbPath,
-				"SELECT * FROM Script_Data WHERE entity_id = " + std::to_string(blueprint.id) + ";",
-				mutableQueryResult);
-			if (mutableQueryResult.size() != 0)
-			{
-				blueprint.componentData.push_back(mutableQueryResult);
-			}
-			mutableQueryResult.clear();
+			ComponentQuery(dbPath, "Render_Data", blueprint);
+			ComponentQuery(dbPath, "Animation_Data", blueprint);
+			ComponentQuery(dbPath, "Script_Data", blueprint);
+			ComponentQuery(dbPath, "Physics_Data", blueprint);
 
 			blueprints.push_back(blueprint);
 			++entityIndex;
 		}
 
 		return true;
+	}
+
+	void ComponentQuery(
+		const std::string& dbPath,
+		const std::string& tableName,
+		/*out*/Blueprint& blueprint)
+	{
+		SqlQueryResult queryResult;
+
+		SqlQuery::SubmitQuery(dbPath,
+			"SELECT * FROM " + tableName + " WHERE entity_id = " + std::to_string(blueprint.id) + ";",
+			queryResult);
+		if (queryResult.size() != 0)
+		{
+			blueprint.componentData.push_back(queryResult);
+		}
 	}
 }

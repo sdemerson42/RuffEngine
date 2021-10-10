@@ -5,6 +5,7 @@
 #include "../Components/ScriptComponent.h"
 #include "../Data/SqlQuery.h"
 #include "SFML/System/Vector2.hpp"
+#include "Globals.h"
 
 #include "../AngelScript/add_on/scriptbuilder/scriptbuilder.h"
 #include "../AngelScript/add_on/scriptmath/scriptmath.h"
@@ -48,8 +49,10 @@ namespace ruff_engine
 			return false;
 		}
 
-		util::Logger::Log("Sim initialized successfully.");
+		m_entities.reserve(globals::TOTAL_ENTITIES);
 
+		util::Logger::Log("Sim initialized successfully.");
+		
 		return true;
 	}
 
@@ -78,6 +81,8 @@ namespace ruff_engine
 		m_systems.push_back(
 			std::make_unique<systems::AnimationSystem>());
 		m_systems.push_back(
+			std::make_unique<systems::PhysicsSystem>());
+		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 		
 		util::Logger::Log("Systems created successfully.");
@@ -100,6 +105,16 @@ namespace ruff_engine
 			200.0f,
 			300.0f,
 			entity);
+
+		m_entities.push_back(
+			std::make_unique<ecs::Entity>());
+
+		m_entityFactory->BuildEntityFromBlueprint(
+			"Trees",
+			400.0f,
+			100.0f,
+			*m_entities.back().get());
+		
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -276,7 +291,6 @@ namespace ruff_engine
 			{
 				system->Execute();
 			}
-
 			util::Time::ResetTime();
 		}
 		util::Logger::Log("Sim stopping main loop.");

@@ -16,4 +16,9 @@ namespace data
 	bool LoadBlueprintData(
 		const std::string& dbPath,
 		/*out*/std::vector<Blueprint>& blueprints);
+
+	void ComponentQuery(
+		const std::string& dbPath,
+		const std::string& tableName,
+		/*out*/Blueprint& blueprint);
 }

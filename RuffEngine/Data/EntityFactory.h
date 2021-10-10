@@ -21,6 +21,8 @@ namespace data
 		std::vector<Blueprint> m_blueprints;
 		asIScriptEngine* m_scriptEngine;
 
+		std::vector<std::string> ProcessMultiValueField(const std::string& values) const;
+
 		void AddRenderComponents(
 			const data::Blueprint& blueprint, 
 			/*out*/ecs::Entity& entity);
@@ -30,6 +32,10 @@ namespace data
 			/*out*/ecs::Entity& entity);
 
 		void AddScriptComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
+
+		void AddPhysicsComponents(
 			const data::Blueprint& blueprint,
 			/*out*/ecs::Entity& entity);
 	};
