@@ -26,21 +26,30 @@ namespace systems
 		{
 			components::PhysicsComponent* component;
 			sf::Vector2f startVelocity;
+			sf::Vector2f endVelocity;
+			sf::Vector2f startCenter;
 			ecs::Box2f aabb;
 		};
 
 		struct Collision
 		{
-			ComponentCollisionData a;
-			ComponentCollisionData b;
-			bool isCollision;
+			ComponentCollisionData* a;
+			ComponentCollisionData* b;
 		};
 
 		sf::Vector2f m_checkProximityBuffer;
 		std::vector<Collision> m_collisions;
+		std::vector<ComponentCollisionData> m_componentData;
+		
 		sf::Vector2f m_gravity;
+		float m_restitution;
 
 		void PopulateCollisions();
-		std::vector<ComponentCollisionData> GetCollisionData();
+		void GetCollisionData();
+		void ResolveHorizontalCollions();
+		void ResolveVerticalCollisions();
+		void CorrectVelocities();
+		void UpdateEntities();
+		bool Collide(const Collision& collision);
 	};
 }

@@ -106,16 +106,6 @@ namespace ruff_engine
 			300.0f,
 			entity);
 
-		m_entities.push_back(
-			std::make_unique<ecs::Entity>());
-
-		m_entityFactory->BuildEntityFromBlueprint(
-			"Trees",
-			400.0f,
-			100.0f,
-			*m_entities.back().get());
-		
-
 		util::Logger::Log("Scene loaded successfully.");
 
 		return true;
@@ -209,6 +199,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetScale(float, float)",
 			asMETHOD(components::ScriptComponent, SetScale), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "const Vector2f& GetVelocity()",
+			asMETHOD(components::ScriptComponent, GetVelocity), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetVelocity(float, float)",
+			asMETHOD(components::ScriptComponent, SetVelocity), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

@@ -30,6 +30,8 @@ namespace components
 		void SetRotation(float value);
 		const sf::Vector2f& GetScale() const;
 		void SetScale(float x, float y);
+		const sf::Vector2f& GetVelocity() const;
+		void SetVelocity(float x, float y);
 	private:
 		asIScriptContext* m_scriptContext{ nullptr };
 		int m_suspendCycleCounter;

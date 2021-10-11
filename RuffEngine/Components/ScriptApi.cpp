@@ -68,4 +68,23 @@ namespace components
 	{
 		m_parent->SetScale(x, y);
 	}
+
+	const sf::Vector2f& ScriptComponent::GetVelocity() const
+	{
+		auto physicsComponent = m_parent->GetComponent<PhysicsComponent>();
+		if (physicsComponent != nullptr)
+		{
+			return physicsComponent->GetVelocity();
+		}
+		return { 0.0f, 0.0f };
+	}
+
+	void ScriptComponent::SetVelocity(float x, float y)
+	{
+		auto physicsComponent = m_parent->GetComponent<PhysicsComponent>();
+		if (physicsComponent != nullptr)
+		{
+			physicsComponent->SetVelocity(x, y);
+		}
+	}
 }

@@ -13,29 +13,26 @@ namespace components
 	class PhysicsComponent : public ecs::ComponentBase
 	{
 	public:
-		const sf::Vector2f& GetVelocityNormal() const
+		const sf::Vector2f& GetVelocity() const
 		{
-			return m_velocityNormal;
+			return m_velocity;
 		}
 		void SetVelocity(float x, float y)
 		{
-			m_velocityNormal = { x, y };
-			util::Math::NormalizeVector(m_velocityNormal);
+			m_velocity = { x, y };
 		}
 		void SetVelocity(const sf::Vector2f& velocity)
 		{
-			SetVelocity(velocity.x, velocity.y);
+			m_velocity = velocity;
 		}
 
 		float GetSpeed() const
 		{
-			return m_velocityMagnitude;
+			float sumSquares = m_velocity.x * m_velocity.x +
+				m_velocity.y * m_velocity.y;
+			return sqrt(sumSquares);
 		}
-		void SetSpeed(float speed)
-		{
-			m_velocityMagnitude = speed;
-		}
-
+		
 		float GetMass() const
 		{
 			return m_mass;
@@ -104,8 +101,7 @@ namespace components
 			return m_activeCollisionLayers.find(layer) != m_activeCollisionLayers.end();
 		}
 	private:
-		sf::Vector2f m_velocityNormal;
-		float m_velocityMagnitude;
+		sf::Vector2f m_velocity;
 		float m_mass;
 		float m_drag;
 
