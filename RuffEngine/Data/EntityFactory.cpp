@@ -217,6 +217,7 @@ namespace data
 					std::stof(queryResult.at("velocity_x")[i]),
 					std::stof(queryResult.at("velocity_y")[i]));
 				physicsComponent->SetMass(std::stof(queryResult.at("mass")[i]));
+				physicsComponent->SetRestution(std::stof(queryResult.at("restitution")[i]));
 				physicsComponent->SetDrag(std::stof(queryResult.at("drag")[i]));
 				physicsComponent->SetAABB(
 					std::stof(queryResult.at("aabb_center_x")[i]),

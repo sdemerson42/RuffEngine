@@ -1,11 +1,15 @@
 #include "Sim.h"
 #include "../Util/Logger.h"
+#include "Globals.h"
+#include <time.h>
 
 #include <memory>
 
 int main()
 {
 	util::Logger::Log("Starting RuffEngine session.");
+
+	srand(time(NULL));
 
 	std::unique_ptr<ruff_engine::Sim> sim =
 		std::make_unique<ruff_engine::Sim>();

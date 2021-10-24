@@ -28,7 +28,12 @@ namespace systems
 			sf::Vector2f startVelocity;
 			sf::Vector2f endVelocity;
 			sf::Vector2f startCenter;
+			float absoluteChange;
 			ecs::Box2f aabb;
+			bool collisionFromTop = false;
+			bool collisionFromBottom = false;
+			bool collisionFromLeft = false;
+			bool collisionFromRight = false;
 		};
 
 		struct Collision
@@ -41,15 +46,16 @@ namespace systems
 		std::vector<Collision> m_collisions;
 		std::vector<ComponentCollisionData> m_componentData;
 		
-		sf::Vector2f m_gravity;
-		float m_restitution;
+		float m_gravity;
 
 		void PopulateCollisions();
 		void GetCollisionData();
-		void ResolveHorizontalCollions();
-		void ResolveVerticalCollisions();
+		void ResolveCollisions(bool hPass);
+		void DisplaceCollision(bool hPass, Collision& collision, float displaceRatio);
 		void CorrectVelocities();
 		void UpdateEntities();
 		bool Collide(const Collision& collision);
+
+		const float m_displacementError = 0.2f;
 	};
 }

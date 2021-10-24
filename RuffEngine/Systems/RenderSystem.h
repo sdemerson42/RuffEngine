@@ -26,11 +26,13 @@ namespace systems
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::unordered_map<std::string, sf::Texture> m_textureMap;
 		std::vector<std::string> m_renderLayers;
+		sf::VertexArray m_debugVertexArray;
 
 		void ProcessTexturePath(const std::string& texturePath);
 		void AddComponentToGroup(
 			const components::RenderComponent& renderComponent,
 			/*out*/LayerGroup& layerGroup);
+		void DebugDrawEntityCenter(const components::RenderComponent& renderComponent);
 		bool ValidateRenderLayer(const std::string& layer);
 		void RenderAllLayers(const LayerGroup& layerGroup);
 	};

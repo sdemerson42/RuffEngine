@@ -94,17 +94,33 @@ namespace ruff_engine
 	{
 		util::Logger::Log("Loading scene " + sceneName + "...");
 
-		// TO DO: For now just create some test entities
+		// TO DO: Replace test objects with data
 
-		m_entities.push_back(
-			std::make_unique<ecs::Entity>());
-		auto& entity = *m_entities.back().get();
+		for (int i = 0; i < 20; ++i)
+		{
+			for (int j = 0; j < 15; ++j)
+			{
+				if (i == 0 || j == 0 || i == 19 || j == 14)
+				{
+					m_entities.push_back(std::make_unique<ecs::Entity>());
+					ecs::Entity* entity = m_entities.back().get();
+					m_entityFactory->BuildEntityFromBlueprint(
+						"Trees", i * 32.0f, j * 32.0f, *entity);
+				}
 
-		m_entityFactory->BuildEntityFromBlueprint(
-			"Wizard",
-			200.0f,
-			300.0f,
-			entity);
+			}
+		}
+
+		for (int i = 0; i < 20; ++i)
+		{
+			m_entities.push_back(std::make_unique<ecs::Entity>());
+			ecs::Entity* entity = m_entities.back().get();
+			m_entityFactory->BuildEntityFromBlueprint(
+				"Wizard", rand() % 400 + 100, rand() % 200 + 100, *entity);
+			entity->GetComponent<components::PhysicsComponent>()->SetVelocity(
+				rand() % 200 - 100, rand() % 200 - 100);
+			entity->GetComponent<components::PhysicsComponent>()->SetMass(rand() % 5 + 1);
+		}
 
 		util::Logger::Log("Scene loaded successfully.");
 

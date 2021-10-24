@@ -18,15 +18,14 @@ namespace systems
 	{
 		// TO DO: Initialize should be called at the beginning of every scene load.
 		m_checkProximityBuffer = { 32.0f, 32.0f };
-		m_gravity = { 0.0f, 0.0f };
-		m_restitution = 0.5f;
+		m_gravity = { 100.0f };
 	}
 
 	void PhysicsSystem::Execute()
 	{
 		PopulateCollisions();
-		ResolveHorizontalCollions();
-		ResolveVerticalCollisions();
+		ResolveCollisions(false);
+		ResolveCollisions(true);
 		CorrectVelocities();
 		UpdateEntities();
 	}
@@ -76,33 +75,43 @@ namespace systems
 			ComponentCollisionData ccd;
 
 			ccd.component = &ecs::ComponentBank::m_physicsComponents[i];
-			ccd.startVelocity = ccd.component->GetVelocity();
-			ccd.endVelocity = ccd.startVelocity;
-			
 			const auto& transform = ccd.component->GetParentTransform();
 			ccd.aabb = ccd.component->GetAABB();
 
-			// Correct for rotation if necessary
+			// Correct for present rotation if necessary
 			if (transform.rotation != 0.0f &&
 				ccd.aabb.center.x != 0.0f || ccd.aabb.center.y != 0.0f)
 			{
-				ccd.aabb.center =
-					util::Math::Rotate(
-						ccd.aabb.center,
-						util::Math::DegreesToRadians(transform.rotation));
+				ccd.aabb.center = util::Math::Rotate(
+					ccd.aabb.center,
+					util::Math::DegreesToRadians(transform.rotation));
 			}
+
+			ccd.startVelocity = ccd.component->GetVelocity();
 			ccd.aabb.center += transform.position;
 			ccd.startCenter = ccd.aabb.center;
+			ccd.endVelocity = ccd.startVelocity;
 
 			m_componentData.push_back(ccd);
 		}
 	}
 
-	void PhysicsSystem::ResolveHorizontalCollions()
+	void PhysicsSystem::ResolveCollisions(bool hPass)
 	{
 		for (auto& cData : m_componentData)
 		{
-			cData.aabb.center.x += cData.startVelocity.x * util::Time::DeltaTime();
+			if (hPass)
+			{
+				float change = cData.startVelocity.x * util::Time::DeltaTime();
+				cData.aabb.center.x += change;
+				cData.absoluteChange = abs(change);
+			}
+			else
+			{
+				float change = cData.startVelocity.y * util::Time::DeltaTime();
+				cData.aabb.center.y += change;
+				cData.absoluteChange = abs(change);
+			}
 		}
 
 		for (auto& collision : m_collisions)
@@ -121,126 +130,143 @@ namespace systems
 			const float aIMass = collision.a->component->GetInverseMass();
 			const float bIMass = collision.b->component->GetInverseMass();
 
-			if (aIMass == 0.0f && bIMass == 0.0f)
+			// Orientation references
+
+			float& aCenterCoord = hPass ?
+				collision.a->aabb.center.x : collision.a->aabb.center.y;
+			float& bCenterCoord = hPass ?
+				collision.b->aabb.center.x : collision.b->aabb.center.y;
+			const bool aFirst = aCenterCoord < bCenterCoord;
+			bool& aNegativeCollision = hPass ?
+				collision.a->collisionFromLeft : collision.a->collisionFromTop;
+			bool& bNegativeCollision = hPass ?
+				collision.b->collisionFromLeft : collision.b->collisionFromTop;
+			bool& aPositiveCollision = hPass ?
+				collision.a->collisionFromRight : collision.a->collisionFromBottom;
+			bool& bPositiveCollision = hPass ?
+				collision.b->collisionFromRight : collision.b->collisionFromBottom;
+			float& aStartVelocityCoord = hPass ?
+				collision.a->startVelocity.x : collision.a->startVelocity.y;
+			float& bStartVelocityCoord = hPass ?
+				collision.b->startVelocity.x : collision.b->startVelocity.y;
+			float& aEndVelocityCoord = hPass ?
+				collision.a->endVelocity.x : collision.a->endVelocity.y;
+			float& bEndVelocityCoord = hPass ?
+				collision.b->endVelocity.x : collision.b->endVelocity.y;
+			
+			const bool aCanChangeVelocity = aIMass != 0.0f &&
+				((aFirst && !aPositiveCollision) ||
+					(!aFirst && !aNegativeCollision));
+			const bool bCanChangeVelocity = bIMass != 0.0f &&
+				((aFirst && !bNegativeCollision) ||
+					(!aFirst && !bPositiveCollision));
+
+			if (!aCanChangeVelocity && !bCanChangeVelocity)
 			{
-				// TO DO: ???
 				continue;
 			}
 
 			float relativeVelocity =
-				collision.b->startVelocity.x - collision.a->startVelocity.x;
-			float impulse = (-1.0f * (m_restitution + 1.0f) * relativeVelocity) /
+				bStartVelocityCoord - aStartVelocityCoord;
+
+			if (aFirst)
+			{
+				if (relativeVelocity >= 0.0f)
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if (relativeVelocity <= 0.0f)
+				{
+					continue;
+				}
+			}
+
+			float restitution =
+				std::min(
+					collision.a->component->GetRestitution(), 
+					collision.b->component->GetRestitution());
+			float impulse = (-1.0f * (restitution + 1.0f) * relativeVelocity) /
 				(aIMass + bIMass);
 
 			const float aMass = collision.a->component->GetMass();
 			const float bMass = collision.b->component->GetMass();
 			float displaceRatio = 0.0f;
 
-			if (aMass == 0.0f)
+			if (aMass == 0.0f && bCanChangeVelocity)
 			{
-				collision.b->endVelocity.x += impulse / bMass;
+				bEndVelocityCoord += impulse / bMass;
 			}
-			else if (bMass == 0.0f)
+			else if (bMass == 0.0f && aCanChangeVelocity)
 			{
-				collision.a->endVelocity.x -= impulse / aMass;
+				aEndVelocityCoord -= impulse / aMass;
 				displaceRatio = 1.0f;
 			}
 			else
 			{
-				collision.a->endVelocity.x -= impulse / aMass;
-				collision.b->endVelocity.x += impulse / bMass;
-				displaceRatio = aMass / (aMass + bMass);
+				aEndVelocityCoord -= impulse / aMass;
+				bEndVelocityCoord += impulse / bMass;
+				displaceRatio = collision.a->absoluteChange /
+					(collision.a->absoluteChange + collision.b->absoluteChange);
 			}
 
-			// Displacement
-
-			if (collision.a->aabb.center.x < collision.b->aabb.center.x)
+			if (aFirst)
 			{
-				const float overlap = collision.a->aabb.GetRight()
-					- collision.b->aabb.GetLeft();
-				collision.a->aabb.center.x -= overlap * displaceRatio;
-				collision.b->aabb.center.x += overlap * (1.0f - displaceRatio);
+				aPositiveCollision = true;
+				bNegativeCollision = true;
 			}
 			else
 			{
-				const float overlap = collision.b->aabb.GetRight() -
-					collision.a->aabb.GetLeft();
-				collision.a->aabb.center.x += overlap * displaceRatio;
-				collision.b->aabb.center.x -= overlap * (1.0f - displaceRatio);
+				aNegativeCollision = true;
+				bPositiveCollision = true;
 			}
+
+			DisplaceCollision(hPass, collision, displaceRatio);
 		}
 	}
 
-	void PhysicsSystem::ResolveVerticalCollisions()
+	void PhysicsSystem::DisplaceCollision(bool hPass, Collision& collision, float displaceRatio)
 	{
-		for (auto& cData : m_componentData)
+		float& aCenterCoord = hPass ?
+			collision.a->aabb.center.x : collision.a->aabb.center.y;
+		float& bCenterCoord = hPass ?
+			collision.b->aabb.center.x : collision.b->aabb.center.y;
+		const bool aFirst = aCenterCoord < bCenterCoord;
+		float aNegativeBoxCoord = hPass ?
+			collision.a->aabb.GetLeft() : collision.a->aabb.GetTop();
+		float bNegativeBoxCoord = hPass ?
+			collision.b->aabb.GetLeft() : collision.b->aabb.GetTop();
+		float aPositiveBoxCoord = hPass ?
+			collision.a->aabb.GetRight() : collision.a->aabb.GetBottom();
+		float bPositiveBoxCoord = hPass ?
+			collision.b->aabb.GetRight() : collision.b->aabb.GetBottom();
+
+		float overlap = 0.0f;
+		if (aFirst)
 		{
-			cData.aabb.center.y += cData.startVelocity.y * util::Time::DeltaTime();
+			overlap = aPositiveBoxCoord - bNegativeBoxCoord;
+		}
+		else
+		{
+			overlap = bPositiveBoxCoord - aNegativeBoxCoord;
 		}
 
-		for (auto& collision : m_collisions)
+		const auto aDisplace = std::min(overlap * displaceRatio, collision.a->absoluteChange);
+		const auto bDisplace = std::min(overlap * (1.0f - displaceRatio), collision.b->absoluteChange);;
+		const auto aError = aDisplace == 0.0f ? 0.0f : m_displacementError;
+		const auto bError = bDisplace == 0.0f ? 0.0f : m_displacementError;
+
+		if (aFirst)
 		{
-			if (!Collide(collision))
-			{
-				continue;
-			}
-
-			if (!collision.a->component->GetIsSolid() ||
-				!collision.b->component->GetIsSolid())
-			{
-				continue;
-			}
-
-			const float aIMass = collision.a->component->GetInverseMass();
-			const float bIMass = collision.b->component->GetInverseMass();
-
-			if (aIMass == 0.0f && bIMass == 0.0f)
-			{
-				// TO DO: ???
-				continue;
-			}
-
-			float relativeVelocity =
-				collision.b->startVelocity.y - collision.a->startVelocity.y;
-			float impulse = (-1.0f * (m_restitution + 1.0f) * relativeVelocity) /
-				(aIMass + bIMass);
-
-			const float aMass = collision.a->component->GetMass();
-			const float bMass = collision.b->component->GetMass();
-			float displaceRatio = 0.0f;
-
-			if (aMass == 0.0f)
-			{
-				collision.b->endVelocity.y += impulse / bMass;
-			}
-			else if (bMass == 0.0f)
-			{
-				collision.a->endVelocity.y -= impulse / aMass;
-				displaceRatio = 1.0f;
-			}
-			else
-			{
-				collision.a->endVelocity.y -= impulse / aMass;
-				collision.b->endVelocity.y += impulse / bMass;
-				displaceRatio = aMass / (aMass + bMass);
-			}
-
-			// Displacement
-
-			if (collision.a->aabb.center.y < collision.b->aabb.center.y)
-			{
-				const float overlap = collision.a->aabb.GetBottom()
-					- collision.b->aabb.GetTop();
-				collision.a->aabb.center.y -= overlap * displaceRatio;
-				collision.b->aabb.center.y += overlap * (1.0f - displaceRatio);
-			}
-			else
-			{
-				const float overlap = collision.b->aabb.GetBottom() -
-					collision.a->aabb.GetTop();
-				collision.a->aabb.center.y += overlap * displaceRatio;
-				collision.b->aabb.center.y -= overlap * (1.0f - displaceRatio);
-			}
+			aCenterCoord -= aDisplace + aError;
+			bCenterCoord += bDisplace + bError;
+		}
+		else
+		{
+			aCenterCoord += aDisplace + aError;
+			bCenterCoord -= bDisplace + bError;
 		}
 	}
 
@@ -248,18 +274,43 @@ namespace systems
 	{
 		for (auto& cData : m_componentData)
 		{
-			// TO DO: Add gravity logic
-
-			sf::Vector2f vel = cData.endVelocity;
-			float speed = sqrt(vel.x * vel.x + vel.y * vel.y);
-			if (speed > 0.0f)
+			if (cData.component->GetMass() != 0.0f &&
+				!cData.component->GetIsIgnoreGravity())
 			{
-				vel /= speed;
+				cData.endVelocity.y += m_gravity * util::Time::DeltaTime();
 			}
-			
-			speed = std::max(0.0f, speed -
-				cData.component->GetDrag() * util::Time::DeltaTime());
-			cData.component->SetVelocity(vel * speed);
+
+			float drag = cData.component->GetDrag();
+			float adjustedDrag = drag * util::Time::DeltaTime();
+			if (drag != 0.0f)
+			{
+				if (!cData.component->GetIsIgnoreGravity())
+				{
+					float& x = cData.endVelocity.x;
+					if (x > 0.0f)
+					{
+						x = std::max(0.0f, x - adjustedDrag);
+					}
+					else
+					{
+						x = std::min(0.0f, x + adjustedDrag);
+					}
+				}
+				else
+				{
+					float speed = sqrt(cData.endVelocity.x * cData.endVelocity.x +
+						cData.endVelocity.y * cData.endVelocity.y);
+					if (speed != 0.0f)
+					{
+						cData.endVelocity /= speed;
+						speed = std::max(0.0f, speed - adjustedDrag);
+						cData.endVelocity *= speed;
+					}
+				}
+				
+			}
+
+			cData.component->SetVelocity(cData.endVelocity);
 		}
 	}
 
@@ -275,9 +326,9 @@ namespace systems
 
 	bool PhysicsSystem::Collide(const Collision& collision)
 	{
-		return collision.a->aabb.GetRight() > collision.b->aabb.GetLeft()
-			&& collision.a->aabb.GetLeft() < collision.b->aabb.GetRight()
-			&& collision.a->aabb.GetBottom() > collision.b->aabb.GetTop()
-			&& collision.a->aabb.GetTop() < collision.b->aabb.GetBottom();
+		return collision.a->aabb.GetRight() > collision.b->aabb.GetLeft() + m_displacementError
+			&& collision.a->aabb.GetLeft() < collision.b->aabb.GetRight() - m_displacementError
+			&& collision.a->aabb.GetBottom() > collision.b->aabb.GetTop() + m_displacementError
+			&& collision.a->aabb.GetTop() < collision.b->aabb.GetBottom() - m_displacementError;
 	}
 }

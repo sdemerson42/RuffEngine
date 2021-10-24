@@ -3,6 +3,7 @@
 #include "../Util/Logger.h"
 #include "../Util/Math.h"
 #include "../Components/ComponentBank.h"
+#include "../RuffEngine/Globals.h"
 
 #include <algorithm>
 
@@ -19,6 +20,13 @@ namespace systems
 	void RenderSystem::Execute()
 	{
 		LayerGroup layerGroup;
+
+		if (globals::DEBUG_MODE)
+		{
+			m_debugVertexArray.clear();
+			m_debugVertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
+		}
+		
 
 		for (int i = 0; i < ecs::ComponentBank::m_renderComponentsSize; ++i)
 		{
@@ -119,6 +127,22 @@ namespace systems
 		mutableVertex.position = drawBottomLeft;
 		mutableVertex.texCoords = sf::Vector2f{ texLeft, texBottom };
 		vertexArray.append(mutableVertex);
+
+		DebugDrawEntityCenter(renderComponent);
+	}
+
+	void RenderSystem::DebugDrawEntityCenter(
+		const components::RenderComponent& renderComponent)
+	{
+		const auto& parentTransform = renderComponent.GetParentTransform();
+		m_debugVertexArray.append(sf::Vertex{ sf::Vector2f{parentTransform.position.x -1.0f,
+			parentTransform.position.y - 1.0f}, sf::Color::White });
+		m_debugVertexArray.append(sf::Vertex{ sf::Vector2f{parentTransform.position.x + 1.0f,
+			parentTransform.position.y - 1.0f}, sf::Color::White });
+		m_debugVertexArray.append(sf::Vertex{ sf::Vector2f{parentTransform.position.x + 1.0f,
+			parentTransform.position.y + 1.0f}, sf::Color::White });
+		m_debugVertexArray.append(sf::Vertex{ sf::Vector2f{parentTransform.position.x - 1.0f,
+			parentTransform.position.y + 1.0f}, sf::Color::White });
 	}
 
 	bool RenderSystem::ValidateRenderLayer(const std::string& layer)
@@ -152,6 +176,11 @@ namespace systems
 				const sf::Texture& texture = m_textureMap.at(vaPair.first);
 				sf::RenderStates states{ &texture };
 				m_window->draw(vaPair.second, states);
+			}
+
+			if (globals::DEBUG_MODE)
+			{
+				m_window->draw(m_debugVertexArray);
 			}
 		}
 		

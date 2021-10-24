@@ -47,6 +47,15 @@ namespace components
 			m_mass = mass;
 		}
 
+		float GetRestitution() const
+		{
+			return m_restitution;
+		}
+		void SetRestution(float value)
+		{
+			m_restitution = std::min(std::max(value, 0.0f), 1.0f);
+		}
+
 		float GetDrag() const
 		{
 			return m_drag;
@@ -102,7 +111,9 @@ namespace components
 		}
 	private:
 		sf::Vector2f m_velocity;
+		float m_rotationSpeed;
 		float m_mass;
+		float m_restitution;
 		float m_drag;
 
 		ecs::Box2f m_aabb;
