@@ -77,6 +77,8 @@ namespace ruff_engine
 		util::Logger::Log("Creating Systems...");
 
 		m_systems.push_back(
+			std::make_unique<systems::InputSystem>());
+		m_systems.push_back(
 			std::make_unique<systems::ScriptSystem>());
 		m_systems.push_back(
 			std::make_unique<systems::AnimationSystem>());
@@ -111,7 +113,7 @@ namespace ruff_engine
 			}
 		}
 
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			m_entities.push_back(std::make_unique<ecs::Entity>());
 			ecs::Entity* entity = m_entities.back().get();
@@ -173,6 +175,13 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
 			"Vector2f", "float y", asOFFSET(sf::Vector2f, y)), errMsg)) fail = true;
 
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectType(
+		"InputData", 0, asOBJ_REF | asOBJ_NOCOUNT ), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
+			"InputData", "Vector2f leftStick", asOFFSET(systems::InputSystem::InputData, leftStick)), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
+			"InputData", "Vector2f rightStick", asOFFSET(systems::InputSystem::InputData, rightStick)), errMsg)) fail = true;
+
 		if (fail)
 		{
 			return false;
@@ -221,6 +230,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetVelocity(float, float)",
 			asMETHOD(components::ScriptComponent, SetVelocity), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "const InputData& GetInput()",
+			asMETHOD(components::ScriptComponent, GetInput), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

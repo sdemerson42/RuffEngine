@@ -87,4 +87,9 @@ namespace components
 			physicsComponent->SetVelocity(x, y);
 		}
 	}
+
+	const systems::InputSystem::InputData& ScriptComponent::GetInput() const
+	{
+		return systems::InputSystem::s_inputData;
+	}
 }

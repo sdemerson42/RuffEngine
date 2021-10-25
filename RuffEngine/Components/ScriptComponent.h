@@ -3,6 +3,7 @@
 #include "../ECSPrimitives/ComponentBase.h"
 #include "../AngelScript/include/angelscript.h"
 #include "SFML/System/Vector2.hpp"
+#include "../Systems/InputSystem.h"
 
 #include <string>
 
@@ -32,6 +33,7 @@ namespace components
 		void SetScale(float x, float y);
 		const sf::Vector2f& GetVelocity() const;
 		void SetVelocity(float x, float y);
+		const systems::InputSystem::InputData& GetInput() const;
 	private:
 		asIScriptContext* m_scriptContext{ nullptr };
 		int m_suspendCycleCounter;
