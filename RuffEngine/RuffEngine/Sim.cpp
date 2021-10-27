@@ -233,6 +233,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "const InputData& GetInput()",
 			asMETHOD(components::ScriptComponent, GetInput), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "const Vector2f& GetViewCenter()",
+			asMETHOD(components::ScriptComponent, GetViewCenter), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetViewCenter(float, float)",
+			asMETHOD(components::ScriptComponent, SetViewCenter), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

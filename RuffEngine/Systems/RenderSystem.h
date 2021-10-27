@@ -22,6 +22,8 @@ namespace systems
 			const std::shared_ptr<sf::RenderWindow>& windowPtr,
 			const std::vector<std::string>& renderLayers);
 		void Execute() override;
+
+		static sf::View s_view;
 	private:
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::unordered_map<std::string, sf::Texture> m_textureMap;

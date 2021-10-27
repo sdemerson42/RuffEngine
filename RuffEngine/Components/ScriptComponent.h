@@ -34,6 +34,8 @@ namespace components
 		const sf::Vector2f& GetVelocity() const;
 		void SetVelocity(float x, float y);
 		const systems::InputSystem::InputData& GetInput() const;
+		const sf::Vector2f& GetViewCenter() const;
+		void SetViewCenter(float x, float y);
 	private:
 		asIScriptContext* m_scriptContext{ nullptr };
 		int m_suspendCycleCounter;

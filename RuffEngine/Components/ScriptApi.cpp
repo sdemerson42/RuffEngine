@@ -2,6 +2,7 @@
 #include "Components.h"
 #include "../Util/Logger.h"
 #include "../ECSPrimitives/Entity.h"
+#include "../Systems/RenderSystem.h"
 #include "../Util/Time.h"
 
 namespace components
@@ -91,5 +92,15 @@ namespace components
 	const systems::InputSystem::InputData& ScriptComponent::GetInput() const
 	{
 		return systems::InputSystem::s_inputData;
+	}
+
+	const sf::Vector2f& ScriptComponent::GetViewCenter() const
+	{
+		return systems::RenderSystem::s_view.getCenter();
+	}
+	
+	void ScriptComponent::SetViewCenter(float x, float y)
+	{
+		systems::RenderSystem::s_view.setCenter(x, y);
 	}
 }

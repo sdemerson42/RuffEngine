@@ -9,12 +9,17 @@
 
 namespace systems
 {
+	sf::View RenderSystem::s_view;
+
 	RenderSystem::RenderSystem(
 		const std::shared_ptr<sf::RenderWindow>& windowPtr,
 		const std::vector<std::string>& renderLayers) :
 		m_window{ windowPtr },
 		m_renderLayers{ renderLayers }
 	{
+		sf::Vector2f windowSize{ m_window->getSize() };
+		s_view.setSize(windowSize);
+		s_view.setCenter(windowSize.x / 2.0f, windowSize.y / 2.0f);
 	}
 
 	void RenderSystem::Execute()
@@ -184,6 +189,7 @@ namespace systems
 			}
 		}
 		
+		m_window->setView(s_view);
 		m_window->display();
 	}
 };
