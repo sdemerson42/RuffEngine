@@ -40,6 +40,13 @@ namespace systems
 			AddComponentToGroup(renderComponent, layerGroup);
 		}
 
+		for (int i = 0; i < ecs::ComponentBank::m_particleComponentsSize; ++i)
+		{
+			auto& particleComponent = ecs::ComponentBank::m_particleComponents[i];
+			ProcessTexturePath(particleComponent.GetTexturePath());
+			AddParticlesToGroup(particleComponent, layerGroup);
+		}
+
 		RenderAllLayers(layerGroup);
 	}
 
@@ -134,6 +141,70 @@ namespace systems
 		vertexArray.append(mutableVertex);
 
 		DebugDrawEntityCenter(renderComponent);
+	}
+
+	void RenderSystem::AddParticlesToGroup(
+		components::ParticleComponent& particleComponent,
+		/*out*/LayerGroup& layerGroup)
+	{
+		const auto& componentLayer = particleComponent.GetRenderLayer();
+
+		// Don't render this component if it's on an invalid layer
+		if (!ValidateRenderLayer(componentLayer)) return;
+
+		auto& vaGroup = layerGroup[componentLayer];
+		const auto& componentTexturePath = particleComponent.GetTexturePath();
+
+		if (vaGroup.find(componentTexturePath) == vaGroup.end())
+		{
+			vaGroup[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
+		}
+
+		// Add vertices to the array
+		sf::VertexArray& vertexArray = vaGroup[componentTexturePath];
+		auto& particles = particleComponent.GetParticles();
+
+		const auto& textureBox = particleComponent.GetTextureBox();
+		float texLeft = textureBox.GetLeft();
+		float texRight = textureBox.GetRight();
+		float texTop = textureBox.GetTop();
+		float texBottom = textureBox.GetBottom();
+
+		for (const auto& particle : particles)
+		{
+			if (!particle.active) continue;
+
+			const auto& drawBox = particle.drawBox;
+
+			float drawLeft = drawBox.GetLeft();
+			float drawRight = drawBox.GetRight();
+			float drawTop = drawBox.GetTop();
+			float drawBottom = drawBox.GetBottom();
+
+			sf::Vector2f drawTopLeft{ drawLeft, drawTop };
+			sf::Vector2f drawTopRight{ drawRight, drawTop };
+			sf::Vector2f drawBottomLeft{ drawLeft, drawBottom };
+			sf::Vector2f drawBottomRight{ drawRight, drawBottom };
+
+			sf::Vertex mutableVertex;
+
+			mutableVertex.color = particle.color;
+			mutableVertex.position = drawTopLeft;
+			mutableVertex.texCoords = sf::Vector2f{ texLeft, texTop };
+			vertexArray.append(mutableVertex);
+
+			mutableVertex.position = drawTopRight;
+			mutableVertex.texCoords = sf::Vector2f{ texRight, texTop };
+			vertexArray.append(mutableVertex);
+
+			mutableVertex.position = drawBottomRight;
+			mutableVertex.texCoords = sf::Vector2f{ texRight, texBottom };
+			vertexArray.append(mutableVertex);
+
+			mutableVertex.position = drawBottomLeft;
+			mutableVertex.texCoords = sf::Vector2f{ texLeft, texBottom };
+			vertexArray.append(mutableVertex);
+		}
 	}
 
 	void RenderSystem::DebugDrawEntityCenter(

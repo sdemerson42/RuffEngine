@@ -29,6 +29,7 @@ namespace data
 			ComponentQuery(dbPath, "Animation_Data", blueprint);
 			ComponentQuery(dbPath, "Script_Data", blueprint);
 			ComponentQuery(dbPath, "Physics_Data", blueprint);
+			ComponentQuery(dbPath, "Particle_Data", blueprint);
 
 			blueprints.push_back(blueprint);
 			++entityIndex;

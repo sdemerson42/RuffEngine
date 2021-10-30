@@ -21,6 +21,7 @@ namespace systems
 	class AnimationSystem;
 	class ScriptSystem;
 	class PhysicsSystem;
+	class ParticleSystem;
 }
 
 namespace ecs
@@ -32,6 +33,7 @@ namespace ecs
 		friend class systems::AnimationSystem;
 		friend class systems::ScriptSystem;
 		friend class systems::PhysicsSystem;
+		friend class systems::ParticleSystem;
 	public:
 		static bool DisconnectAllFromEntity(Entity* entity);
 
@@ -46,6 +48,9 @@ namespace ecs
 
 		static bool ConnectPhysicsComponent(Entity* entity);
 		static bool DisconnectPhysicsComponent(Entity* entity);
+
+		static bool ConnectParticleComponent(Entity* entity);
+		static bool DisconnectParticleComponent(Entity* entity);
 	private:
 		static std::vector<components::RenderComponent> m_renderComponents;
 		static int m_renderComponentsSize;
@@ -55,6 +60,8 @@ namespace ecs
 		static int m_scriptComponentsSize;
 		static std::vector<components::PhysicsComponent> m_physicsComponents;
 		static int m_physicsComponentsSize;
+		static std::vector<components::ParticleComponent> m_particleComponents;
+		static int m_particleComponentsSize;
 
 		template<typename T>
 		static bool ConnectToEntity(

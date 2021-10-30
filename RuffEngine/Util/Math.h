@@ -36,6 +36,15 @@ namespace util
 			vector.x /= magnitude;
 			vector.y /= magnitude;
 		}
+
+		static float RandomRangeFloat(float min, float max)
+		{
+			int iMin = int(min * 100.0f);
+			int iMax = int(max * 100.0f);
+			int iRange = iMin - iMax + 1;
+			int iValue = rand() % iRange + iMin;
+			return (float)iValue / 100.0f;
+		}
 	protected:
 		Math()
 		{}

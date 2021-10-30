@@ -85,6 +85,8 @@ namespace ruff_engine
 		m_systems.push_back(
 			std::make_unique<systems::PhysicsSystem>());
 		m_systems.push_back(
+			std::make_unique<systems::ParticleSystem>());
+		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 		
 		util::Logger::Log("Systems created successfully.");

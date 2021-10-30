@@ -4,3 +4,4 @@
 #include "AnimationComponent.h"
 #include "ScriptComponent.h"
 #include "PhysicsComponent.h"
+#include "ParticleComponent.h"

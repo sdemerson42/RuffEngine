@@ -167,6 +167,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="ISystem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Range.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>

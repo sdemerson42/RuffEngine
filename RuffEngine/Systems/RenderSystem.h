@@ -34,6 +34,9 @@ namespace systems
 		void AddComponentToGroup(
 			const components::RenderComponent& renderComponent,
 			/*out*/LayerGroup& layerGroup);
+		void AddParticlesToGroup(
+			components::ParticleComponent& particleComponent,
+			/*out*/LayerGroup& layerGroup);
 		void DebugDrawEntityCenter(const components::RenderComponent& renderComponent);
 		bool ValidateRenderLayer(const std::string& layer);
 		void RenderAllLayers(const LayerGroup& layerGroup);

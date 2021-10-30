@@ -67,6 +67,7 @@ namespace data
 		AddAnimationComponents(*blueprintIter, entity);
 		AddScriptComponents(*blueprintIter, entity);
 		AddPhysicsComponents(*blueprintIter, entity);
+		AddParticleComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -201,18 +202,17 @@ namespace data
 				continue;
 			}
 
-			// Connect render components
+			// Connect physics components
 			int totalComponents = queryResult.at("physics_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
 				if (!CONNECT_COMP(&entity, PhysicsComponent))
 				{
-					util::Logger::Log("Warning: Failed to connect RenderComponent to entity.");
+					util::Logger::Log("Warning: Failed to connect PhysicsComponent to entity.");
 					continue;
 				}
 
 				PhysicsComponent* physicsComponent = entity.GetComponents<PhysicsComponent>().back();
-				//queryResult.at("texture_path")[i]
 				physicsComponent->SetVelocity(
 					std::stof(queryResult.at("velocity_x")[i]),
 					std::stof(queryResult.at("velocity_y")[i]));
@@ -235,6 +235,81 @@ namespace data
 				{
 					physicsComponent->AddActiveCollisionLayer(layer);
 				}
+			}
+		}
+	}
+
+	void EntityFactory::AddParticleComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("particle_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect particle components
+			int totalComponents = queryResult.at("particle_id").size();
+			for (int i = 0; i < totalComponents; ++i)
+			{
+				if (!CONNECT_COMP(&entity, ParticleComponent))
+				{
+					util::Logger::Log("Warning: Failed to connect RenderComponent to entity.");
+					continue;
+				}
+
+				ParticleComponent* particleComponent = entity.GetComponents<ParticleComponent>().back();
+				const std::string& sEmitterShape = queryResult.at("emitter_shape")[i];
+				const std::string& sEmitterVars = queryResult.at("emitter_vars")[i];
+				auto vars = ProcessMultiValueField(sEmitterVars);
+
+				if (sEmitterShape == "CONE")
+				{
+					particleComponent->SetEmitterShape(ParticleComponent::EmitterShape::CONE);
+					particleComponent->AddEmitterVar("offsetX", std::stof(vars[0]));
+					particleComponent->AddEmitterVar("offsetY", std::stof(vars[1]));
+					particleComponent->AddEmitterVar("startX", std::stof(vars[2]));
+					particleComponent->AddEmitterVar("startY", std::stof(vars[3]));
+					particleComponent->AddEmitterVar("angleDegrees", std::stof(vars[4]));
+				}
+
+				particleComponent->SetTexturePath(queryResult.at("texture_path")[i]);
+				particleComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
+				particleComponent->SetTextureBox(
+					std::stof(queryResult.at("texture_center_x")[i]),
+					std::stof(queryResult.at("texture_center_y")[i]),
+					std::stof(queryResult.at("texture_half_x")[i]),
+					std::stof(queryResult.at("texture_half_y")[i]));
+				particleComponent->SetIsUniformScaling(
+					std::stoi(queryResult.at("uniform_scaling")[i]));
+				particleComponent->SetScaleRange(
+					std::stof(queryResult.at("scale_min_x")[i]),
+					std::stof(queryResult.at("scale_max_x")[i]),
+					std::stof(queryResult.at("scale_min_y")[i]),
+					std::stof(queryResult.at("scale_max_y")[i]));
+				particleComponent->SetColorRange(
+					sf::Color(
+						std::stoi(queryResult.at("color_min_r")[i]),
+						std::stoi(queryResult.at("color_min_g")[i]),
+						std::stoi(queryResult.at("color_min_b")[i]),
+						std::stoi(queryResult.at("color_min_a")[i])),
+					sf::Color(
+						std::stoi(queryResult.at("color_min_r")[i]),
+						std::stoi(queryResult.at("color_max_g")[i]),
+						std::stoi(queryResult.at("color_max_b")[i]),
+						std::stoi(queryResult.at("color_max_a")[i])));
+				particleComponent->SetLifeRange(
+					std::stof(queryResult.at("life_min")[i]),
+					std::stof(queryResult.at("life_max")[i]));
+				particleComponent->SetSpeedRange(
+					std::stof(queryResult.at("speed_min")[i]),
+					std::stof(queryResult.at("speed_max")[i]));
+				particleComponent->SetSpawnRate(
+					std::stof(queryResult.at("spawn_rate")[i]));
+				
+				particleComponent->Initialize();
 			}
 		}
 	}

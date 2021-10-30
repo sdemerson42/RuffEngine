@@ -38,5 +38,9 @@ namespace data
 		void AddPhysicsComponents(
 			const data::Blueprint& blueprint,
 			/*out*/ecs::Entity& entity);
+
+		void AddParticleComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
 	};
 }

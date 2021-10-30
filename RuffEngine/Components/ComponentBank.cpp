@@ -19,6 +19,9 @@ namespace ecs
 	std::vector<components::PhysicsComponent> ComponentBank::m_physicsComponents{ globals::TOTAL_COMPONENTS };
 	int ComponentBank::m_physicsComponentsSize = 0;
 
+	std::vector<components::ParticleComponent> ComponentBank::m_particleComponents{ globals::TOTAL_COMPONENTS };
+	int ComponentBank::m_particleComponentsSize = 0;
+
 	// Static methods
 
 	bool ComponentBank::DisconnectAllFromEntity(Entity* entity)
@@ -68,5 +71,15 @@ namespace ecs
 	bool ComponentBank::DisconnectPhysicsComponent(Entity* entity)
 	{
 		return DisconnectFromEntity(entity, m_physicsComponents, m_physicsComponentsSize);
+	}
+
+	bool ComponentBank::ConnectParticleComponent(Entity* entity)
+	{
+		return ConnectToEntity(entity, m_particleComponents, m_particleComponentsSize);
+	}
+
+	bool ComponentBank::DisconnectParticleComponent(Entity* entity)
+	{
+		return DisconnectFromEntity(entity, m_particleComponents, m_particleComponentsSize);
 	}
 }
