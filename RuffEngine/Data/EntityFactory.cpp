@@ -46,6 +46,7 @@ namespace data
 		const std::string& blueprintName,
 		float positionX,
 		float positionY,
+		bool isActive,
 		/*out*/ecs::Entity& entity)
 	{
 		auto blueprintIter = std::find_if(
@@ -62,6 +63,9 @@ namespace data
 			return false;
 		}
 
+		// First tag will always be the blueprint name
+		entity.AddTag(blueprintName);
+
 		// Add components
 		AddRenderComponents(*blueprintIter, entity);
 		AddAnimationComponents(*blueprintIter, entity);
@@ -71,6 +75,8 @@ namespace data
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
+
+		entity.SetIsActive(isActive);
 
 		return true;
 	}
@@ -97,6 +103,9 @@ namespace data
 				}
 
 				RenderComponent* renderComponent = entity.GetComponents<RenderComponent>().back();
+				renderComponent->Initialize();
+				renderComponent->SetIsActive(true);
+				
 				renderComponent->SetTexturePath(queryResult.at("texture_path")[i]);
 				renderComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
 				renderComponent->SetTextureBox(
@@ -143,6 +152,8 @@ namespace data
 			}
 
 			AnimationComponent* animationComponent = entity.GetComponent<AnimationComponent>();
+			animationComponent->Initialize();
+			animationComponent->SetIsActive(true);
 
 			int totalAnimations = queryResult.at("animation_id").size();
 			for (int i = 0; i < totalAnimations; ++i)
@@ -174,7 +185,7 @@ namespace data
 				continue;
 			}
 
-			// Connect render components
+			// Connect script components
 			int totalComponents = queryResult.at("script_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
@@ -187,6 +198,8 @@ namespace data
 				ScriptComponent* scriptComponent = entity.GetComponents<ScriptComponent>().back();
 				std::string scriptPrefix = queryResult.at("main_prefix")[i];
 				scriptComponent->PrepareScriptContext(m_scriptEngine, scriptPrefix);
+				scriptComponent->Initialize();
+				scriptComponent->SetIsActive(true);
 			}
 		}
 	}
@@ -213,6 +226,8 @@ namespace data
 				}
 
 				PhysicsComponent* physicsComponent = entity.GetComponents<PhysicsComponent>().back();
+				physicsComponent->Initialize();
+				physicsComponent->SetIsActive(true);
 				physicsComponent->SetVelocity(
 					std::stof(queryResult.at("velocity_x")[i]),
 					std::stof(queryResult.at("velocity_y")[i]));
@@ -261,6 +276,8 @@ namespace data
 				}
 
 				ParticleComponent* particleComponent = entity.GetComponents<ParticleComponent>().back();
+				particleComponent->Initialize();
+				particleComponent->SetIsActive(true);
 				const std::string& sEmitterShape = queryResult.at("emitter_shape")[i];
 				const std::string& sEmitterVars = queryResult.at("emitter_vars")[i];
 				auto vars = ProcessMultiValueField(sEmitterVars);
@@ -309,7 +326,7 @@ namespace data
 				particleComponent->SetSpawnRate(
 					std::stof(queryResult.at("spawn_rate")[i]));
 				
-				particleComponent->Initialize();
+				particleComponent->PostStateSetup();
 			}
 		}
 	}

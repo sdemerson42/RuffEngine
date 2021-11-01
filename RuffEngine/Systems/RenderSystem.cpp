@@ -35,7 +35,11 @@ namespace systems
 
 		for (int i = 0; i < ecs::ComponentBank::m_renderComponentsSize; ++i)
 		{
-			const auto& renderComponent = ecs::ComponentBank::m_renderComponents[i];
+			auto& renderComponent = ecs::ComponentBank::m_renderComponents[i];
+			if (!renderComponent.GetIsActive() || !renderComponent.GetParent()->GetIsActive())
+			{
+				continue;
+			}
 			ProcessTexturePath(renderComponent.GetTexturePath());
 			AddComponentToGroup(renderComponent, layerGroup);
 		}
@@ -43,6 +47,10 @@ namespace systems
 		for (int i = 0; i < ecs::ComponentBank::m_particleComponentsSize; ++i)
 		{
 			auto& particleComponent = ecs::ComponentBank::m_particleComponents[i];
+			if (!particleComponent.GetIsActive() || !particleComponent.GetParent()->GetIsActive())
+			{
+				continue;
+			}
 			ProcessTexturePath(particleComponent.GetTexturePath());
 			AddParticlesToGroup(particleComponent, layerGroup);
 		}

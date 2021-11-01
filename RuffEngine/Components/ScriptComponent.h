@@ -6,19 +6,33 @@
 #include "../Systems/InputSystem.h"
 
 #include <string>
+#include <unordered_map>
 
 namespace components
 {
 	class ScriptComponent : public ecs::ComponentBase
 	{
 	public:
+		void Initialize() override;
 		void PrepareScriptContext(asIScriptEngine* scriptEngine, const std::string& mainPrefix);
 		void ExecuteScript();
+		void ExecuteCollision(ecs::Entity* collider);
 
 		// Script API methods
 		void Suspend(int cycles);
 		void Log(const std::string& msg) const;
 		float DeltaTime() const;
+		
+		int GetInt(const std::string& name);
+		void SetInt(const std::string& name, int value);
+		int AddInt(const std::string& name, int value);
+		float GetFloat(const std::string& name);
+		void SetFloat(const std::string& name, float value);
+		float AddFloat(const std::string& name, float value);
+		std::string GetString(const std::string& name);
+		void SetString(const std::string& name, const std::string& value);
+		std::string AddString(const std::string& name, const std::string& value);
+
 		const sf::Vector2f& GetPosition() const;
 		void SetPosition(float x, float y);
 		void PlayAnimation(
@@ -37,8 +51,16 @@ namespace components
 		const sf::Vector2f& GetViewCenter() const;
 		void SetViewCenter(float x, float y);
 	private:
-		asIScriptContext* m_scriptContext{ nullptr };
+		asIScriptContext* m_mainScriptContext{ nullptr };
+		asIScriptContext* m_collisionScriptContext{ nullptr };
+		asIScriptFunction* m_mainScriptFunction{ nullptr };
+		asIScriptFunction* m_collisionScriptFunction{ nullptr };
 		int m_suspendCycleCounter;
 		int m_suspendCycleTotal;
+
+		// API State
+		std::unordered_map<std::string, int> m_apiStateInt;
+		std::unordered_map<std::string, float> m_apiStateFloat;
+		std::unordered_map<std::string, std::string> m_apiStateStr;
 	};
 };

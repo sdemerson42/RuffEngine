@@ -29,3 +29,9 @@ void Wizard_Main(ScriptComponent@ api)
 		api.Suspend();
 	}
 }
+
+void Wizard_OnCollision(ScriptComponent@ api, Entity@ collider)
+{
+	int total = api.AddInt("total", 1);
+	api.Log("Total: " + total);
+}

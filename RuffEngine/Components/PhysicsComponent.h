@@ -109,6 +109,10 @@ namespace components
 		{
 			return m_activeCollisionLayers.find(layer) != m_activeCollisionLayers.end();
 		}
+		const std::unordered_set<std::string>& GetActiveCollisionLayers()
+		{
+			return m_activeCollisionLayers;
+		}
 	private:
 		sf::Vector2f m_velocity;
 		float m_rotationSpeed;

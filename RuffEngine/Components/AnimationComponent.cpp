@@ -7,6 +7,14 @@
 
 namespace components
 {
+	void AnimationComponent::Initialize()
+	{
+		m_animations.clear();
+		m_currentAnimation = nullptr;
+		m_currentAnimationFrame = 0;
+		m_timeCounter = 0.0f;
+	}
+
 	void AnimationComponent::AddAnimation(
 		const std::string& name,
 		const ecs::Box2f& startFrame,

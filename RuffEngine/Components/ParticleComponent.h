@@ -29,7 +29,9 @@ namespace components
 			CONE
 		};
 
-		void Initialize();
+		void Initialize() override;
+
+		void PostStateSetup();
 
 		EmitterShape GetEmitterShape() const
 		{

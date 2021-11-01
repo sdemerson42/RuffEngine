@@ -16,6 +16,7 @@ namespace data
 			const std::string& blueprintName,
 			float positionX,
 			float positionY,
+			bool isActive,
 			/*out*/ecs::Entity& entity);
 	private:
 		std::vector<Blueprint> m_blueprints;

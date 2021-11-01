@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 namespace components
 {
@@ -44,6 +45,7 @@ namespace systems
 
 		sf::Vector2f m_checkProximityBuffer;
 		std::vector<Collision> m_collisions;
+		std::unordered_set<Collision*> m_onCollisions;
 		std::vector<ComponentCollisionData> m_componentData;
 		
 		float m_gravity;
@@ -54,6 +56,7 @@ namespace systems
 		void DisplaceCollision(bool hPass, Collision& collision, float displaceRatio);
 		void CorrectVelocities();
 		void UpdateEntities();
+		void UpdateScripts();
 		bool Collide(const Collision& collision);
 
 		const float m_displacementError = 0.2f;

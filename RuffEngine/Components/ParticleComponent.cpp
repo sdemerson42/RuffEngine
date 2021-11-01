@@ -6,6 +6,13 @@ namespace components
 {
 	void ParticleComponent::Initialize()
 	{
+		m_emitterVars.clear();
+		m_particles.clear();
+		m_spawnCounter = 0.0f;
+	}
+
+	void ParticleComponent::PostStateSetup()
+	{
 		switch (m_emitterShape)
 		{
 		case EmitterShape::CONE:

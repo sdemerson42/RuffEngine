@@ -16,6 +16,11 @@ namespace systems
 			components::ParticleComponent& pc =
 				ecs::ComponentBank::m_particleComponents[i];
 
+			if (!pc.GetIsActive() || !pc.GetParent()->GetIsActive())
+			{
+				continue;
+			}
+
 			auto& particles = pc.GetParticles();
 
 			// Spawn new particles

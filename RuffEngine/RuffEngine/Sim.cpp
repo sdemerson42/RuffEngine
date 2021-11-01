@@ -39,7 +39,7 @@ namespace ruff_engine
 		}
 
 		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_simData->name);
-		m_entityFactory = std::make_unique<data::EntityFactory>();
+		m_entityFactory = std::make_shared<data::EntityFactory>();
 		m_entityFactory->Initialize(m_simData->entitiesDbPath, m_scriptEngine);
 
 		result = MakeSystems();
@@ -77,6 +77,8 @@ namespace ruff_engine
 		util::Logger::Log("Creating Systems...");
 
 		m_systems.push_back(
+			std::make_unique<systems::SpawnSystem>(&m_entities, m_entityFactory));
+		m_systems.push_back(
 			std::make_unique<systems::InputSystem>());
 		m_systems.push_back(
 			std::make_unique<systems::ScriptSystem>());
@@ -100,31 +102,8 @@ namespace ruff_engine
 
 		// TO DO: Replace test objects with data
 
-		for (int i = 0; i < 20; ++i)
-		{
-			for (int j = 0; j < 15; ++j)
-			{
-				if (i == 0 || j == 0 || i == 19 || j == 14)
-				{
-					m_entities.push_back(std::make_unique<ecs::Entity>());
-					ecs::Entity* entity = m_entities.back().get();
-					m_entityFactory->BuildEntityFromBlueprint(
-						"Trees", i * 32.0f, j * 32.0f, *entity);
-				}
-
-			}
-		}
-
-		for (int i = 0; i < 1; ++i)
-		{
-			m_entities.push_back(std::make_unique<ecs::Entity>());
-			ecs::Entity* entity = m_entities.back().get();
-			m_entityFactory->BuildEntityFromBlueprint(
-				"Wizard", rand() % 400 + 100, rand() % 200 + 100, *entity);
-			entity->GetComponent<components::PhysicsComponent>()->SetVelocity(
-				rand() % 200 - 100, rand() % 200 - 100);
-			entity->GetComponent<components::PhysicsComponent>()->SetMass(rand() % 5 + 1);
-		}
+		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
+			SpawnEntity("Wizard", 100.0f, 100.0f, true, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -184,6 +163,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
 			"InputData", "Vector2f rightStick", asOFFSET(systems::InputSystem::InputData, rightStick)), errMsg)) fail = true;
 
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectType(
+			"Entity", 0, asOBJ_REF | asOBJ_NOCOUNT), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"Entity", "bool HasTag(const string& in)",
+			asMETHOD(ecs::Entity, HasTag), asCALL_THISCALL), errMsg)) fail = true;
+
 		if (fail)
 		{
 			return false;
@@ -241,6 +226,33 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetViewCenter(float, float)",
 			asMETHOD(components::ScriptComponent, SetViewCenter), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "int GetInt(const string& in)",
+			asMETHOD(components::ScriptComponent, GetInt), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetInt(const string& in, int)",
+			asMETHOD(components::ScriptComponent, SetInt), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "int AddInt(const string& in, int)",
+			asMETHOD(components::ScriptComponent, AddInt), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "float GetFloat(const string& in)",
+			asMETHOD(components::ScriptComponent, GetFloat), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetFloat(const string& in, float)",
+			asMETHOD(components::ScriptComponent, SetFloat), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "float AddFloat(const string& in, float)",
+			asMETHOD(components::ScriptComponent, AddFloat), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "string GetString(const string& in)",
+			asMETHOD(components::ScriptComponent, GetString), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetString(const string& in, const string& in)",
+			asMETHOD(components::ScriptComponent, SetString), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "string AddString(const string& in, const string& in)",
+			asMETHOD(components::ScriptComponent, AddString), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

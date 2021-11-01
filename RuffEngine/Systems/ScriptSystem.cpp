@@ -8,7 +8,11 @@ namespace systems
 	{
 		for (int i = 0; i < ecs::ComponentBank::m_scriptComponentsSize; ++i)
 		{
-			ecs::ComponentBank::m_scriptComponents[i].ExecuteScript();
+			components::ScriptComponent* sc = &ecs::ComponentBank::m_scriptComponents[i];
+			if (sc->GetIsActive() && sc->GetParent()->GetIsActive())
+			{
+				sc->ExecuteScript();
+			}
 		}
 	}
 }

@@ -30,6 +30,22 @@ namespace ecs
 		{
 		}
 
+		while (DISCONNECT_COMP(entity, AnimationComponent))
+		{
+		}
+
+		while (DISCONNECT_COMP(entity, ScriptComponent))
+		{
+		}
+
+		while (DISCONNECT_COMP(entity, PhysicsComponent))
+		{
+		}
+
+		while (DISCONNECT_COMP(entity, ParticleComponent))
+		{
+		}
+
 		return true;
 	}
 

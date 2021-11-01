@@ -28,6 +28,7 @@ namespace systems
 		ResolveCollisions(true);
 		CorrectVelocities();
 		UpdateEntities();
+		UpdateScripts();
 	}
 
 	void PhysicsSystem::PopulateCollisions()
@@ -35,20 +36,35 @@ namespace systems
 		GetCollisionData();
 
 		m_collisions.clear();
+		m_onCollisions.clear();
 		
 		for (size_t i = 0; i < m_componentData.size(); ++i)
 		{
 			auto& aData = m_componentData[i];
-			sf::Vector2f aTl{
-				aData.aabb.GetLeft() - m_checkProximityBuffer.x,
-				aData.aabb.GetTop() - m_checkProximityBuffer.y };
-			sf::Vector2f aBr{
-				aData.aabb.GetRight() + m_checkProximityBuffer.x,
-				aData.aabb.GetBottom() + m_checkProximityBuffer.y };
-
+			const auto& aLayers = aData.component->GetActiveCollisionLayers();
 			for (size_t j = i + 1; j < m_componentData.size(); ++j)
 			{
 				auto& bData = m_componentData[j];
+
+				// Check collision layers
+				bool sharedLayer = false;
+				for (const std::string& layer : aLayers)
+				{
+					if (bData.component->HasActiveCollisionLayer(layer))
+					{
+						sharedLayer = true;
+						break;
+					}
+				}
+				if (!sharedLayer) continue;
+
+				sf::Vector2f aTl{
+				aData.aabb.GetLeft() - m_checkProximityBuffer.x,
+				aData.aabb.GetTop() - m_checkProximityBuffer.y };
+				sf::Vector2f aBr{
+					aData.aabb.GetRight() + m_checkProximityBuffer.x,
+					aData.aabb.GetBottom() + m_checkProximityBuffer.y };
+
 				const auto& aabb = bData.aabb;
 				if (aabb.GetLeft() > aTl.x
 					&& aabb.GetRight() < aBr.x
@@ -72,9 +88,15 @@ namespace systems
 		const int totalComponents = ecs::ComponentBank::m_physicsComponentsSize;
 		for (int i = 0; i < totalComponents; ++i)
 		{
+			components::PhysicsComponent& pc = ecs::ComponentBank::m_physicsComponents[i];
+			if (!pc.GetIsActive() || !pc.GetParent()->GetIsActive())
+			{
+				continue;
+			}
+
 			ComponentCollisionData ccd;
 
-			ccd.component = &ecs::ComponentBank::m_physicsComponents[i];
+			ccd.component = &pc;
 			const auto& transform = ccd.component->GetParentTransform();
 			ccd.aabb = ccd.component->GetAABB();
 
@@ -120,6 +142,9 @@ namespace systems
 			{
 				continue;
 			}
+
+			// This collision may trigger scripts
+			m_onCollisions.insert(&collision);
 
 			if (!collision.a->component->GetIsSolid() ||
 				!collision.b->component->GetIsSolid())
@@ -321,6 +346,26 @@ namespace systems
 			sf::Vector2f centerDelta = cData.aabb.center - cData.startCenter;
 			cData.component->GetParent()->SetPosition(
 				cData.component->GetParent()->GetPosition() + centerDelta);
+		}
+	}
+
+	void PhysicsSystem::UpdateScripts()
+	{
+		for (Collision* collision : m_onCollisions)
+		{
+			components::ScriptComponent* aScript =
+				collision->a->component->GetParent()->GetComponent<components::ScriptComponent>();
+			if (aScript != nullptr)
+			{
+				aScript->ExecuteCollision(collision->b->component->GetParent());
+			}
+
+			components::ScriptComponent* bScript =
+				collision->b->component->GetParent()->GetComponent<components::ScriptComponent>();
+			if (bScript != nullptr)
+			{
+				bScript->ExecuteCollision(collision->a->component->GetParent());
+			}
 		}
 	}
 

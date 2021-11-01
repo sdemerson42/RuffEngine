@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 #include <typeindex>
+#include <string>
+#include <unordered_set>
 
 #include "ComponentBase.h"
 #include "Transform.h"
@@ -66,6 +68,31 @@ namespace ecs
 			return m_transform;
 		}
 
+		inline const std::unordered_set<std::string>& GetTags() const
+		{
+			return m_tags;
+		}
+
+		inline void AddTag(const std::string& tag)
+		{
+			m_tags.insert(tag);
+		}
+
+		inline bool HasTag(const std::string& tag)
+		{
+			return m_tags.find(tag) != std::end(m_tags);
+		}
+
+		inline bool GetIsActive() const
+		{
+			return m_isActive;
+		}
+
+		inline void SetIsActive(bool value)
+		{
+			m_isActive = value;
+		}
+
 		template<typename T>
 		T* const GetComponent()
 		{
@@ -106,5 +133,7 @@ namespace ecs
 	private:
 		ComponentVector m_components;
 		Transform m_transform;
+		std::unordered_set<std::string> m_tags;
+		bool m_isActive;
 	};
 }

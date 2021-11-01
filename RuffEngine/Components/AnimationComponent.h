@@ -39,6 +39,8 @@ namespace components
 			REVERSE
 		};
 
+		void Initialize() override;
+
 		void AddAnimation(
 			const std::string& name,
 			const ecs::Box2f& startFrame,

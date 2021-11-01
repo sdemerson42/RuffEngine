@@ -29,7 +29,7 @@ namespace ruff_engine
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::vector<std::unique_ptr<ecs::ISystem>> m_systems;
 		std::vector<std::unique_ptr<ecs::Entity>> m_entities;
-		std::unique_ptr<data::EntityFactory> m_entityFactory;
+		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::unique_ptr<SimData> m_simData;
 		asIScriptEngine* m_scriptEngine;
 

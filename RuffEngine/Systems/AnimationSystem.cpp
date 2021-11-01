@@ -8,7 +8,12 @@ namespace systems
 	{
 		for (int i = 0; i < ecs::ComponentBank::m_animationComponentsSize; ++i)
 		{
-			ecs::ComponentBank::m_animationComponents[i].Update();
+			components::AnimationComponent* ac =
+				&ecs::ComponentBank::m_animationComponents[i];
+			if (ac->GetIsActive() && ac->GetParent()->GetIsActive())
+			{
+				ecs::ComponentBank::m_animationComponents[i].Update();
+			}
 		}
 	}
 }

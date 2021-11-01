@@ -11,7 +11,7 @@ namespace components
 	{
 		m_suspendCycleCounter = 0;
 		m_suspendCycleTotal = cycles;
-		m_scriptContext->Suspend();
+		m_mainScriptContext->Suspend();
 	}
 
 	void ScriptComponent::Log(const std::string& msg) const
@@ -27,6 +27,54 @@ namespace components
 	const sf::Vector2f& ScriptComponent::GetPosition() const
 	{
 		return m_parent->GetPosition();
+	}
+
+	int ScriptComponent::GetInt(const std::string& name)
+	{
+		return m_apiStateInt[name];
+	}
+
+	void ScriptComponent::SetInt(const std::string& name, int value)
+	{
+		m_apiStateInt[name] = value;
+	}
+
+	int ScriptComponent::AddInt(const std::string& name, int value)
+	{
+		m_apiStateInt[name] += value;
+		return m_apiStateInt[name];
+	}
+
+	float ScriptComponent::GetFloat(const std::string& name)
+	{
+		return m_apiStateFloat[name];
+	}
+	
+	void ScriptComponent::SetFloat(const std::string& name, float value)
+	{
+		m_apiStateFloat[name] = value;
+	}
+
+	float ScriptComponent::AddFloat(const std::string& name, float value)
+	{
+		m_apiStateFloat[name] += value;
+		return m_apiStateFloat[name];
+	}
+
+	std::string ScriptComponent::GetString(const std::string& name)
+	{
+		return m_apiStateStr[name];
+	}
+
+	void ScriptComponent::SetString(const std::string& name, const std::string& value)
+	{
+		m_apiStateStr[name] = value;
+	}
+
+	std::string ScriptComponent::AddString(const std::string& name, const std::string& value)
+	{
+		m_apiStateStr[name] += value;
+		return m_apiStateStr[name];
 	}
 
 	void ScriptComponent::SetPosition(float x, float y)
