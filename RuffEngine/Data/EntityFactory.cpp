@@ -2,6 +2,7 @@
 #include "../Util/Logger.h"
 #include "../Components/ComponentBank.h"
 #include "../Components/Components.h"
+#include "../Systems/SpawnSystem.h"
 
 #include <algorithm>
 
@@ -9,7 +10,8 @@ namespace data
 {
 	using namespace components;
 
-	bool EntityFactory::Initialize(const std::string& entityDbPath, asIScriptEngine* scriptEngine)
+	bool EntityFactory::Initialize(const std::string& entityDbPath, 
+		asIScriptEngine* scriptEngine, systems::SpawnSystem* spawnSystem)
 	{
 		if (!LoadBlueprintData(entityDbPath, m_blueprints))
 		{
@@ -18,6 +20,7 @@ namespace data
 		}
 
 		m_scriptEngine = scriptEngine;
+		m_spawnSystem = spawnSystem;
 
 		return true;
 	}
@@ -200,6 +203,7 @@ namespace data
 				scriptComponent->PrepareScriptContext(m_scriptEngine, scriptPrefix);
 				scriptComponent->Initialize();
 				scriptComponent->SetIsActive(true);
+				scriptComponent->AddSpawnSystem(m_spawnSystem);
 			}
 		}
 	}

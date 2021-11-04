@@ -10,6 +10,7 @@
 #include "../AngelScript/add_on/scriptbuilder/scriptbuilder.h"
 #include "../AngelScript/add_on/scriptmath/scriptmath.h"
 #include "../AngelScript/add_on/scriptstdstring/scriptstdstring.h"
+#include "../AngelScript/add_on/scriptarray/scriptarray.h"
 
 #include <cassert>
 
@@ -40,7 +41,6 @@ namespace ruff_engine
 
 		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_simData->name);
 		m_entityFactory = std::make_shared<data::EntityFactory>();
-		m_entityFactory->Initialize(m_simData->entitiesDbPath, m_scriptEngine);
 
 		result = MakeSystems();
 		if (!result)
@@ -48,6 +48,8 @@ namespace ruff_engine
 			util::Logger::Log("Warning: Sim systems were not created successfully.");
 			return false;
 		}
+		m_entityFactory->Initialize(m_simData->entitiesDbPath, m_scriptEngine, 
+			static_cast<systems::SpawnSystem*>(m_systems[0].get()));
 
 		m_entities.reserve(globals::TOTAL_ENTITIES);
 
@@ -103,7 +105,7 @@ namespace ruff_engine
 		// TO DO: Replace test objects with data
 
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			SpawnEntity("Wizard", 100.0f, 100.0f, true, "");
+			EnqueueSpawn("Wizard", 100.0f, 100.0f, true, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -119,6 +121,7 @@ namespace ruff_engine
 		// Register add-ons
 		RegisterScriptMath(m_scriptEngine);
 		RegisterStdString(m_scriptEngine);
+		RegisterScriptArray(m_scriptEngine, true);
 
 		if (!RegisterScriptApi())
 		{
@@ -253,6 +256,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "string AddString(const string& in, const string& in)",
 			asMETHOD(components::ScriptComponent, AddString), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "Entity@ SpawnEntity(const string& in, float, float)",
+			asMETHOD(components::ScriptComponent, SpawnEntity), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "ScriptComponent@ GetScriptFromEntity(Entity@)",
+			asMETHOD(components::ScriptComponent, GetScriptFromEntity), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

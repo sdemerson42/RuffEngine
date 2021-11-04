@@ -15,13 +15,6 @@ namespace systems
 	class SpawnSystem : public ecs::ISystem
 	{
 	public:
-		SpawnSystem(std::vector<std::unique_ptr<ecs::Entity>>* entities,
-			const std::shared_ptr<data::EntityFactory>& factory);
-		void Execute() override;
-		void SpawnEntity(const std::string& name, float x, float y,
-			bool isActive, const std::string& data);
-		void DespawnEntity(ecs::Entity* entity);
-	private:
 		struct SpawnData
 		{
 			SpawnData(const std::string& name, float x, float y, bool isActive, const std::string& data) :
@@ -33,6 +26,16 @@ namespace systems
 			std::string data;
 		};
 
+		SpawnSystem(std::vector<std::unique_ptr<ecs::Entity>>* entities,
+			const std::shared_ptr<data::EntityFactory>& factory);
+		void Execute() override;
+		ecs::Entity* TrySpawn(const std::string& name, float x, float y,
+			bool isActive, const std::string& data);
+		ecs::Entity* TrySpawn(const SpawnData& data);
+		void EnqueueSpawn(const std::string& name, float x, float y,
+			bool isActive, const std::string& data);
+		void DespawnEntity(ecs::Entity* entity);
+	private:
 		std::vector<std::unique_ptr<ecs::Entity>>* m_entities;
 		std::vector<ecs::Entity*> m_inactiveEntities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;

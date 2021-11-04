@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ScriptComponent.h"
 #include "../Util/Logger.h"
+#include "../Systems/SpawnSystem.h"
 
 #include <string>
 
@@ -64,5 +65,10 @@ namespace components
 		m_collisionScriptContext->SetArgObject(0, this);
 		m_collisionScriptContext->SetArgObject(1, collider);
 		m_collisionScriptContext->Execute();
+	}
+
+	void ScriptComponent::AddSpawnSystem(systems::SpawnSystem* spawnSystem)
+	{
+		m_spawnSystem = spawnSystem;
 	}
 }

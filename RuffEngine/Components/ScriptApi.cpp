@@ -3,6 +3,7 @@
 #include "../Util/Logger.h"
 #include "../ECSPrimitives/Entity.h"
 #include "../Systems/RenderSystem.h"
+#include "../Systems/SpawnSystem.h"
 #include "../Util/Time.h"
 
 namespace components
@@ -150,5 +151,15 @@ namespace components
 	void ScriptComponent::SetViewCenter(float x, float y)
 	{
 		systems::RenderSystem::s_view.setCenter(x, y);
+	}
+
+	ecs::Entity& ScriptComponent::SpawnEntity(const std::string& name, float x, float y)
+	{
+		return *m_spawnSystem->TrySpawn(name, x, y, true, "");
+	}
+
+	ScriptComponent& ScriptComponent::GetScriptFromEntity(ecs::Entity& entity)
+	{
+		return *entity.GetComponent<ScriptComponent>();
 	}
 }

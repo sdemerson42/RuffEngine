@@ -73,7 +73,6 @@ namespace systems
 			float angle = util::Math::RandomRangeFloat(0.0f, pc->GetEmitterVar("angleRadians"));
 			sf::Vector2f normal = { pc->GetEmitterVar("startX"), pc->GetEmitterVar("startY") };
 			normal = util::Math::Rotate(normal, angle);
-			normal.y *= -1.0f;
 			particle->velocity = normal * speed;
 		}
 		}

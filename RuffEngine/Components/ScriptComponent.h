@@ -8,6 +8,11 @@
 #include <string>
 #include <unordered_map>
 
+namespace systems
+{
+	class SpawnSystem;
+}
+
 namespace components
 {
 	class ScriptComponent : public ecs::ComponentBase
@@ -15,6 +20,7 @@ namespace components
 	public:
 		void Initialize() override;
 		void PrepareScriptContext(asIScriptEngine* scriptEngine, const std::string& mainPrefix);
+		void AddSpawnSystem(systems::SpawnSystem* spawnSystem);
 		void ExecuteScript();
 		void ExecuteCollision(ecs::Entity* collider);
 
@@ -50,11 +56,14 @@ namespace components
 		const systems::InputSystem::InputData& GetInput() const;
 		const sf::Vector2f& GetViewCenter() const;
 		void SetViewCenter(float x, float y);
+		ecs::Entity& SpawnEntity(const std::string& name, float x, float y);
+		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };
 		asIScriptFunction* m_mainScriptFunction{ nullptr };
 		asIScriptFunction* m_collisionScriptFunction{ nullptr };
+		systems::SpawnSystem* m_spawnSystem;
 		int m_suspendCycleCounter;
 		int m_suspendCycleTotal;
 

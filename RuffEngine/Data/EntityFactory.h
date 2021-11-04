@@ -6,12 +6,18 @@
 
 #include <vector>
 
+namespace systems
+{
+	class SpawnSystem;
+}
+
 namespace data
 {
 	class EntityFactory
 	{
 	public:
-		bool Initialize(const std::string& entityDbPath, asIScriptEngine* scriptEngine);
+		bool Initialize(const std::string& entityDbPath, asIScriptEngine* scriptEngine,
+			systems::SpawnSystem* spawnSystem);
 		bool BuildEntityFromBlueprint(
 			const std::string& blueprintName,
 			float positionX,
@@ -21,6 +27,7 @@ namespace data
 	private:
 		std::vector<Blueprint> m_blueprints;
 		asIScriptEngine* m_scriptEngine;
+		systems::SpawnSystem* m_spawnSystem;
 
 		std::vector<std::string> ProcessMultiValueField(const std::string& values) const;
 
