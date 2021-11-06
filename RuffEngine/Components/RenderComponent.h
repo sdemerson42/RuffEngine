@@ -3,14 +3,20 @@
 #include "../ECSPrimitives/ComponentBase.h"
 #include "../ECSPrimitives/Box2f.h"
 #include "SFML/Graphics/Color.hpp"
+#include "../ECSPrimitives/Autolist.h"
+#include "../ECSPrimitives/Entity.h"
 
 #include <string>
 
 namespace components
 {
-	class RenderComponent : public ecs::ComponentBase
+	class RenderComponent : public ecs::ComponentBase, public ecs::Autolist<RenderComponent>
 	{
 	public:
+		RenderComponent(ecs::Entity* parent) :
+			ComponentBase{ parent }
+		{}
+
 		const std::string& GetTexturePath() const
 		{
 			return m_texturePath;

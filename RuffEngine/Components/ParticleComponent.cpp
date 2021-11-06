@@ -5,6 +5,10 @@
 
 namespace components
 {
+	ParticleComponent::ParticleComponent(ecs::Entity* parent) :
+		ComponentBase{ parent }
+	{}
+
 	void ParticleComponent::Initialize()
 	{
 		m_emitterVars.clear();

@@ -4,6 +4,7 @@
 #include "../AngelScript/include/angelscript.h"
 #include "SFML/System/Vector2.hpp"
 #include "../Systems/InputSystem.h"
+#include "../ECSPrimitives/Autolist.h"
 
 #include <string>
 #include <unordered_map>
@@ -13,11 +14,19 @@ namespace systems
 	class SpawnSystem;
 }
 
+namespace ecs
+{
+	class Entity;
+}
+
 namespace components
 {
-	class ScriptComponent : public ecs::ComponentBase
+	class ScriptComponent : public ecs::ComponentBase, public ecs::Autolist<ScriptComponent>
 	{
 	public:
+		ScriptComponent(ecs::Entity* parent);
+		~ScriptComponent();
+
 		void Initialize() override;
 		void PrepareScriptContext(asIScriptEngine* scriptEngine, const std::string& mainPrefix);
 		void AddSpawnSystem(systems::SpawnSystem* spawnSystem);
@@ -58,6 +67,7 @@ namespace components
 		void SetViewCenter(float x, float y);
 		ecs::Entity& SpawnEntity(const std::string& name, float x, float y);
 		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
+		void Despawn();
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

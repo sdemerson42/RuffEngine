@@ -5,13 +5,19 @@
 #include "../ECSPrimitives/Box2f.h"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Graphics/Color.hpp"
+#include "../ECSPrimitives/Autolist.h"
 
 #include <string>
 #include <unordered_map>
 
+namespace ecs
+{
+	class Entity;
+}
+
 namespace components
 {
-	class ParticleComponent : public ecs::ComponentBase
+	class ParticleComponent : public ecs::ComponentBase, public ecs::Autolist<ParticleComponent>
 	{
 	public:
 		struct Particle
@@ -28,6 +34,8 @@ namespace components
 		{
 			CONE
 		};
+
+		ParticleComponent(ecs::Entity* parent);
 
 		void Initialize() override;
 

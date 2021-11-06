@@ -1,18 +1,20 @@
 #include "pch.h"
 #include "AnimationSystem.h"
-#include "../Components/ComponentBank.h"
+#include "../Components/AnimationComponent.h"
+#include "../ECSPrimitives/Entity.h"
 
 namespace systems
 {
 	void AnimationSystem::Execute()
 	{
-		for (int i = 0; i < ecs::ComponentBank::m_animationComponentsSize; ++i)
+		auto sz = ecs::Autolist<components::AnimationComponent>::Size();
+		for (int i = 0; i < sz; ++i)
 		{
 			components::AnimationComponent* ac =
-				&ecs::ComponentBank::m_animationComponents[i];
+				ecs::Autolist<components::AnimationComponent>::Get(i);
 			if (ac->GetIsActive() && ac->GetParent()->GetIsActive())
 			{
-				ecs::ComponentBank::m_animationComponents[i].Update();
+				ac->Update();
 			}
 		}
 	}

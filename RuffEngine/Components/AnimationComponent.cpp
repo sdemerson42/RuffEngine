@@ -7,6 +7,10 @@
 
 namespace components
 {
+	AnimationComponent::AnimationComponent(ecs::Entity* parent) :
+		ComponentBase{ parent }
+	{}
+
 	void AnimationComponent::Initialize()
 	{
 		m_animations.clear();
@@ -19,8 +23,7 @@ namespace components
 		const std::string& name,
 		const ecs::Box2f& startFrame,
 		int framesPerRow,
-		int totalFrames,
-		int renderIndex)
+		int totalFrames)
 	{
 		if (m_animations.find(name) != std::end(m_animations))
 		{
@@ -43,7 +46,7 @@ namespace components
 		}
 
 		m_animations[name] =
-			Animation{ name, startFrame, framesPerRow, totalFrames, renderIndex };
+			Animation{ name, startFrame, framesPerRow, totalFrames };
 	}
 
 	bool AnimationComponent::PlayAnimation(
@@ -81,7 +84,7 @@ namespace components
 		m_pingPongState = isPingPong && m_currentAnimation->totalFrames > 2 ?
 			PingPongStates::FORWARD : PingPongStates::NONE;
 
-		SetFrame(m_currentAnimation->startFrame, m_currentAnimation->renderIndex);
+		SetFrame(m_currentAnimation->startFrame);
 
 		return true;
 	}
@@ -152,7 +155,6 @@ namespace components
 		const int rowPosition = m_currentAnimationFrame % m_currentAnimation->framesPerRow;
 		const int columnPosition = m_currentAnimationFrame / m_currentAnimation->framesPerRow;
 		const auto& startFrame = m_currentAnimation->startFrame;
-		const int renderIndex = m_currentAnimation->renderIndex;
 
 		ecs::Box2f frame{
 			startFrame.center.x + (float)rowPosition * startFrame.halfSize.x * 2.0f,
@@ -160,24 +162,19 @@ namespace components
 			startFrame.halfSize.x,
 			startFrame.halfSize.y };
 
-		SetFrame(frame, renderIndex);
+		SetFrame(frame);
 	}
 
 	void AnimationComponent::SetFrame(
-		const ecs::Box2f& frame,
-		int renderIndex)
+		const ecs::Box2f& frame)
 	{
 		ecs::Entity* entity = GetParent();
-		auto renderComponents = entity->GetComponents<RenderComponent>();
-
-		if (renderIndex >= renderComponents.size())
+		auto renderComponent = entity->GetComponent<RenderComponent>();
+		if (renderComponent == nullptr)
 		{
-			util::Logger::Log("Warning: Can't set frame to out-of-range renderIndex " +
-				std::to_string(renderIndex) + ".");
+			util::Logger::Log("Warning: Attempting to set frame with no RenderComponent.");
 			return;
 		}
-
-		RenderComponent* renderComponent = renderComponents[renderIndex];
 		renderComponent->SetTextureBox(frame);
 	}
 

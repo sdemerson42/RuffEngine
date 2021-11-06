@@ -1,6 +1,9 @@
 void Wizard_Main(ScriptComponent@ api)
 {
-	const float speed = 200.0f;
+	const float speed = 150.0f;
+	const float shootRate = 0.25f;
+	float shootCounter = shootRate;
+	
 
 	while(true)
 	{
@@ -9,6 +12,71 @@ void Wizard_Main(ScriptComponent@ api)
 
 		if (i.leftStick.x != 0.0f || i.leftStick.y != 0.0f) api.PlayAnimation("walk", 6.0f, false, true);
 		else api.StopAnimation();
+
+		// SpawnTest
+
+		if (shootCounter < shootRate) shootCounter += api.DeltaTime();
+		if (shootCounter >= shootRate && (i.rightStick.x != 0.0f || i.rightStick.y != 0.0f))
+		{
+			auto p = api.GetPosition();
+			auto fireballEntity = api.SpawnEntity("Fireball", p.x, p.y);
+			auto fs = api.GetScriptFromEntity(fireballEntity);
+			
+			if (i.rightStick.x < 0.0f)
+			{
+				if (i.rightStick.y < 0.0f)
+				{
+					fs.SetRotation(-45);
+					fs.SetVelocity(-200, -200);
+				}
+				if (i.rightStick.y == 0.0f)
+				{
+					fs.SetRotation(-90);
+					fs.SetVelocity(-300, 0);
+				}
+				if (i.rightStick.y > 0.0f)
+				{
+					fs.SetRotation(-135);
+					fs.SetVelocity(-200, 200);
+				}
+
+			}
+
+			if (i.rightStick.x == 0.0f)
+			{
+				if (i.rightStick.y < 0.0f)
+				{
+					fs.SetVelocity(0, -300);
+				}
+				
+				if (i.rightStick.y > 0.0f)
+				{
+					fs.SetRotation(180);
+					fs.SetVelocity(0, 300);
+				}
+			}
+
+			if (i.rightStick.x > 0.0f)
+			{
+				if (i.rightStick.y < 0.0f)
+				{
+					fs.SetRotation(45);
+					fs.SetVelocity(200, -200);
+				}
+				if (i.rightStick.y == 0.0f)
+				{
+					fs.SetRotation(90);
+					fs.SetVelocity(300, 0);
+				}
+				if (i.rightStick.y > 0.0f)
+				{
+					fs.SetRotation(135);
+					fs.SetVelocity(200, 200);
+				}
+			}
+
+			shootCounter = 0.0f;
+		}
 
 		// Camera
 
@@ -32,6 +100,5 @@ void Wizard_Main(ScriptComponent@ api)
 
 void Wizard_OnCollision(ScriptComponent@ api, Entity@ collider)
 {
-	int total = api.AddInt("total", 1);
-	api.Log("Total: " + total);
+	
 }

@@ -106,6 +106,8 @@ namespace ruff_engine
 
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
 			EnqueueSpawn("Wizard", 100.0f, 100.0f, true, "");
+		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
+			EnqueueSpawn("Trees", 200.0f, 200.0f, true, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -262,6 +264,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "ScriptComponent@ GetScriptFromEntity(Entity@)",
 			asMETHOD(components::ScriptComponent, GetScriptFromEntity), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void Despawn()",
+			asMETHOD(components::ScriptComponent, Despawn), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

@@ -1,7 +1,8 @@
 #include "pch.h"
 
 #include "PhysicsSystem.h"
-#include "../Components/ComponentBank.h"
+#include "../Components/PhysicsComponent.h"
+#include "../Components/ScriptComponent.h"
 #include "../ECSPrimitives/Entity.h"
 #include "../Util/Math.h"
 #include "../Util/Logger.h"
@@ -85,18 +86,18 @@ namespace systems
 	{
 		m_componentData.clear();
 
-		const int totalComponents = ecs::ComponentBank::m_physicsComponentsSize;
-		for (int i = 0; i < totalComponents; ++i)
+		auto sz = ecs::Autolist<components::PhysicsComponent>::Size();
+		for (int i = 0; i < sz; ++i)
 		{
-			components::PhysicsComponent& pc = ecs::ComponentBank::m_physicsComponents[i];
-			if (!pc.GetIsActive() || !pc.GetParent()->GetIsActive())
+			auto pc = ecs::Autolist<components::PhysicsComponent>::Get(i);
+			if (!pc->GetIsActive() || !pc->GetParent()->GetIsActive())
 			{
 				continue;
 			}
 
 			ComponentCollisionData ccd;
 
-			ccd.component = &pc;
+			ccd.component = &*pc;
 			const auto& transform = ccd.component->GetParentTransform();
 			ccd.aabb = ccd.component->GetAABB();
 

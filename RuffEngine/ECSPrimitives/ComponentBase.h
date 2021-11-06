@@ -11,7 +11,7 @@ namespace ecs
 	{
 		friend class ComponentBank;
 	public:
-		ComponentBase();
+		ComponentBase(Entity* parent);
 		virtual ~ComponentBase()
 		{}
 		

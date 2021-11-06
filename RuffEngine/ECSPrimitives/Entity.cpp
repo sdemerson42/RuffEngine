@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "Entity.h"
-#include "../Components/ComponentBank.h"
 
 namespace ecs
 {
@@ -13,6 +12,6 @@ namespace ecs
 
 	Entity::~Entity()
 	{
-		ComponentBank::DisconnectAllFromEntity(this);
+		
 	}
 }

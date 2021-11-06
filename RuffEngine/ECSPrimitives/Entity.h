@@ -5,13 +5,14 @@
 #include <typeindex>
 #include <string>
 #include <unordered_set>
+#include <memory>
 
 #include "ComponentBase.h"
 #include "Transform.h"
 
 namespace ecs
 {
-	using ComponentVector = std::vector<ComponentBase*>;
+	using ComponentVector = std::vector<std::unique_ptr<ComponentBase>>;
 
 	class Entity
 	{
@@ -101,7 +102,7 @@ namespace ecs
 			auto cIter = std::find_if(
 				m_components.begin(),
 				m_components.end(),
-				[&](ComponentBase* cPtr)
+				[&](std::unique_ptr<ComponentBase>& cPtr)
 				{
 					return std::type_index{ typeid(*cPtr) } == tIndex;
 				});
@@ -111,24 +112,14 @@ namespace ecs
 				return nullptr;
 			}
 
-			return static_cast<T*>(*cIter);
+			return static_cast<T*>(cIter->get());
 		}
 
 		template<typename T>
-		std::vector<T*> GetComponents()
+		T* AddComponent()
 		{
-			std::vector<T*> returnComponents;
-			std::type_index tIndex{ typeid(T) };
-
-			for (auto cPtr : m_components)
-			{
-				if (std::type_index{ typeid(*cPtr) } == tIndex)
-				{
-					returnComponents.push_back(static_cast<T*>(cPtr));
-				}
-			}
-
-			return returnComponents;
+			m_components.push_back(std::make_unique<T>(this));
+			return static_cast<T*>(m_components.back().get());
 		}
 	private:
 		ComponentVector m_components;

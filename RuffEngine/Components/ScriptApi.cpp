@@ -162,4 +162,9 @@ namespace components
 	{
 		return *entity.GetComponent<ScriptComponent>();
 	}
+
+	void ScriptComponent::Despawn()
+	{
+		m_spawnSystem->DespawnEntity(GetParent());
+	}
 }

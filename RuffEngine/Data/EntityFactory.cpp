@@ -1,6 +1,5 @@
 #include "EntityFactory.h"
 #include "../Util/Logger.h"
-#include "../Components/ComponentBank.h"
 #include "../Components/Components.h"
 #include "../Systems/SpawnSystem.h"
 
@@ -99,13 +98,12 @@ namespace data
 			int totalComponents = queryResult.at("render_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
-				if (!CONNECT_COMP(&entity, RenderComponent))
+				RenderComponent* renderComponent = entity.GetComponent<RenderComponent>();
+				if (renderComponent == nullptr)
 				{
-					util::Logger::Log("Warning: Failed to connect RenderComponent to entity.");
-					continue;
+					renderComponent = entity.AddComponent<RenderComponent>();
+					
 				}
-
-				RenderComponent* renderComponent = entity.GetComponents<RenderComponent>().back();
 				renderComponent->Initialize();
 				renderComponent->SetIsActive(true);
 				
@@ -143,18 +141,12 @@ namespace data
 				continue;
 			}
 
-			// Connect a single animation component
-			if (!hasAnimationComponent)
-			{
-				if (!CONNECT_COMP(&entity, AnimationComponent))
-				{
-					util::Logger::Log("Warning: Failed to connect AnimationComponent to entity.");
-					return;
-				}
-				hasAnimationComponent = true;
-			}
-
 			AnimationComponent* animationComponent = entity.GetComponent<AnimationComponent>();
+			if (animationComponent == nullptr)
+			{
+				animationComponent = entity.AddComponent<AnimationComponent>();
+			}
+			
 			animationComponent->Initialize();
 			animationComponent->SetIsActive(true);
 
@@ -171,8 +163,7 @@ namespace data
 						std::stof(queryResult.at("half_y")[i])
 					},
 					std::stoi(queryResult.at("frames_per_row")[i]),
-					std::stoi(queryResult.at("total_frames")[i]),
-					std::stoi(queryResult.at("render_index")[i]));
+					std::stoi(queryResult.at("total_frames")[i]));
 			}
 		}
 	}
@@ -192,13 +183,11 @@ namespace data
 			int totalComponents = queryResult.at("script_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
-				if (!CONNECT_COMP(&entity, ScriptComponent))
+				ScriptComponent* scriptComponent = entity.GetComponent<ScriptComponent>();
+				if (scriptComponent == nullptr)
 				{
-					util::Logger::Log("Warning: Failed to connect ScriptComponent to entity.");
-					continue;
+					scriptComponent = entity.AddComponent<ScriptComponent>();
 				}
-
-				ScriptComponent* scriptComponent = entity.GetComponents<ScriptComponent>().back();
 				std::string scriptPrefix = queryResult.at("main_prefix")[i];
 				scriptComponent->PrepareScriptContext(m_scriptEngine, scriptPrefix);
 				scriptComponent->Initialize();
@@ -223,13 +212,11 @@ namespace data
 			int totalComponents = queryResult.at("physics_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
-				if (!CONNECT_COMP(&entity, PhysicsComponent))
+				PhysicsComponent* physicsComponent = entity.GetComponent<PhysicsComponent>();
+				if (physicsComponent == nullptr)
 				{
-					util::Logger::Log("Warning: Failed to connect PhysicsComponent to entity.");
-					continue;
+					physicsComponent = entity.AddComponent<PhysicsComponent>();
 				}
-
-				PhysicsComponent* physicsComponent = entity.GetComponents<PhysicsComponent>().back();
 				physicsComponent->Initialize();
 				physicsComponent->SetIsActive(true);
 				physicsComponent->SetVelocity(
@@ -273,13 +260,11 @@ namespace data
 			int totalComponents = queryResult.at("particle_id").size();
 			for (int i = 0; i < totalComponents; ++i)
 			{
-				if (!CONNECT_COMP(&entity, ParticleComponent))
+				ParticleComponent* particleComponent = entity.GetComponent<ParticleComponent>();
+				if (particleComponent == nullptr)
 				{
-					util::Logger::Log("Warning: Failed to connect RenderComponent to entity.");
-					continue;
+					particleComponent = entity.AddComponent<ParticleComponent>();
 				}
-
-				ParticleComponent* particleComponent = entity.GetComponents<ParticleComponent>().back();
 				particleComponent->Initialize();
 				particleComponent->SetIsActive(true);
 				const std::string& sEmitterShape = queryResult.at("emitter_shape")[i];

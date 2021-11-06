@@ -161,6 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Autolist.h" />
     <ClInclude Include="Box2f.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="Entity.h" />

@@ -2,8 +2,9 @@
 
 #include "../ECSPrimitives/ISystem.h"
 #include "../ECSPrimitives/Transform.h"
-#include "../Components/ComponentBank.h"
 #include "SFML/Graphics.hpp"
+#include "../Components/RenderComponent.h"
+#include "../Components/ParticleComponent.h"
 
 #include <memory>
 #include <unordered_map>

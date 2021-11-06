@@ -4,8 +4,8 @@
 
 namespace ecs
 {
-	ComponentBase::ComponentBase() :
-		m_parent{ nullptr }
+	ComponentBase::ComponentBase(Entity* parent) :
+		m_parent{ parent }
 	{}
 
 	Entity* const ComponentBase::GetParent()

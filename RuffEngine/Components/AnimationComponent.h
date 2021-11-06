@@ -2,35 +2,39 @@
 
 #include "../ECSPrimitives/ComponentBase.h"
 #include "../ECSPrimitives/Box2f.h"
+#include "../ECSPrimitives/Autolist.h"
 
 #include <vector>
 #include <unordered_map>
 #include <string>
+
+namespace ecs
+{
+	class Entity;
+}
 
 namespace components
 {
 	struct Animation
 	{
 		Animation() :
-			framesPerRow{ 0 }, totalFrames{ 0 }, renderIndex{ 0 }
+			framesPerRow{ 0 }, totalFrames{ 0 }
 		{}
 		Animation(const std::string& name,
 			const ecs::Box2f& startFrame,
 			int framesPerRow,
-			int totalFrames,
-			int renderIndex) :
+			int totalFrames) :
 			name{ name }, startFrame{ startFrame }, framesPerRow{ framesPerRow }, 
-			totalFrames{ totalFrames }, renderIndex{ renderIndex }
+			totalFrames{ totalFrames }
 		{}
 
 		std::string name;
 		ecs::Box2f startFrame;
 		int framesPerRow;
 		int totalFrames;
-		int renderIndex;
 	};
 
-	class AnimationComponent : public ecs::ComponentBase
+	class AnimationComponent : public ecs::ComponentBase, public ecs::Autolist<AnimationComponent>
 	{
 	public:
 		enum class PingPongStates {
@@ -39,14 +43,15 @@ namespace components
 			REVERSE
 		};
 
+		AnimationComponent(ecs::Entity* parent);
+
 		void Initialize() override;
 
 		void AddAnimation(
 			const std::string& name,
 			const ecs::Box2f& startFrame,
 			int framesPerRow,
-			int totalFrames,
-			int renderIndex);
+			int totalFrames);
 		bool PlayAnimation(
 			const std::string& name,
 			float framesPerSecond,
@@ -55,8 +60,7 @@ namespace components
 		void StopAnimation();
 		void Update();
 		void SetFrame(
-			const ecs::Box2f& frame,
-			int renderIndex);
+			const ecs::Box2f& frame);
 		bool GetIsAnimating() const;
 		const std::string& GetCurrentAnimationName() const;
 

@@ -7,6 +7,16 @@
 
 namespace components
 {
+	ScriptComponent::ScriptComponent(ecs::Entity* parent) :
+		ComponentBase{ parent }
+	{}
+
+	ScriptComponent::~ScriptComponent()
+	{
+		if (m_mainScriptContext != nullptr) m_mainScriptContext->Release();
+		if (m_collisionScriptContext != nullptr) m_collisionScriptContext->Release();
+	}
+
 	void ScriptComponent::Initialize()
 	{
 		m_mainScriptContext->Abort();

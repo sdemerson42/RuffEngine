@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ParticleSystem.h"
-#include "../Components/ComponentBank.h"
+#include "../Components/ParticleComponent.h"
+#include "../ECSPrimitives/Entity.h"
 #include "../Util/Time.h"
 #include "../Util/Math.h"
 #include "../Util/Logger.h"
@@ -10,41 +11,39 @@ namespace systems
 	void ParticleSystem::Execute()
 	{
 		float deltaTime = util::Time::DeltaTime();
-		auto sz = ecs::ComponentBank::m_particleComponentsSize;
+		auto sz = ecs::Autolist<components::ParticleComponent>::Size();
 		for (int i = 0; i < sz; ++i)
 		{
-			components::ParticleComponent& pc =
-				ecs::ComponentBank::m_particleComponents[i];
-
-			if (!pc.GetIsActive() || !pc.GetParent()->GetIsActive())
+			auto pc = ecs::Autolist<components::ParticleComponent>::Get(i);
+			auto& particles = pc->GetParticles();
+			
+			if (pc->GetIsActive() && pc->GetParent()->GetIsActive())
 			{
-				continue;
-			}
+				pc->PostStateSetup();
 
-			auto& particles = pc.GetParticles();
+				// Spawn new particles
 
-			// Spawn new particles
-
-			int spawnTotal = pc.IncSpawnCounter(deltaTime);
-			if (spawnTotal > 0)
-			{
-				for (int j = 0; j < particles.size(); ++j)
-				{
-					auto& particle = particles[j];
-					if (!particle.active)
-					{
-						CreateParticle(&pc, &particle);
-						if (--spawnTotal == 0) break;
-					}
-				}
-
+				int spawnTotal = pc->IncSpawnCounter(deltaTime);
 				if (spawnTotal > 0)
 				{
-					for (int j = 0; j < spawnTotal; ++j)
+					for (int j = 0; j < particles.size(); ++j)
 					{
-						particles.push_back(components::ParticleComponent::Particle{});
-						auto& particle = particles.back();
-						CreateParticle(&pc, &particle);
+						auto& particle = particles[j];
+						if (!particle.active)
+						{
+							CreateParticle(pc, &particle);
+							if (--spawnTotal == 0) break;
+						}
+					}
+
+					if (spawnTotal > 0)
+					{
+						for (int j = 0; j < spawnTotal; ++j)
+						{
+							particles.push_back(components::ParticleComponent::Particle{});
+							auto& particle = particles.back();
+							CreateParticle(pc, &particle);
+						}
 					}
 				}
 			}

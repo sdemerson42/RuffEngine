@@ -4,15 +4,21 @@
 #include "../ECSPrimitives/Box2f.h"
 #include "../Util/Math.h"
 #include "SFML/System/Vector2.hpp"
+#include "../ECSPrimitives/Autolist.h"
+#include "../ECSPrimitives/Entity.h"
 
 #include <unordered_set>
 #include <string>
 
 namespace components
 {
-	class PhysicsComponent : public ecs::ComponentBase
+	class PhysicsComponent : public ecs::ComponentBase, public ecs::Autolist<PhysicsComponent>
 	{
 	public:
+		PhysicsComponent(ecs::Entity* parent) :
+			ComponentBase{ parent }
+		{}
+
 		const sf::Vector2f& GetVelocity() const
 		{
 			return m_velocity;

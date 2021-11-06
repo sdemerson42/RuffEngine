@@ -2,7 +2,7 @@
 #include "RenderSystem.h"
 #include "../Util/Logger.h"
 #include "../Util/Math.h"
-#include "../Components/ComponentBank.h"
+#include "../ECSPrimitives/Entity.h"
 #include "../RuffEngine/Globals.h"
 
 #include <algorithm>
@@ -32,27 +32,29 @@ namespace systems
 			m_debugVertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 		
-
-		for (int i = 0; i < ecs::ComponentBank::m_renderComponentsSize; ++i)
+		auto sz = ecs::Autolist<components::RenderComponent>::Size();
+		for (int i = 0; i < sz; ++i)
 		{
-			auto& renderComponent = ecs::ComponentBank::m_renderComponents[i];
-			if (!renderComponent.GetIsActive() || !renderComponent.GetParent()->GetIsActive())
+			auto renderComponent = ecs::Autolist<components::RenderComponent>::Get(i);
+			if (!renderComponent->GetIsActive() || !renderComponent->GetParent()->GetIsActive())
 			{
 				continue;
 			}
-			ProcessTexturePath(renderComponent.GetTexturePath());
-			AddComponentToGroup(renderComponent, layerGroup);
+			ProcessTexturePath(renderComponent->GetTexturePath());
+			AddComponentToGroup(*renderComponent, layerGroup);
 		}
 
-		for (int i = 0; i < ecs::ComponentBank::m_particleComponentsSize; ++i)
+		sz = ecs::Autolist<components::ParticleComponent>::Size();
+		for (int i = 0; i < sz; ++i)
 		{
-			auto& particleComponent = ecs::ComponentBank::m_particleComponents[i];
-			if (!particleComponent.GetIsActive() || !particleComponent.GetParent()->GetIsActive())
+			auto particleComponent = ecs::Autolist<components::ParticleComponent>::Get(i);
+			auto particleCount = particleComponent->GetParticles().size();
+			if (particleCount == 0)
 			{
 				continue;
 			}
-			ProcessTexturePath(particleComponent.GetTexturePath());
-			AddParticlesToGroup(particleComponent, layerGroup);
+			ProcessTexturePath(particleComponent->GetTexturePath());
+			AddParticlesToGroup(*particleComponent, layerGroup);
 		}
 
 		RenderAllLayers(layerGroup);
