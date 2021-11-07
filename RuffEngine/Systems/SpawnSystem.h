@@ -17,26 +17,30 @@ namespace systems
 	public:
 		struct SpawnData
 		{
-			SpawnData(const std::string& name, float x, float y, bool isActive, const std::string& data) :
-				name{ name }, position{ x, y }, isActive{ isActive }, data{ data }
+			SpawnData(const std::string& name, float x, float y, 
+				bool isActive, bool isPersistent, const std::string& data) :
+				name{ name }, position{ x, y }, isActive{ isActive }, 
+				isPersistent{ isPersistent }, data{ data }
 			{}
 			std::string name;
 			sf::Vector2f position;
 			bool isActive;
+			bool isPersistent;
 			std::string data;
 		};
 
-		SpawnSystem(std::vector<std::unique_ptr<ecs::Entity>>* entities,
+		SpawnSystem(std::vector<std::vector<std::unique_ptr<ecs::Entity>>>* entities,
 			const std::shared_ptr<data::EntityFactory>& factory);
+		void  Initialize();
 		void Execute() override;
 		ecs::Entity* TrySpawn(const std::string& name, float x, float y,
-			bool isActive, const std::string& data);
+			bool isActive, bool isPersistent, const std::string& data);
 		ecs::Entity* TrySpawn(const SpawnData& data);
 		void EnqueueSpawn(const std::string& name, float x, float y,
-			bool isActive, const std::string& data);
+			bool isActive, bool isPersistent, const std::string& data);
 		void DespawnEntity(ecs::Entity* entity);
 	private:
-		std::vector<std::unique_ptr<ecs::Entity>>* m_entities;
+		std::vector<std::vector<std::unique_ptr<ecs::Entity>>>* m_entities;
 		std::vector<ecs::Entity*> m_inactiveEntities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::vector<SpawnData> m_spawnData;

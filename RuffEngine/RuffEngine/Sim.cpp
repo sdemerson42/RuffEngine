@@ -41,6 +41,7 @@ namespace ruff_engine
 
 		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_simData->name);
 		m_entityFactory = std::make_shared<data::EntityFactory>();
+		m_entities.resize(2);	// Persistent and scene-only entity vectors
 
 		result = MakeSystems();
 		if (!result)
@@ -102,12 +103,14 @@ namespace ruff_engine
 	{
 		util::Logger::Log("Loading scene " + sceneName + "...");
 
+		static_cast<systems::SpawnSystem*>(m_systems[0].get())->Initialize();
+
 		// TO DO: Replace test objects with data
 
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Wizard", 100.0f, 100.0f, true, "");
+			EnqueueSpawn("Wizard", 100.0f, 100.0f, true, false, "");
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Trees", 200.0f, 200.0f, true, "");
+			EnqueueSpawn("Trees", 200.0f, 200.0f, true, false, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 

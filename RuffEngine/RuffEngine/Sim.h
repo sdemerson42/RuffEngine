@@ -22,13 +22,19 @@ namespace ruff_engine
 	class Sim
 	{
 	public:
+		enum class EntityVectorIndex
+		{
+			PERSISTENT = 0,
+			SCENE_ONLY = 1
+		};
+
 		~Sim();
 		bool Initialize();
 		void Execute();
 	private:
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::vector<std::unique_ptr<ecs::ISystem>> m_systems;
-		std::vector<std::unique_ptr<ecs::Entity>> m_entities;
+		std::vector<std::vector<std::unique_ptr<ecs::Entity>>> m_entities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::unique_ptr<SimData> m_simData;
 		asIScriptEngine* m_scriptEngine;

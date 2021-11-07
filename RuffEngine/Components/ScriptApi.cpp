@@ -155,7 +155,7 @@ namespace components
 
 	ecs::Entity& ScriptComponent::SpawnEntity(const std::string& name, float x, float y)
 	{
-		return *m_spawnSystem->TrySpawn(name, x, y, true, "");
+		return *m_spawnSystem->TrySpawn(name, x, y, true, false, "");
 	}
 
 	ScriptComponent& ScriptComponent::GetScriptFromEntity(ecs::Entity& entity)

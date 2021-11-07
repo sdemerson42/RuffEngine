@@ -19,7 +19,6 @@ namespace components
 
 	void ScriptComponent::Initialize()
 	{
-		m_mainScriptContext->Abort();
 		auto result = m_mainScriptContext->Prepare(m_mainScriptFunction);
 		if (result < 0)
 		{
@@ -46,6 +45,14 @@ namespace components
 		{
 			m_mainScriptContext = scriptEngine->CreateContext();
 		}
+		else
+		{
+			auto mainState = m_mainScriptContext->GetState();
+			if (mainState == asEXECUTION_SUSPENDED || mainState == asEXECUTION_ABORTED)
+			{
+				m_mainScriptContext->Abort();
+			}
+		}
 		std::string functionDecl = "void " + mainPrefix + "_Main(ScriptComponent@ api)";
 		m_mainScriptFunction = scriptEngine->GetModule("main")->
 			GetFunctionByDecl(functionDecl.c_str());
@@ -53,6 +60,14 @@ namespace components
 		if (m_collisionScriptContext == nullptr)
 		{
 			m_collisionScriptContext = scriptEngine->CreateContext();
+		}
+		else
+		{
+			auto collisionState = m_collisionScriptContext->GetState();
+			if (collisionState == asEXECUTION_SUSPENDED || collisionState == asEXECUTION_ABORTED)
+			{
+				m_mainScriptContext->Abort();
+			}
 		}
 		functionDecl = "void " + mainPrefix + "_OnCollision(ScriptComponent@ api, Entity@ collider)";
 		m_collisionScriptFunction = scriptEngine->GetModule("main")->

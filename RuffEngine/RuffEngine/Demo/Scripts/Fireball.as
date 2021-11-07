@@ -8,6 +8,7 @@ void Fireball_Main(ScriptComponent@ api)
 		if (lifeCounter >= 3.0f)
 		{
 			api.Despawn();
+			break;
 		}
 
 		api.Suspend();
