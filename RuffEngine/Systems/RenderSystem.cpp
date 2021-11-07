@@ -150,7 +150,10 @@ namespace systems
 		mutableVertex.texCoords = sf::Vector2f{ texLeft, texBottom };
 		vertexArray.append(mutableVertex);
 
-		DebugDrawEntityCenter(renderComponent);
+		if (globals::DEBUG_MODE)
+		{
+			DebugDrawEntityCenter(renderComponent);
+		}
 	}
 
 	void RenderSystem::AddParticlesToGroup(
