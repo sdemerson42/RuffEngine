@@ -104,13 +104,14 @@ namespace ruff_engine
 		util::Logger::Log("Loading scene " + sceneName + "...");
 
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->Initialize();
+		systems::SpawnSystem::SetSceneLayer("main");
 
 		// TO DO: Replace test objects with data
 
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Wizard", 100.0f, 100.0f, true, false, "");
+			EnqueueSpawn("Wizard", "main", 100.0f, 100.0f, true, false, "");
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Trees", 200.0f, 200.0f, true, false, "");
+			EnqueueSpawn("Trees", "main", 200.0f, 200.0f, true, false, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -170,6 +171,8 @@ namespace ruff_engine
 			"InputData", "Vector2f leftStick", asOFFSET(systems::InputSystem::InputData, leftStick)), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
 			"InputData", "Vector2f rightStick", asOFFSET(systems::InputSystem::InputData, rightStick)), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectProperty(
+			"InputData", "int button", asOFFSET(systems::InputSystem::InputData, button)), errMsg)) fail = true;
 
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectType(
 			"Entity", 0, asOBJ_REF | asOBJ_NOCOUNT), errMsg)) fail = true;
@@ -270,6 +273,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void Despawn()",
 			asMETHOD(components::ScriptComponent, Despawn), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetSceneLayer(const string& in)",
+			asMETHOD(components::ScriptComponent, SetSceneLayer), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

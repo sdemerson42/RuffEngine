@@ -167,4 +167,9 @@ namespace components
 	{
 		m_spawnSystem->DespawnEntity(GetParent());
 	}
+
+	void ScriptComponent::SetSceneLayer(const std::string& layer)
+	{
+		systems::SpawnSystem::SetSceneLayer(layer);
+	}
 }

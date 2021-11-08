@@ -15,8 +15,8 @@ namespace components
 	class PhysicsComponent : public ecs::ComponentBase, public ecs::Autolist<PhysicsComponent>
 	{
 	public:
-		PhysicsComponent(ecs::Entity* parent) :
-			ComponentBase{ parent }
+		PhysicsComponent(ecs::Entity* parent, const std::string& sceneLayer) :
+			ComponentBase{ parent }, Autolist <PhysicsComponent> { sceneLayer }
 		{}
 
 		const sf::Vector2f& GetVelocity() const

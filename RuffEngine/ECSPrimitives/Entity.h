@@ -94,6 +94,16 @@ namespace ecs
 			m_isActive = value;
 		}
 
+		inline const std::string& GetSceneLayer() const
+		{
+			return m_sceneLayer;
+		}
+
+		inline void SetSceneLayer(const std::string& sceneLayer)
+		{
+			m_sceneLayer = sceneLayer;
+		}
+
 		template<typename T>
 		T* const GetComponent()
 		{
@@ -118,7 +128,7 @@ namespace ecs
 		template<typename T>
 		T* AddComponent()
 		{
-			m_components.push_back(std::make_unique<T>(this));
+			m_components.push_back(std::make_unique<T>(this, m_sceneLayer));
 			return static_cast<T*>(m_components.back().get());
 		}
 	private:
@@ -126,5 +136,6 @@ namespace ecs
 		Transform m_transform;
 		std::unordered_set<std::string> m_tags;
 		bool m_isActive;
+		std::string m_sceneLayer;
 	};
 }

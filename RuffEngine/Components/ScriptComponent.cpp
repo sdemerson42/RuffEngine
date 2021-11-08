@@ -7,8 +7,9 @@
 
 namespace components
 {
-	ScriptComponent::ScriptComponent(ecs::Entity* parent) :
-		ComponentBase{ parent }
+	ScriptComponent::ScriptComponent(ecs::Entity* parent,
+		const std::string& sceneLayer) :
+		ComponentBase{ parent }, Autolist<ScriptComponent>{ sceneLayer }
 	{}
 
 	ScriptComponent::~ScriptComponent()

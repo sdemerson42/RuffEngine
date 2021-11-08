@@ -46,6 +46,7 @@ namespace data
 
 	bool EntityFactory::BuildEntityFromBlueprint(
 		const std::string& blueprintName,
+		const std::string& sceneLayer,
 		float positionX,
 		float positionY,
 		bool isActive,
@@ -67,6 +68,9 @@ namespace data
 
 		// First tag will always be the blueprint name
 		entity.AddTag(blueprintName);
+
+		// Set scene layer before adding components
+		entity.SetSceneLayer(sceneLayer);
 
 		// Add components
 		AddRenderComponents(*blueprintIter, entity);

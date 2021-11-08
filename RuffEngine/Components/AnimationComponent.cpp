@@ -7,8 +7,9 @@
 
 namespace components
 {
-	AnimationComponent::AnimationComponent(ecs::Entity* parent) :
-		ComponentBase{ parent }
+	AnimationComponent::AnimationComponent(
+		ecs::Entity* parent, const std::string& sceneLayer) :
+		ComponentBase{ parent }, Autolist<AnimationComponent>{ sceneLayer }
 	{}
 
 	void AnimationComponent::Initialize()

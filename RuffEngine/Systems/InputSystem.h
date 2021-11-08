@@ -14,10 +14,12 @@ namespace systems
 		{
 			InputData() :
 				leftStick{ 0.0f, 0.0f },
-				rightStick{ 0.0f, 0.0f }
+				rightStick{ 0.0f, 0.0f },
+				button{ 0 }
 			{}
 			sf::Vector2f leftStick;
 			sf::Vector2f rightStick;
+			int button;
 		};
 
 		static InputData s_inputData;

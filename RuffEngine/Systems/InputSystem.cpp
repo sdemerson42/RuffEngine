@@ -10,8 +10,11 @@ namespace systems
 	void InputSystem::Execute()
 	{
 		// TO DO: Configurable input
-		s_inputData = InputData{};
 
+		s_inputData.leftStick.x = 0.0f;
+		s_inputData.leftStick.y = 0.0f;
+		s_inputData.rightStick.x = 0.0f;
+		s_inputData.rightStick.y = 0.0f;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			s_inputData.leftStick.y = -1.0f;
@@ -43,6 +46,18 @@ namespace systems
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
 		{
 			s_inputData.rightStick.x = 1.0f;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+		{
+			if (s_inputData.button < 2)
+			{
+				s_inputData.button++;
+			}
+		}
+		else
+		{
+			s_inputData.button = 0;
 		}
 	}
 };

@@ -13,8 +13,8 @@ namespace components
 	class RenderComponent : public ecs::ComponentBase, public ecs::Autolist<RenderComponent>
 	{
 	public:
-		RenderComponent(ecs::Entity* parent) :
-			ComponentBase{ parent }
+		RenderComponent(ecs::Entity* parent, const std::string& sceneLayer) :
+			ComponentBase{ parent }, Autolist<RenderComponent>{ sceneLayer }
 		{}
 
 		const std::string& GetTexturePath() const

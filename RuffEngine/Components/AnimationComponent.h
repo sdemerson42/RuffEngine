@@ -43,7 +43,7 @@ namespace components
 			REVERSE
 		};
 
-		AnimationComponent(ecs::Entity* parent);
+		AnimationComponent(ecs::Entity* parent, const std::string& sceneLayer);
 
 		void Initialize() override;
 

@@ -5,16 +5,18 @@
 #include "../Util/Time.h"
 #include "../Util/Math.h"
 #include "../Util/Logger.h"
+#include "SpawnSystem.h"
 
 namespace systems
 {
 	void ParticleSystem::Execute()
 	{
 		float deltaTime = util::Time::DeltaTime();
-		auto sz = ecs::Autolist<components::ParticleComponent>::Size();
+		const auto& sceneLayer = SpawnSystem::GetSceneLayer();
+		auto sz = ecs::Autolist<components::ParticleComponent>::Size(sceneLayer);
 		for (int i = 0; i < sz; ++i)
 		{
-			auto pc = ecs::Autolist<components::ParticleComponent>::Get(i);
+			auto pc = ecs::Autolist<components::ParticleComponent>::Get(sceneLayer, i);
 			auto& particles = pc->GetParticles();
 			
 			if (pc->GetIsActive() && pc->GetParent()->GetIsActive())

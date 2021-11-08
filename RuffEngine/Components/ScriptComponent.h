@@ -24,7 +24,7 @@ namespace components
 	class ScriptComponent : public ecs::ComponentBase, public ecs::Autolist<ScriptComponent>
 	{
 	public:
-		ScriptComponent(ecs::Entity* parent);
+		ScriptComponent(ecs::Entity* parent, const std::string& sceneLayer);
 		~ScriptComponent();
 
 		void Initialize() override;
@@ -68,6 +68,7 @@ namespace components
 		ecs::Entity& SpawnEntity(const std::string& name, float x, float y);
 		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
 		void Despawn();
+		void SetSceneLayer(const std::string& layer);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

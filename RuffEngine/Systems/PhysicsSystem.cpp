@@ -7,6 +7,7 @@
 #include "../Util/Math.h"
 #include "../Util/Logger.h"
 #include "../Util/Time.h"
+#include "SpawnSystem.h"
 
 namespace systems
 {
@@ -86,10 +87,11 @@ namespace systems
 	{
 		m_componentData.clear();
 
-		auto sz = ecs::Autolist<components::PhysicsComponent>::Size();
+		const auto& sceneLayer = SpawnSystem::GetSceneLayer();
+		auto sz = ecs::Autolist<components::PhysicsComponent>::Size(sceneLayer);
 		for (int i = 0; i < sz; ++i)
 		{
-			auto pc = ecs::Autolist<components::PhysicsComponent>::Get(i);
+			auto pc = ecs::Autolist<components::PhysicsComponent>::Get(sceneLayer, i);
 			if (!pc->GetIsActive() || !pc->GetParent()->GetIsActive())
 			{
 				continue;

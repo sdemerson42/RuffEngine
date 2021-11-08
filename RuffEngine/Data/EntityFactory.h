@@ -20,6 +20,7 @@ namespace data
 			systems::SpawnSystem* spawnSystem);
 		bool BuildEntityFromBlueprint(
 			const std::string& blueprintName,
+			const std::string& sceneLayer,
 			float positionX,
 			float positionY,
 			bool isActive,

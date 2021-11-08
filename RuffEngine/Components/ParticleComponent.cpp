@@ -5,8 +5,9 @@
 
 namespace components
 {
-	ParticleComponent::ParticleComponent(ecs::Entity* parent) :
-		ComponentBase{ parent }
+	ParticleComponent::ParticleComponent(ecs::Entity* parent, 
+		const std::string& sceneLayer) :
+		ComponentBase{ parent }, Autolist<ParticleComponent>{ sceneLayer }
 	{}
 
 	void ParticleComponent::Initialize()

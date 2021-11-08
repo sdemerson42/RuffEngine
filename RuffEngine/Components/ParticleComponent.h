@@ -35,7 +35,7 @@ namespace components
 			CONE
 		};
 
-		ParticleComponent(ecs::Entity* parent);
+		ParticleComponent(ecs::Entity* parent, const std::string& sceneLayer);
 
 		void Initialize() override;
 

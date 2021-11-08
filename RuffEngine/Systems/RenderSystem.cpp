@@ -32,10 +32,10 @@ namespace systems
 			m_debugVertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 		
-		auto sz = ecs::Autolist<components::RenderComponent>::Size();
+		auto sz = ecs::Autolist<components::RenderComponent>::SizeAll();
 		for (int i = 0; i < sz; ++i)
 		{
-			auto renderComponent = ecs::Autolist<components::RenderComponent>::Get(i);
+			auto renderComponent = ecs::Autolist<components::RenderComponent>::GetAll(i);
 			if (!renderComponent->GetIsActive() || !renderComponent->GetParent()->GetIsActive())
 			{
 				continue;
@@ -44,10 +44,10 @@ namespace systems
 			AddComponentToGroup(*renderComponent, layerGroup);
 		}
 
-		sz = ecs::Autolist<components::ParticleComponent>::Size();
+		sz = ecs::Autolist<components::ParticleComponent>::SizeAll();
 		for (int i = 0; i < sz; ++i)
 		{
-			auto particleComponent = ecs::Autolist<components::ParticleComponent>::Get(i);
+			auto particleComponent = ecs::Autolist<components::ParticleComponent>::GetAll(i);
 			auto particleCount = particleComponent->GetParticles().size();
 			if (particleCount == 0)
 			{
