@@ -10,16 +10,19 @@
 namespace systems
 {
 	sf::View RenderSystem::s_view;
+	sf::View RenderSystem::s_defaultView;
 
 	RenderSystem::RenderSystem(
 		const std::shared_ptr<sf::RenderWindow>& windowPtr,
-		const std::vector<std::string>& renderLayers) :
+		const std::vector<RenderLayer>& renderLayers) :
 		m_window{ windowPtr },
 		m_renderLayers{ renderLayers }
 	{
 		sf::Vector2f windowSize{ m_window->getSize() };
 		s_view.setSize(windowSize);
 		s_view.setCenter(windowSize.x / 2.0f, windowSize.y / 2.0f);
+		s_defaultView.setSize(windowSize);
+		s_defaultView.setCenter(windowSize.x / 2.0f, windowSize.y / 2.0f);
 	}
 
 	void RenderSystem::Execute()
@@ -236,7 +239,11 @@ namespace systems
 
 	bool RenderSystem::ValidateRenderLayer(const std::string& layer)
 	{
-		auto resultIter = std::find(std::begin(m_renderLayers), std::end(m_renderLayers), layer);
+		auto resultIter = std::find_if(std::begin(m_renderLayers), std::end(m_renderLayers),
+			[&](const RenderLayer& renderLayer)
+			{
+				return renderLayer.name == layer;
+			});
 		if (resultIter == std::end(m_renderLayers))
 		{
 			util::Logger::Log("Warning: Render component layer " + layer + " does not exist.");
@@ -252,18 +259,19 @@ namespace systems
 		// Draw each layer in order
 		for (const auto& layer : m_renderLayers)
 		{
-			const auto& vaGroupIter = layerGroup.find(layer);
+			const auto& vaGroupIter = layerGroup.find(layer.name);
 			if (vaGroupIter == std::end(layerGroup))
 			{
 				continue;
 			}
 
-			const auto& vaGroup = layerGroup.at(layer);
+			const auto& vaGroup = layerGroup.at(layer.name);
 
 			for (const auto& vaPair : vaGroup)
 			{
 				const sf::Texture& texture = m_textureMap.at(vaPair.first);
 				sf::RenderStates states{ &texture };
+				m_window->setView(layer.isStatic ? s_defaultView : s_view);
 				m_window->draw(vaPair.second, states);
 			}
 
@@ -272,8 +280,6 @@ namespace systems
 				m_window->draw(m_debugVertexArray);
 			}
 		}
-		
-		m_window->setView(s_view);
 		m_window->display();
 	}
 };

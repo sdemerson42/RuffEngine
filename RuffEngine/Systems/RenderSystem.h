@@ -19,16 +19,23 @@ namespace systems
 		using LayerGroup = std::unordered_map<std::string, VertexGroup>;
 
 	public:
+		struct RenderLayer
+		{
+			std::string name;
+			bool isStatic;
+		};
+
 		RenderSystem(
 			const std::shared_ptr<sf::RenderWindow>& windowPtr,
-			const std::vector<std::string>& renderLayers);
+			const std::vector<RenderLayer>& renderLayers);
 		void Execute() override;
 
 		static sf::View s_view;
+		static sf::View s_defaultView;
 	private:
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::unordered_map<std::string, sf::Texture> m_textureMap;
-		std::vector<std::string> m_renderLayers;
+		std::vector<RenderLayer> m_renderLayers;
 		sf::VertexArray m_debugVertexArray;
 
 		void ProcessTexturePath(const std::string& texturePath);

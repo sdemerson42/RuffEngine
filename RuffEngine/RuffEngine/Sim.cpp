@@ -68,7 +68,8 @@ namespace ruff_engine
 		m_simData->name = "Demo";
 		m_simData->entitiesDbPath = "Demo/Data/Entities.db";
 		m_simData->scriptsPath = "Demo/Scripts/";
-		m_simData->renderLayers.push_back("default");
+		m_simData->renderLayers.push_back({ "default", false });
+		m_simData->renderLayers.push_back({ "overlay", true });
 
 		util::Logger::Log("Sim data loaded successfully.");
 
@@ -112,6 +113,8 @@ namespace ruff_engine
 			EnqueueSpawn("Wizard", "main", 100.0f, 100.0f, true, false, "");
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
 			EnqueueSpawn("Trees", "main", 200.0f, 200.0f, true, false, "");
+		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
+			EnqueueSpawn("Clouds", "main", 400.0f, 300.0f, true, false, "");
 
 		util::Logger::Log("Scene loaded successfully.");
 

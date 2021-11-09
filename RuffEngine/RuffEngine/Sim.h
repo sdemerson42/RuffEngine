@@ -4,6 +4,7 @@
 #include "../ECSPrimitives/ISystem.h"
 #include "../Data/EntityFactory.h"
 #include "angelscript.h"
+#include "../Systems/RenderSystem.h"
 
 #include <memory>
 #include <vector>
@@ -16,7 +17,7 @@ namespace ruff_engine
 		std::string name;
 		std::string entitiesDbPath;
 		std::string scriptsPath;
-		std::vector<std::string> renderLayers;
+		std::vector<systems::RenderSystem::RenderLayer> renderLayers;
 	};
 
 	class Sim
