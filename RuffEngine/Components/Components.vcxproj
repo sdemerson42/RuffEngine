@@ -169,6 +169,7 @@
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ScriptComponent.h" />
+    <ClInclude Include="TextComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />

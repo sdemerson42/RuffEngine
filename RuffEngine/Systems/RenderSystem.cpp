@@ -60,6 +60,15 @@ namespace systems
 			AddParticlesToGroup(*particleComponent, layerGroup);
 		}
 
+		sz = ecs::Autolist<components::TextComponent>::SizeAll();
+		for (int i = 0; i < sz; ++i)
+		{
+			auto textComponent = ecs::Autolist<components::TextComponent>::GetAll(i);
+			ProcessFontPath(textComponent->GetFontPath());
+			AddTextToGroup(*textComponent, layerGroup);
+		}
+
+
 		RenderAllLayers(layerGroup);
 	}
 
@@ -77,6 +86,20 @@ namespace systems
 			"Warning: Texture at path " + texturePath + " failed to load.");
 	}
 
+	void RenderSystem::ProcessFontPath(const std::string& fontPath)
+	{
+		const auto fontMapIter = m_fontMap.find(fontPath);
+		if (fontMapIter != std::end(m_fontMap))
+		{
+			return;
+		}
+
+		auto loadResult = m_fontMap[fontPath].loadFromFile(fontPath);
+		util::Logger::Log(loadResult ?
+			"Font at path " + fontPath + " loaded." :
+			"Warning: Font at path " + fontPath + " failed to load.");
+	}
+
 	void RenderSystem::AddComponentToGroup(
 		const components::RenderComponent& renderComponent,
 		/*out*/LayerGroup& layerGroup)
@@ -86,16 +109,16 @@ namespace systems
 		// Don't render this component if it's on an invalid layer
 		if (!ValidateRenderLayer(componentLayer)) return;
 
-		auto& vaGroup = layerGroup[componentLayer];
+		auto& drawGroup = layerGroup[componentLayer];
 		const auto& componentTexturePath = renderComponent.GetTexturePath();
 
-		if (vaGroup.find(componentTexturePath) == vaGroup.end())
+		if (drawGroup.vertexArrays.find(componentTexturePath) == drawGroup.vertexArrays.end())
 		{
-			vaGroup[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
+			drawGroup.vertexArrays[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 
 		// Add vertices to the array
-		sf::VertexArray& vertexArray = vaGroup[componentTexturePath];
+		sf::VertexArray& vertexArray = drawGroup.vertexArrays[componentTexturePath];
 
 		const auto& textureBox = renderComponent.GetTextureBox();
 		float texLeft = textureBox.GetLeft();
@@ -168,16 +191,16 @@ namespace systems
 		// Don't render this component if it's on an invalid layer
 		if (!ValidateRenderLayer(componentLayer)) return;
 
-		auto& vaGroup = layerGroup[componentLayer];
+		auto& drawGroup = layerGroup[componentLayer];
 		const auto& componentTexturePath = particleComponent.GetTexturePath();
 
-		if (vaGroup.find(componentTexturePath) == vaGroup.end())
+		if (drawGroup.vertexArrays.find(componentTexturePath) == drawGroup.vertexArrays.end())
 		{
-			vaGroup[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
+			drawGroup.vertexArrays[componentTexturePath].setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 
 		// Add vertices to the array
-		sf::VertexArray& vertexArray = vaGroup[componentTexturePath];
+		sf::VertexArray& vertexArray = drawGroup.vertexArrays[componentTexturePath];
 		auto& particles = particleComponent.GetParticles();
 
 		const auto& textureBox = particleComponent.GetTextureBox();
@@ -223,6 +246,36 @@ namespace systems
 		}
 	}
 
+	void RenderSystem::AddTextToGroup(components::TextComponent& textComponent,
+		/*out*/LayerGroup& layerGroup)
+	{
+		const auto& componentLayer = textComponent.GetRenderLayer();
+
+		// Don't render this component if it's on an invalid layer
+		if (!ValidateRenderLayer(componentLayer)) return;
+
+		auto& drawGroup = layerGroup[componentLayer];
+		sf::Text* text = &textComponent.GetText();
+		if (text->getFont() == nullptr)
+		{
+			text->setFont(m_fontMap[textComponent.GetFontPath()]);
+		}
+
+		ecs::Entity* parent = textComponent.GetParent();
+		auto offset = textComponent.GetOffset();
+		float rotation = parent->GetRotation();
+		if (rotation != 0.0f)
+		{
+			offset = util::Math::Rotate(offset, util::Math::DegreesToRadians(rotation));
+		}
+		auto position = parent->GetPosition() + offset;
+
+		text->setPosition(position);
+		text->setRotation(rotation);
+
+		drawGroup.texts.push_back(&textComponent.GetText());
+	}
+
 	void RenderSystem::DebugDrawEntityCenter(
 		const components::RenderComponent& renderComponent)
 	{
@@ -265,14 +318,19 @@ namespace systems
 				continue;
 			}
 
-			const auto& vaGroup = layerGroup.at(layer.name);
+			const auto& drawGroup = layerGroup.at(layer.name);
 
-			for (const auto& vaPair : vaGroup)
+			for (const auto& vaPair : drawGroup.vertexArrays)
 			{
 				const sf::Texture& texture = m_textureMap.at(vaPair.first);
 				sf::RenderStates states{ &texture };
 				m_window->setView(layer.isStatic ? s_defaultView : s_view);
 				m_window->draw(vaPair.second, states);
+			}
+
+			for (const auto& text : drawGroup.texts)
+			{
+				m_window->draw(*text);
 			}
 
 			if (globals::DEBUG_MODE)

@@ -53,5 +53,9 @@ namespace data
 		void AddParticleComponents(
 			const data::Blueprint& blueprint,
 			/*out*/ecs::Entity& entity);
+
+		void AddTextComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
 	};
 }

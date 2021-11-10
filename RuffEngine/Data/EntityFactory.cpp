@@ -81,6 +81,7 @@ namespace data
 		AddScriptComponents(*blueprintIter, entity);
 		AddPhysicsComponents(*blueprintIter, entity);
 		AddParticleComponents(*blueprintIter, entity);
+		AddTextComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -324,6 +325,52 @@ namespace data
 					std::stof(queryResult.at("spawn_rate")[i]));
 				
 				particleComponent->PostStateSetup();
+			}
+		}
+	}
+
+	void EntityFactory::AddTextComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("text_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect text components
+			int totalComponents = queryResult.at("text_id").size();
+			for (int i = 0; i < totalComponents; ++i)
+			{
+				TextComponent* textComponent = entity.GetComponent<TextComponent>();
+				if (textComponent == nullptr)
+				{
+					textComponent = entity.AddComponent<TextComponent>();
+				}
+				textComponent->Initialize();
+				textComponent->SetIsActive(true);
+				textComponent->SetFontPath(queryResult.at("font_path")[i]);
+				textComponent->SetTextString(queryResult.at("text_string")[i]);
+				textComponent->SetOffset(
+					std::stoi(queryResult.at("offset_x")[i]),
+					std::stoi(queryResult.at("offset_y")[i]));
+				textComponent->SetOutlineColor({
+					sf::Uint8(std::stoi(queryResult.at("outline_color_r")[i])),
+					sf::Uint8(std::stoi(queryResult.at("outline_color_g")[i])),
+					sf::Uint8(std::stoi(queryResult.at("outline_color_b")[i])),
+					sf::Uint8(std::stoi(queryResult.at("outline_color_a")[i])) });
+				textComponent->SetFillColor({
+					sf::Uint8(std::stoi(queryResult.at("fill_color_r")[i])),
+					sf::Uint8(std::stoi(queryResult.at("fill_color_g")[i])),
+					sf::Uint8(std::stoi(queryResult.at("fill_color_b")[i])),
+					sf::Uint8(std::stoi(queryResult.at("fill_color_a")[i])) });
+				textComponent->SetSize(
+					std::stoi(queryResult.at("size")[i]));
+				textComponent->SetOutlineThickness(
+					std::stof(queryResult.at("outline_thickness")[i]));
+				textComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
 			}
 		}
 	}

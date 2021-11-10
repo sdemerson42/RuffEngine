@@ -5,6 +5,7 @@
 #include "SFML/Graphics.hpp"
 #include "../Components/RenderComponent.h"
 #include "../Components/ParticleComponent.h"
+#include "../Components/TextComponent.h"
 
 #include <memory>
 #include <unordered_map>
@@ -15,8 +16,12 @@ namespace systems
 	//TO DO: Texture preload
 	class RenderSystem : public ecs::ISystem
 	{
-		using VertexGroup = std::unordered_map<std::string, sf::VertexArray>;
-		using LayerGroup = std::unordered_map<std::string, VertexGroup>;
+		struct DrawableGroup
+		{
+			std::unordered_map<std::string, sf::VertexArray> vertexArrays;
+			std::vector<sf::Text*> texts;
+		};
+		using LayerGroup = std::unordered_map<std::string, DrawableGroup>;
 
 	public:
 		struct RenderLayer
@@ -35,15 +40,19 @@ namespace systems
 	private:
 		std::shared_ptr<sf::RenderWindow> m_window;
 		std::unordered_map<std::string, sf::Texture> m_textureMap;
+		std::unordered_map<std::string, sf::Font> m_fontMap;
 		std::vector<RenderLayer> m_renderLayers;
 		sf::VertexArray m_debugVertexArray;
 
 		void ProcessTexturePath(const std::string& texturePath);
+		void ProcessFontPath(const std::string& fontPath);
 		void AddComponentToGroup(
 			const components::RenderComponent& renderComponent,
 			/*out*/LayerGroup& layerGroup);
 		void AddParticlesToGroup(
 			components::ParticleComponent& particleComponent,
+			/*out*/LayerGroup& layerGroup);
+		void AddTextToGroup(components::TextComponent& textComponent,
 			/*out*/LayerGroup& layerGroup);
 		void DebugDrawEntityCenter(const components::RenderComponent& renderComponent);
 		bool ValidateRenderLayer(const std::string& layer);
