@@ -4,6 +4,7 @@
 #include "../ECSPrimitives/Entity.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/SpawnSystem.h"
+#include "../Systems/SoundSystem.h"
 #include "../Util/Time.h"
 
 namespace components
@@ -171,5 +172,32 @@ namespace components
 	void ScriptComponent::SetSceneLayer(const std::string& layer)
 	{
 		systems::SpawnSystem::SetSceneLayer(layer);
+	}
+
+	void ScriptComponent::PlaySound(const std::string& name, int priority, float volume, 
+		float pitch, float positionX, float positionY, float positionZ, bool isLooping)
+	{
+		m_soundSystem->PlaySound(name, priority, volume, pitch, positionX,
+			positionY, positionZ, isLooping);
+	}
+	void ScriptComponent::StopSound(const std::string& name)
+	{
+		m_soundSystem->StopSound(name);
+	}
+	void ScriptComponent::PlayMusic(const std::string& name, float volume, bool isLooping)
+	{
+		m_soundSystem->PlayMusic(name, volume, isLooping);
+	}
+	void ScriptComponent::StopMusic()
+	{
+		m_soundSystem->StopMusic();
+	}
+	float ScriptComponent::GetMusicVolume()
+	{
+		return m_soundSystem->GetMusicVolume();
+	}
+	void ScriptComponent::SetMusicVolume(float value)
+	{
+		m_soundSystem->SetMusicVolume(value);
 	}
 }

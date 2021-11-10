@@ -17,6 +17,8 @@ namespace ruff_engine
 		std::string name;
 		std::string entitiesDbPath;
 		std::string scriptsPath;
+		std::string soundPath;
+		std::vector<std::string> soundBuffers;
 		std::vector<systems::RenderSystem::RenderLayer> renderLayers;
 	};
 

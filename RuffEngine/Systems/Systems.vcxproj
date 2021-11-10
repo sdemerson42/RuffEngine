@@ -169,6 +169,7 @@
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ScriptSystem.h" />
+    <ClInclude Include="SoundSystem.h" />
     <ClInclude Include="SpawnSystem.h" />
     <ClInclude Include="Systems.h" />
   </ItemGroup>
@@ -185,6 +186,7 @@
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="ScriptSystem.cpp" />
+    <ClCompile Include="SoundSystem.cpp" />
     <ClCompile Include="SpawnSystem.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

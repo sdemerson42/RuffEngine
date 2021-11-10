@@ -50,7 +50,8 @@ namespace ruff_engine
 			return false;
 		}
 		m_entityFactory->Initialize(m_simData->entitiesDbPath, m_scriptEngine, 
-			static_cast<systems::SpawnSystem*>(m_systems[0].get()));
+			static_cast<systems::SpawnSystem*>(m_systems[0].get()),
+			static_cast<systems::SoundSystem*>(m_systems[6].get()));
 
 		m_entities.reserve(globals::TOTAL_ENTITIES);
 
@@ -68,6 +69,8 @@ namespace ruff_engine
 		m_simData->name = "Demo";
 		m_simData->entitiesDbPath = "Demo/Data/Entities.db";
 		m_simData->scriptsPath = "Demo/Scripts/";
+		m_simData->soundPath = "Demo/Sound/";
+		m_simData->soundBuffers.push_back("Fireball.wav");
 		m_simData->renderLayers.push_back({ "default", false });
 		m_simData->renderLayers.push_back({ "overlay", true });
 
@@ -92,6 +95,8 @@ namespace ruff_engine
 			std::make_unique<systems::PhysicsSystem>());
 		m_systems.push_back(
 			std::make_unique<systems::ParticleSystem>());
+		m_systems.push_back(
+			std::make_unique<systems::SoundSystem>(m_simData->soundPath, m_simData->soundBuffers));
 		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 		
@@ -279,6 +284,24 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetSceneLayer(const string& in)",
 			asMETHOD(components::ScriptComponent, SetSceneLayer), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void PlaySound(const string& in, int, float, float, float, float, float, bool)",
+			asMETHOD(components::ScriptComponent, PlaySound), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void StopSound(const string& in)",
+			asMETHOD(components::ScriptComponent, StopSound), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void PlayMusic(const string& in, float, bool)",
+			asMETHOD(components::ScriptComponent, PlayMusic), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void StopMusic()",
+			asMETHOD(components::ScriptComponent, StopMusic), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "float GetMusicVolume()",
+			asMETHOD(components::ScriptComponent, GetMusicVolume), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetMusicVolume(float)",
+			asMETHOD(components::ScriptComponent, SetMusicVolume), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

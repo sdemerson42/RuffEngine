@@ -9,6 +9,7 @@
 namespace systems
 {
 	class SpawnSystem;
+	class SoundSystem;
 }
 
 namespace data
@@ -17,7 +18,7 @@ namespace data
 	{
 	public:
 		bool Initialize(const std::string& entityDbPath, asIScriptEngine* scriptEngine,
-			systems::SpawnSystem* spawnSystem);
+			systems::SpawnSystem* spawnSystem, systems::SoundSystem* soundSystem);
 		bool BuildEntityFromBlueprint(
 			const std::string& blueprintName,
 			const std::string& sceneLayer,
@@ -29,6 +30,7 @@ namespace data
 		std::vector<Blueprint> m_blueprints;
 		asIScriptEngine* m_scriptEngine;
 		systems::SpawnSystem* m_spawnSystem;
+		systems::SoundSystem* m_soundSystem;
 
 		std::vector<std::string> ProcessMultiValueField(const std::string& values) const;
 

@@ -2,6 +2,7 @@
 #include "ScriptComponent.h"
 #include "../Util/Logger.h"
 #include "../Systems/SpawnSystem.h"
+#include "../Systems/SoundSystem.h"
 
 #include <string>
 
@@ -96,5 +97,10 @@ namespace components
 	void ScriptComponent::AddSpawnSystem(systems::SpawnSystem* spawnSystem)
 	{
 		m_spawnSystem = spawnSystem;
+	}
+
+	void ScriptComponent::AddSoundSystem(systems::SoundSystem* soundSystem)
+	{
+		m_soundSystem = soundSystem;
 	}
 }

@@ -12,6 +12,7 @@
 namespace systems
 {
 	class SpawnSystem;
+	class SoundSystem;
 }
 
 namespace ecs
@@ -30,6 +31,7 @@ namespace components
 		void Initialize() override;
 		void PrepareScriptContext(asIScriptEngine* scriptEngine, const std::string& mainPrefix);
 		void AddSpawnSystem(systems::SpawnSystem* spawnSystem);
+		void AddSoundSystem(systems::SoundSystem* soundSystem);
 		void ExecuteScript();
 		void ExecuteCollision(ecs::Entity* collider);
 
@@ -69,12 +71,27 @@ namespace components
 		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
 		void Despawn();
 		void SetSceneLayer(const std::string& layer);
+		void PlaySound(
+			const std::string& name,
+			int priority,
+			float volume,
+			float pitch,
+			float positionX,
+			float positionY,
+			float positionZ,
+			bool isLooping);
+		void StopSound(const std::string& name);
+		void PlayMusic(const std::string& name, float volume, bool isLooping);
+		void StopMusic();
+		float GetMusicVolume();
+		void SetMusicVolume(float value);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };
 		asIScriptFunction* m_mainScriptFunction{ nullptr };
 		asIScriptFunction* m_collisionScriptFunction{ nullptr };
 		systems::SpawnSystem* m_spawnSystem;
+		systems::SoundSystem* m_soundSystem;
 		int m_suspendCycleCounter;
 		int m_suspendCycleTotal;
 

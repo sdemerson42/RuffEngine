@@ -2,6 +2,7 @@
 #include "../Util/Logger.h"
 #include "../Components/Components.h"
 #include "../Systems/SpawnSystem.h"
+#include "../Systems/SoundSystem.h"
 
 #include <algorithm>
 
@@ -10,7 +11,8 @@ namespace data
 	using namespace components;
 
 	bool EntityFactory::Initialize(const std::string& entityDbPath, 
-		asIScriptEngine* scriptEngine, systems::SpawnSystem* spawnSystem)
+		asIScriptEngine* scriptEngine, systems::SpawnSystem* spawnSystem,
+		systems::SoundSystem* soundSystem)
 	{
 		if (!LoadBlueprintData(entityDbPath, m_blueprints))
 		{
@@ -20,6 +22,7 @@ namespace data
 
 		m_scriptEngine = scriptEngine;
 		m_spawnSystem = spawnSystem;
+		m_soundSystem = soundSystem;
 
 		return true;
 	}
@@ -197,6 +200,7 @@ namespace data
 				scriptComponent->Initialize();
 				scriptComponent->SetIsActive(true);
 				scriptComponent->AddSpawnSystem(m_spawnSystem);
+				scriptComponent->AddSoundSystem(m_soundSystem);
 			}
 		}
 	}

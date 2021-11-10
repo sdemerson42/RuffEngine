@@ -3,7 +3,6 @@ void Wizard_Main(ScriptComponent@ api)
 	const float speed = 150.0f;
 	const float shootRate = 0.25f;
 	float shootCounter = shootRate;
-	
 
 	while(true)
 	{
@@ -21,6 +20,8 @@ void Wizard_Main(ScriptComponent@ api)
 			auto p = api.GetPosition();
 			auto fireballEntity = api.SpawnEntity("Fireball", p.x, p.y);
 			auto fs = api.GetScriptFromEntity(fireballEntity);
+			
+			api.PlaySound("Fireball.wav", 1, 50, 1.0f, 0.0f, 0.0f, 0.0f, false);
 			
 			if (i.rightStick.x < 0.0f)
 			{
