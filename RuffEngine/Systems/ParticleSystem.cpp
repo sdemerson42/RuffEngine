@@ -68,11 +68,11 @@ namespace systems
 		{
 			const auto& parentPosition =
 				pc->GetParent()->GetPosition();
-			particle->drawBox.center = { parentPosition.x + pc->GetEmitterVar("offsetX"),
-				parentPosition.y + pc->GetEmitterVar("offsetY") };
+			particle->drawBox.center = { parentPosition.x + pc->GetEmitterVar("psOffsetX"),
+				parentPosition.y + pc->GetEmitterVar("psOffsetY") };
 
 			float angle = util::Math::RandomRangeFloat(0.0f, pc->GetEmitterVar("angleRadians"));
-			sf::Vector2f normal = { pc->GetEmitterVar("startX"), pc->GetEmitterVar("startY") };
+			sf::Vector2f normal = { pc->GetEmitterVar("psStartX"), pc->GetEmitterVar("psStartY") };
 			normal = util::Math::Rotate(normal, angle);
 			particle->velocity = normal * speed;
 		}

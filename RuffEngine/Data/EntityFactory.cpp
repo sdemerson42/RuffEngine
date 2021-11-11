@@ -34,6 +34,7 @@ namespace data
 
 		for (char c : values)
 		{
+			if (c == ' ') continue;
 			if (c == ',')
 			{
 				valueVector.push_back(s);

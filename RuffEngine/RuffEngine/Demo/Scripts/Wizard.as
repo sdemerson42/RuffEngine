@@ -47,6 +47,7 @@ void Wizard_Main(ScriptComponent@ api)
 			{
 				if (i.rightStick.y < 0.0f)
 				{
+					fs.SetRotation(0);
 					fs.SetVelocity(0, -300);
 				}
 				

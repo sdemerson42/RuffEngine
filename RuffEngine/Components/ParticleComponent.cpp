@@ -31,10 +31,10 @@ namespace components
 			startVector = util::Math::Rotate(startVector, parentRotation);
 			offset = util::Math::Rotate(offset, parentRotation);
 			util::Math::NormalizeVector(startVector);
-			m_emitterVars["startX"] = startVector.x;
-			m_emitterVars["startY"] = startVector.y;
-			m_emitterVars["offsetX"] = offset.x;
-			m_emitterVars["offsetY"] = offset.y;
+			m_emitterVars["psStartX"] = startVector.x;
+			m_emitterVars["psStartY"] = startVector.y;
+			m_emitterVars["psOffsetX"] = offset.x;
+			m_emitterVars["psOffsetY"] = offset.y;
 			break;
 		}
 		}

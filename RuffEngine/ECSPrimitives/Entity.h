@@ -9,6 +9,7 @@
 
 #include "ComponentBase.h"
 #include "Transform.h"
+#include "../Components/ParticleComponent.h"
 
 namespace ecs
 {
@@ -46,6 +47,11 @@ namespace ecs
 		inline void SetRotation(float rotation)
 		{
 			m_transform.rotation = rotation;
+			auto pc = GetComponent<components::ParticleComponent>();
+			if (pc != nullptr)
+			{
+				pc->PostStateSetup();
+			}
 		}
 
 		inline const sf::Vector2f& GetScale() const
