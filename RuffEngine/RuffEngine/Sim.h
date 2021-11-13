@@ -5,6 +5,7 @@
 #include "../Data/EntityFactory.h"
 #include "angelscript.h"
 #include "../Systems/RenderSystem.h"
+#include "../Data/SimData.h"
 
 #include <memory>
 #include <vector>
@@ -12,16 +13,6 @@
 
 namespace ruff_engine
 {
-	struct SimData
-	{
-		std::string name;
-		std::string entitiesDbPath;
-		std::string scriptsPath;
-		std::string soundPath;
-		std::vector<std::string> soundBuffers;
-		std::vector<systems::RenderSystem::RenderLayer> renderLayers;
-	};
-
 	class Sim
 	{
 	public:
@@ -39,10 +30,9 @@ namespace ruff_engine
 		std::vector<std::unique_ptr<ecs::ISystem>> m_systems;
 		std::vector<std::vector<std::unique_ptr<ecs::Entity>>> m_entities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
-		std::unique_ptr<SimData> m_simData;
+		std::unique_ptr<data::SimData> m_simData;
 		asIScriptEngine* m_scriptEngine;
 
-		bool LoadSimData();
 		bool MakeSystems();
 		bool LoadScene(const std::string& sceneName);
 		bool PrepareScriptEngine();

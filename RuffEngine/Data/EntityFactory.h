@@ -32,8 +32,6 @@ namespace data
 		systems::SpawnSystem* m_spawnSystem;
 		systems::SoundSystem* m_soundSystem;
 
-		std::vector<std::string> ProcessMultiValueField(const std::string& values) const;
-
 		void AddRenderComponents(
 			const data::Blueprint& blueprint, 
 			/*out*/ecs::Entity& entity);

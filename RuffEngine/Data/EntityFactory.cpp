@@ -3,6 +3,7 @@
 #include "../Components/Components.h"
 #include "../Systems/SpawnSystem.h"
 #include "../Systems/SoundSystem.h"
+#include "Parse.h"
 
 #include <algorithm>
 
@@ -25,27 +26,6 @@ namespace data
 		m_soundSystem = soundSystem;
 
 		return true;
-	}
-
-	std::vector<std::string> EntityFactory::ProcessMultiValueField(const std::string& values) const
-	{
-		std::vector<std::string> valueVector;
-		std::string s;
-
-		for (char c : values)
-		{
-			if (c == ' ') continue;
-			if (c == ',')
-			{
-				valueVector.push_back(s);
-				s.clear();
-				continue;
-			}
-			s += c;
-		}
-		valueVector.push_back(s);
-
-		return valueVector;
 	}
 
 	bool EntityFactory::BuildEntityFromBlueprint(
@@ -246,7 +226,7 @@ namespace data
 					std::stoi(queryResult.at("ignore_gravity")[i]));
 
 				auto collisionLayers =
-					ProcessMultiValueField(queryResult.at("collision_layers")[i]);
+					Parse::ProcessMultiValueField(queryResult.at("collision_layers")[i]);
 				for (const auto& layer : collisionLayers)
 				{
 					physicsComponent->AddActiveCollisionLayer(layer);
@@ -279,7 +259,7 @@ namespace data
 				particleComponent->SetIsActive(true);
 				const std::string& sEmitterShape = queryResult.at("emitter_shape")[i];
 				const std::string& sEmitterVars = queryResult.at("emitter_vars")[i];
-				auto vars = ProcessMultiValueField(sEmitterVars);
+				auto vars = Parse::ProcessMultiValueField(sEmitterVars);
 
 				if (sEmitterShape == "CONE")
 				{

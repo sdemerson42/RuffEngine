@@ -169,7 +169,9 @@
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="EntityFactory.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Parse.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SimData.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="SqlQuery.h" />
   </ItemGroup>

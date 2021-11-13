@@ -4,6 +4,7 @@
 #include "../Util/Logger.h"
 #include "../Components/ScriptComponent.h"
 #include "../Data/SqlQuery.h"
+#include "../Data/Parse.h"
 #include "SFML/System/Vector2.hpp"
 #include "Globals.h"
 
@@ -26,11 +27,15 @@ namespace ruff_engine
 	{
 		util::Logger::Log("Sim initializing...");
 
-		bool result = LoadSimData();
+		m_simData = std::make_unique<data::SimData>();
+		bool result = data::Parse::LoadSimData(*m_simData);
 		if (!result)
 		{
-			util::Logger::Log("Warning: Sim data failed to load.");
 			return false;
+		}
+		else
+		{
+			util::Logger::Log("Sim data loaded successfully.");
 		}
 
 		if (!PrepareScriptEngine())
@@ -39,7 +44,9 @@ namespace ruff_engine
 			return false;
 		}
 
-		m_window = std::make_shared<sf::RenderWindow>(sf::VideoMode{ 800, 600 }, m_simData->name);
+		m_window = std::make_shared<sf::RenderWindow>(
+			sf::VideoMode{ m_simData->winX, m_simData->winY },
+			m_simData->name);
 		m_entityFactory = std::make_shared<data::EntityFactory>();
 		m_entities.resize(2);	// Persistent and scene-only entity vectors
 
@@ -49,7 +56,7 @@ namespace ruff_engine
 			util::Logger::Log("Warning: Sim systems were not created successfully.");
 			return false;
 		}
-		m_entityFactory->Initialize(m_simData->entitiesDbPath, m_scriptEngine, 
+		m_entityFactory->Initialize(m_simData->dbPath, m_scriptEngine, 
 			static_cast<systems::SpawnSystem*>(m_systems[0].get()),
 			static_cast<systems::SoundSystem*>(m_systems[6].get()));
 
@@ -57,25 +64,6 @@ namespace ruff_engine
 
 		util::Logger::Log("Sim initialized successfully.");
 		
-		return true;
-	}
-
-	bool Sim::LoadSimData()
-	{
-		util::Logger::Log("Loading Sim data...");
-
-		// TO DO: Load from data
-		m_simData = std::make_unique<SimData>();
-		m_simData->name = "Demo";
-		m_simData->entitiesDbPath = "Demo/Data/Entities.db";
-		m_simData->scriptsPath = "Demo/Scripts/";
-		m_simData->soundPath = "Demo/Sound/";
-		m_simData->soundBuffers.push_back("Fireball.wav");
-		m_simData->renderLayers.push_back({ "default", false });
-		m_simData->renderLayers.push_back({ "overlay", true });
-
-		util::Logger::Log("Sim data loaded successfully.");
-
 		return true;
 	}
 
@@ -319,7 +307,7 @@ namespace ruff_engine
 
 		data::SqlQueryResult query;
 		auto queryResult = data::SqlQuery::SubmitQuery(
-			m_simData->entitiesDbPath, "SELECT * FROM Script_Data", query);
+			m_simData->dbPath, "SELECT * FROM Script_Data", query);
 
 		CScriptBuilder builder;
 		builder.StartNewModule(m_scriptEngine, "main");
@@ -327,7 +315,7 @@ namespace ruff_engine
 		const auto& scriptFileNames = query.at("script_file_name");
 		for (const std::string& fileName : scriptFileNames)
 		{
-			std::string filePath = m_simData->scriptsPath + fileName;
+			std::string filePath = m_simData->scriptPath + fileName;
 			int result = builder.AddSectionFromFile(filePath.c_str());
 			if (result < 0)
 			{
