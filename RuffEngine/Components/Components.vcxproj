@@ -170,6 +170,7 @@
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ScriptComponent.h" />
     <ClInclude Include="TextComponent.h" />
+    <ClInclude Include="TileComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
@@ -182,6 +183,7 @@
     </ClCompile>
     <ClCompile Include="ScriptApi.cpp" />
     <ClCompile Include="ScriptComponent.cpp" />
+    <ClCompile Include="TileComponent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

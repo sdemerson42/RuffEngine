@@ -18,7 +18,8 @@ namespace data
 	{
 	public:
 		bool Initialize(const std::string& entityDbPath, asIScriptEngine* scriptEngine,
-			systems::SpawnSystem* spawnSystem, systems::SoundSystem* soundSystem);
+			systems::SpawnSystem* spawnSystem, systems::SoundSystem* soundSystem,
+			const std::string& dbPathName);
 		bool BuildEntityFromBlueprint(
 			const std::string& blueprintName,
 			const std::string& sceneLayer,
@@ -31,6 +32,7 @@ namespace data
 		asIScriptEngine* m_scriptEngine;
 		systems::SpawnSystem* m_spawnSystem;
 		systems::SoundSystem* m_soundSystem;
+		std::string m_dbPathName;
 
 		void AddRenderComponents(
 			const data::Blueprint& blueprint, 
@@ -53,6 +55,10 @@ namespace data
 			/*out*/ecs::Entity& entity);
 
 		void AddTextComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
+
+		void AddTileComponents(
 			const data::Blueprint& blueprint,
 			/*out*/ecs::Entity& entity);
 	};

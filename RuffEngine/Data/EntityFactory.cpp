@@ -13,7 +13,7 @@ namespace data
 
 	bool EntityFactory::Initialize(const std::string& entityDbPath, 
 		asIScriptEngine* scriptEngine, systems::SpawnSystem* spawnSystem,
-		systems::SoundSystem* soundSystem)
+		systems::SoundSystem* soundSystem, const std::string& dbPathName)
 	{
 		if (!LoadBlueprintData(entityDbPath, m_blueprints))
 		{
@@ -24,6 +24,7 @@ namespace data
 		m_scriptEngine = scriptEngine;
 		m_spawnSystem = spawnSystem;
 		m_soundSystem = soundSystem;
+		m_dbPathName = dbPathName;
 
 		return true;
 	}
@@ -63,6 +64,7 @@ namespace data
 		AddPhysicsComponents(*blueprintIter, entity);
 		AddParticleComponents(*blueprintIter, entity);
 		AddTextComponents(*blueprintIter, entity);
+		AddTileComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -352,6 +354,42 @@ namespace data
 				textComponent->SetOutlineThickness(
 					std::stof(queryResult.at("outline_thickness")[i]));
 				textComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
+			}
+		}
+	}
+
+	void EntityFactory::AddTileComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("tile_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect tile components
+			int totalComponents = queryResult.at("tile_id").size();
+			for (int i = 0; i < totalComponents; ++i)
+			{
+				TileComponent* tileComponent = entity.GetComponent<TileComponent>();
+				if (tileComponent == nullptr)
+				{
+					tileComponent = entity.AddComponent<TileComponent>();
+				}
+				tileComponent->Initialize();
+				tileComponent->SetIsActive(true);
+				auto idStrings = Parse::ProcessMultiValueField(
+					queryResult.at("tile_maps")[i]);
+				
+				std::vector<int> tileMapIds;
+				for (const auto& idString : idStrings)
+				{
+					tileMapIds.push_back(std::stoi(idString));
+				}
+				tileComponent->SetDbPathName(m_dbPathName);
+				tileComponent->PostInitialize(tileMapIds);
 			}
 		}
 	}

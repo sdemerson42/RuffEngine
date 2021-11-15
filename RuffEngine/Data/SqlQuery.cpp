@@ -12,7 +12,14 @@ namespace data
 		for (int i = 0; i < argc; ++i)
 		{
 			auto columnName = azColName[i];
-			SqlQuery::s_queryResult[columnName].push_back(argv[i]);
+			if (argv[i] == nullptr)
+			{
+				SqlQuery::s_queryResult[columnName].push_back("");
+			}
+			else
+			{
+				SqlQuery::s_queryResult[columnName].push_back(argv[i]);
+			}
 		}
 		return 0;
 	}

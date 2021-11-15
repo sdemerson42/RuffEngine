@@ -58,7 +58,8 @@ namespace ruff_engine
 		}
 		m_entityFactory->Initialize(m_simData->dbPath, m_scriptEngine, 
 			static_cast<systems::SpawnSystem*>(m_systems[0].get()),
-			static_cast<systems::SoundSystem*>(m_systems[6].get()));
+			static_cast<systems::SoundSystem*>(m_systems[6].get()),
+			m_simData->dbPath);
 
 		m_entities.reserve(globals::TOTAL_ENTITIES);
 
@@ -102,6 +103,8 @@ namespace ruff_engine
 
 		// TO DO: Replace test objects with data
 
+		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
+			EnqueueSpawn("Field1", "main", 0.0f, 0.0f, true, false, "");
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
 			EnqueueSpawn("Wizard", "main", 100.0f, 100.0f, true, false, "");
 		static_cast<systems::SpawnSystem*>(m_systems[0].get())->

@@ -6,3 +6,4 @@
 #include "PhysicsComponent.h"
 #include "ParticleComponent.h"
 #include "TextComponent.h"
+#include "TileComponent.h"
