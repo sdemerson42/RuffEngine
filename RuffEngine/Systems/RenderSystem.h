@@ -20,6 +20,7 @@ namespace systems
 		{
 			std::unordered_map<std::string, sf::VertexArray> vertexArrays;
 			std::vector<sf::Text*> texts;
+			std::vector<sf::Sprite> renderTextureSprites;
 		};
 		using LayerGroup = std::unordered_map<std::string, DrawableGroup>;
 
@@ -46,6 +47,10 @@ namespace systems
 
 		void ProcessTexturePath(const std::string& texturePath);
 		void ProcessFontPath(const std::string& fontPath);
+		void AddRenderTextureToGroup(
+			const std::string& renderLayer,
+			const sf::RenderTexture& renderTexture,
+			/*out*/LayerGroup& layerGroup);
 		void AddComponentToGroup(
 			const components::RenderComponent& renderComponent,
 			/*out*/LayerGroup& layerGroup);

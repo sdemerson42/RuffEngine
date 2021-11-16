@@ -4,6 +4,7 @@
 #include "../Util/Math.h"
 #include "../ECSPrimitives/Entity.h"
 #include "../RuffEngine/Globals.h"
+#include "../Components/TileComponent.h"
 
 #include <algorithm>
 
@@ -35,7 +36,23 @@ namespace systems
 			m_debugVertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
 		}
 		
-		auto sz = ecs::Autolist<components::RenderComponent>::SizeAll();
+		auto sz = ecs::Autolist<components::TileComponent>::SizeAll();
+		for (int i = 0; i < sz; ++i)
+		{
+			auto tileComponent = ecs::Autolist<components::TileComponent>::GetAll(i);
+			if (!tileComponent->GetIsActive() || !tileComponent->GetParent()->GetIsActive())
+			{
+				continue;
+			}
+			const auto& textures = tileComponent->GetRenderTextures();
+			for (const auto& texture : textures)
+			{
+				AddRenderTextureToGroup(texture.renderLayer,
+					*texture.renderTexture.get(), layerGroup);
+			}
+		}
+
+		sz = ecs::Autolist<components::RenderComponent>::SizeAll();
 		for (int i = 0; i < sz; ++i)
 		{
 			auto renderComponent = ecs::Autolist<components::RenderComponent>::GetAll(i);
@@ -98,6 +115,16 @@ namespace systems
 		util::Logger::Log(loadResult ?
 			"Font at path " + fontPath + " loaded." :
 			"Warning: Font at path " + fontPath + " failed to load.");
+	}
+
+	void RenderSystem::AddRenderTextureToGroup(
+		const std::string& renderLayer,
+		const sf::RenderTexture& renderTexture,
+		/*out*/LayerGroup& layerGroup)
+	{
+		sf::Sprite sprite;
+		sprite.setTexture(renderTexture.getTexture());
+		layerGroup[renderLayer].renderTextureSprites.push_back(sprite);
 	}
 
 	void RenderSystem::AddComponentToGroup(
@@ -320,11 +347,16 @@ namespace systems
 
 			const auto& drawGroup = layerGroup.at(layer.name);
 
+			for (const auto& sprite : drawGroup.renderTextureSprites)
+			{
+				m_window->setView(layer.isStatic ? s_defaultView : s_view);
+				m_window->draw(sprite);
+			}
+
 			for (const auto& vaPair : drawGroup.vertexArrays)
 			{
 				const sf::Texture& texture = m_textureMap.at(vaPair.first);
 				sf::RenderStates states{ &texture };
-				m_window->setView(layer.isStatic ? s_defaultView : s_view);
 				m_window->draw(vaPair.second, states);
 			}
 

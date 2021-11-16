@@ -16,6 +16,9 @@ namespace data
 		static std::vector<std::string> ProcessMultiValueField(const std::string& values)
 		{
 			std::vector<std::string> valueVector;
+
+			if (values == "") return valueVector;
+
 			std::string s;
 
 			for (char c : values)

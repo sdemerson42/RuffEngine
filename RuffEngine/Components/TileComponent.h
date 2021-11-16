@@ -36,6 +36,12 @@ namespace components
 			float secPerFrame;
 			float secCounter;
 		};
+
+		struct RenderTextureData
+		{
+			std::unique_ptr<sf::RenderTexture> renderTexture;
+			std::string renderLayer;
+		};
 		
 		TileComponent(ecs::Entity* parent, const std::string& sceneLayer);
 		~TileComponent()
@@ -46,20 +52,22 @@ namespace components
 		void SetDbPathName(const std::string& pathName);
 		void PostInitialize(const std::vector<int>& tileMapIds);
 		void Update();
+		const std::vector<RenderTextureData>& GetRenderTextures()
+		{
+			return m_renderTextureData;
+		}
 	private:
 		void BuildTileMap(const data::SqlQueryResult& data);
 		int VerifyTileSet(int index);
-		void BuildRenderComponents(const std::string& tiles, int rowSize,
+		void BuildImageAndAnimations(const std::string& tiles, const std::string& animations, int rowSize,
 			const std::string& renderLayer, const std::string& colors);
-		void BuildAnimations(const std::string& tiles, const std::string& animations,
-			int rowSize);
 		void BuildPhysics(const std::string& tiles, const std::string& physicsLayers, int rowSize);
 
 		std::string m_dbPathName;
 		int m_tileSetIndex;
 		std::vector<TileAnimation> m_tileAnimations;
-		std::vector<components::RenderComponent*> m_renderRefs;
 		std::unordered_map<int, std::vector<components::RenderComponent*>> m_animationRenderRefs;
+		std::vector<RenderTextureData> m_renderTextureData;
 
 		static std::unordered_map<int, TileSet> s_tileSets;
 	};

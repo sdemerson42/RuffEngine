@@ -4,6 +4,8 @@
 #include "../ECSPrimitives/Entity.h"
 #include "../Util/Time.h"
 
+#include <unordered_set>
+
 namespace components
 {
 	std::unordered_map<int, TileComponent::TileSet> TileComponent::s_tileSets;
@@ -11,6 +13,7 @@ namespace components
 	TileComponent::TileComponent(ecs::Entity* parent, const std::string& sceneLayer) :
 		ecs::ComponentBase{ parent }, Autolist<TileComponent>{ sceneLayer }
 	{
+		m_renderTextureData.reserve(10);
 	}
 
 	void TileComponent::SetDbPathName(const std::string& pathName)
@@ -20,6 +23,8 @@ namespace components
 
 	void TileComponent::PostInitialize(const std::vector<int>& tileMapIds)
 	{
+		m_renderTextureData.clear();
+
 		data::SqlQueryResult result;
 		for (int id : tileMapIds)
 		{
@@ -70,13 +75,8 @@ namespace components
 		std::string renderLayer = data.at("render_layer")[0];
 		std::string colors = data.at("tile_colors")[0];
 		std::string tiles = data.at("tiles")[0];
-		BuildRenderComponents(tiles, rowSize, renderLayer, colors);
-
 		std::string animations = data.at("tile_animations")[0];
-		if (animations != "")
-		{
-			BuildAnimations(tiles, animations, rowSize);
-		}
+		BuildImageAndAnimations(tiles, animations, rowSize, renderLayer, colors);
 
 		std::string physicsLayers = data.at("physics_layers")[0];
 		if (physicsLayers != "")
@@ -116,11 +116,36 @@ namespace components
 		return id;
 	}
 
-	void TileComponent::BuildRenderComponents(const std::string& tiles, int rowSize,
-		const std::string& renderLayer, const std::string& colors)
+	void TileComponent::BuildImageAndAnimations(const std::string& tiles, const std::string& animations, 
+		int rowSize, const std::string& renderLayer, const std::string& colors)
 	{
+		const TileSet& tileSet = s_tileSets[m_tileSetIndex];
+		sf::Texture texture;
+		if (!texture.loadFromFile(tileSet.texturePathName))
+		{
+			util::Logger::Log("Warning: TileComponent failed to load texture " +
+				tileSet.texturePathName + ".");
+			return;
+		}
+
 		ecs::Entity* entity = GetParent();
 		auto tileVec = data::Parse::ProcessMultiValueField(tiles);
+		auto animationsVec = data::Parse::ProcessMultiValueField(animations);
+		std::unordered_set<int> animatedTiles;
+		const sf::Vector2f& tileHalfSize = tileSet.tileHalfSize;
+
+		m_renderTextureData.push_back(RenderTextureData{});
+		m_renderTextureData.back().renderTexture =
+			std::make_unique<sf::RenderTexture>();
+		m_renderTextureData.back().renderTexture->create(
+			rowSize * 2 * (int)tileHalfSize.x,
+			(tileVec.size() / rowSize) * 2 * (int)tileHalfSize.y);
+		sf::VertexArray vertexArray{ sf::PrimitiveType::Quads };
+
+		for (int i = 0; i < animationsVec.size(); i += 3)
+		{
+			animatedTiles.insert(std::stoi(animationsVec[i]));
+		}
 
 		int i = 0, j = 0;
 
@@ -140,36 +165,21 @@ namespace components
 				continue;
 			}
 
-			const TileSet& tileSet = s_tileSets[m_tileSetIndex];
-			const sf::Vector2f& tileHalfSize = tileSet.tileHalfSize;
-			auto rc = entity->AddComponent<components::RenderComponent>();
-			m_renderRefs.push_back(rc);
-			rc->SetTexturePath(tileSet.texturePathName);
-			
+			// Do common rendering calculations
+
 			ecs::Box2f drawBox;
 			drawBox.center = {
 				(float)i * 2.0f * tileHalfSize.x + tileHalfSize.x,
 				(float)j * 2.0f * tileHalfSize.y + tileHalfSize.y };
 			drawBox.halfSize = tileHalfSize;
-			rc->SetDrawBox(drawBox);
-
-			++i;
-			if (i == rowSize)
-			{
-				i = 0;
-				++j;
-			}
 
 			ecs::Box2f texBox;
 			texBox.center = {
 				float(tile % rowSize * 2) * tileHalfSize.x + tileHalfSize.x,
 				float(tile / rowSize * 2) * tileHalfSize.y + tileHalfSize.y };
 			texBox.halfSize = drawBox.halfSize;
-			rc->SetTextureBox(texBox);
 
-			rc->SetRenderLayer(renderLayer);
-
-			rc->SetColor(sf::Color::White);                                                    
+			sf::Color drawColor{ sf::Color::White };
 			if (colors != "")
 			{
 				auto colorVals = data::Parse::ProcessMultiValueField(colors);
@@ -177,66 +187,99 @@ namespace components
 				{
 					int val = std::stoi(colorVals[k]);
 					if (val != tile) continue;
-					rc->SetColor(
+					drawColor = {
 						sf::Uint8(std::stoi(colorVals[k + 1])),
 						sf::Uint8(std::stoi(colorVals[k + 2])),
 						sf::Uint8(std::stoi(colorVals[k + 3])),
-						sf::Uint8(std::stoi(colorVals[k + 4])));
+						sf::Uint8(std::stoi(colorVals[k + 4])) };
 					break;
 				}
 			}
-			rc->SetIsActive(true);
-		}
-	}
-
-	void TileComponent::BuildAnimations(const std::string& tiles, const std::string& animations,
-		int rowSize)
-	{
-		auto tileStr = data::Parse::ProcessMultiValueField(tiles);
-		auto animationStr = data::Parse::ProcessMultiValueField(animations);
-		const TileSet& tileSet = s_tileSets[m_tileSetIndex];
-		
-		for (int i = 0; i < animationStr.size(); i += 3)
-		{
-			int tileToAnimate = std::stoi(animationStr[i]);
-			int frameTotal = std::stoi(animationStr[i + 1]);
-			float seconds = std::stof(animationStr[i + 2]);
-			const sf::Vector2f& tileHalfSize = tileSet.tileHalfSize;
-
-			m_tileAnimations.push_back(TileAnimation());
-			auto& animation = m_tileAnimations.back();
-			animation.frameCounter = 0;
-			animation.frameTotal = frameTotal;
-			animation.secPerFrame = seconds;
-			animation.secCounter = 0.0f;
-			animation.tileId = tileToAnimate;
-
-			animation.startFrame = {
-				{ float(tileToAnimate % rowSize * 2) * tileHalfSize.x + tileHalfSize.x,
-				float(tileToAnimate / rowSize * 2) * tileHalfSize.y + tileHalfSize.y },
-				tileHalfSize };
-
-			int rIndex = 0;
-			for (int j = 0; j < tileStr.size(); ++j)
+			
+			if (animatedTiles.find(tile) == animatedTiles.end())
 			{
-				int tile = std::stoi(tileStr[j]);
+				// Draw to render target
+				vertexArray.append(sf::Vertex{
+					sf::Vector2f{ drawBox.GetLeft(), drawBox.GetTop() },
+					drawColor,
+					sf::Vector2f{ texBox.GetLeft(), texBox.GetTop()} });
+				vertexArray.append(sf::Vertex{
+					sf::Vector2f{ drawBox.GetRight(), drawBox.GetTop() },
+					drawColor,
+					sf::Vector2f{ texBox.GetRight(), texBox.GetTop()} });
+				vertexArray.append(sf::Vertex{
+					sf::Vector2f{ drawBox.GetRight(), drawBox.GetBottom() },
+					drawColor,
+					sf::Vector2f{ texBox.GetRight(), texBox.GetBottom()} });
+				vertexArray.append(sf::Vertex{
+					sf::Vector2f{ drawBox.GetLeft(), drawBox.GetBottom() },
+					drawColor,
+					sf::Vector2f{ texBox.GetLeft(), texBox.GetBottom()} });
 
-				if (tile == -1)
+				++i;
+				if (i == rowSize)
 				{
-					continue;
+					i = 0;
+					++j;
 				}
-
-				if (tile != tileToAnimate)
-				{
-					++rIndex;
-					continue;
-				}
-
-				m_animationRenderRefs[tileToAnimate].push_back(
-					m_renderRefs[rIndex]);
-
-				++rIndex;
+				continue;
 			}
+			else
+			{
+				// Create render component and animation
+				ecs::Entity* parent = GetParent();
+				auto rc = parent->AddComponent<components::RenderComponent>();
+
+				rc->SetColor(drawColor);
+				rc->SetDrawBox(drawBox);
+				rc->SetRenderLayer(renderLayer);
+				rc->SetTextureBox(texBox);
+				rc->SetTexturePath(tileSet.texturePathName);
+				rc->SetIsActive(true);
+
+				m_animationRenderRefs[tile].push_back(rc);
+				auto animationIter = std::find_if(
+					m_tileAnimations.begin(), m_tileAnimations.end(),
+					[&](const TileAnimation& animation)
+					{
+						return animation.tileId == tile;
+					});
+				if (animationIter == m_tileAnimations.end())
+				{
+					m_tileAnimations.push_back(TileAnimation{});
+					auto& animation = m_tileAnimations.back();
+
+					for (int i = 0; i < animationsVec.size(); i += 3);
+					{
+						int animTile = std::stoi(animationsVec[i]);
+						if (tile == animTile)
+						{
+							animation.tileId = animTile;
+							animation.frameCounter = 0;
+							animation.frameTotal = std::stoi(animationsVec[i + 1]);
+							animation.secCounter = 0.0f;
+							animation.secPerFrame = std::stof(animationsVec[i + 2]);
+							animation.startFrame = texBox;
+						}
+					}
+				}
+			}
+
+			++i;
+			if (i == rowSize)
+			{
+				i = 0;
+				++j;
+			}
+		}
+
+		if (vertexArray.getVertexCount() > 0)
+		{
+			sf::RenderStates states;
+			states.texture = &texture;
+			m_renderTextureData.back().renderTexture->draw(vertexArray, states);
+			m_renderTextureData.back().renderTexture->display();
+			m_renderTextureData.back().renderLayer = renderLayer;
 		}
 	}
 
