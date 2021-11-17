@@ -3,13 +3,18 @@
 #include "../ECSPrimitives/ISystem.h"
 #include "../ECSPrimitives/Transform.h"
 #include "SFML/Graphics.hpp"
-#include "../Components/RenderComponent.h"
-#include "../Components/ParticleComponent.h"
-#include "../Components/TextComponent.h"
 
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
+namespace components
+{
+	class TileComponent;
+	class RenderComponent;
+	class TextComponent;
+	class ParticleComponent;
+}
 
 namespace systems
 {
@@ -47,9 +52,7 @@ namespace systems
 
 		void ProcessTexturePath(const std::string& texturePath);
 		void ProcessFontPath(const std::string& fontPath);
-		void AddRenderTextureToGroup(
-			const std::string& renderLayer,
-			const sf::RenderTexture& renderTexture,
+		void AddRenderTextureToGroup(components::TileComponent& tileComponent,
 			/*out*/LayerGroup& layerGroup);
 		void AddComponentToGroup(
 			const components::RenderComponent& renderComponent,

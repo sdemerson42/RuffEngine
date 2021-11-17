@@ -5,6 +5,9 @@
 #include "../ECSPrimitives/Entity.h"
 #include "../RuffEngine/Globals.h"
 #include "../Components/TileComponent.h"
+#include "../Components/RenderComponent.h"
+#include "../Components/ParticleComponent.h"
+#include "../Components/TextComponent.h"
 
 #include <algorithm>
 
@@ -44,12 +47,7 @@ namespace systems
 			{
 				continue;
 			}
-			const auto& textures = tileComponent->GetRenderTextures();
-			for (const auto& texture : textures)
-			{
-				AddRenderTextureToGroup(texture.renderLayer,
-					*texture.renderTexture.get(), layerGroup);
-			}
+			AddRenderTextureToGroup(*tileComponent, layerGroup);
 		}
 
 		sz = ecs::Autolist<components::RenderComponent>::SizeAll();
@@ -117,14 +115,18 @@ namespace systems
 			"Warning: Font at path " + fontPath + " failed to load.");
 	}
 
-	void RenderSystem::AddRenderTextureToGroup(
-		const std::string& renderLayer,
-		const sf::RenderTexture& renderTexture,
+	void RenderSystem::AddRenderTextureToGroup(components::TileComponent& tileComponent,
 		/*out*/LayerGroup& layerGroup)
 	{
-		sf::Sprite sprite;
-		sprite.setTexture(renderTexture.getTexture());
-		layerGroup[renderLayer].renderTextureSprites.push_back(sprite);
+		const sf::Vector2f& parentPosition = tileComponent.GetParent()->GetPosition();
+		const auto& textures = tileComponent.GetRenderTextures();
+		for (const auto& texture : textures)
+		{
+			sf::Sprite sprite;
+			sprite.setTexture(texture.renderTexture->getTexture());
+			sprite.setPosition(parentPosition);
+			layerGroup[texture.renderLayer].renderTextureSprites.push_back(sprite);
+		}
 	}
 
 	void RenderSystem::AddComponentToGroup(
