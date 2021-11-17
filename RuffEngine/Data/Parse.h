@@ -1,12 +1,14 @@
 #pragma once
 
 #include "SimData.h"
+#include "SceneData.h"
 #include "SqlQuery.h"
 #include "../Util/Logger.h"
 #include "../Systems/RenderSystem.h"
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 namespace data
 {
@@ -68,6 +70,74 @@ namespace data
 				simData.renderLayers.push_back(layer);
 			}
 
+			simData.startScene = std::stoi(query["start_scene"][0]);
+
+			return true;
+		}
+
+		static bool LoadSceneData(const std::string& dbPathName, 
+			/*out*/std::unordered_map<int, SceneData>& sceneData)
+		{
+			SqlQueryResult result;
+			if (!SqlQuery::SubmitQuery(dbPathName,
+				"SELECT * FROM Scene_Data", result))
+			{
+				util::Logger::Log("Warning: Could not read scene data.");
+				return false;
+			}
+
+			int totalScenes = result["scene_id"].size();
+			for (int i = 0; i < totalScenes; ++i)
+			{
+				SceneData sd;
+				sd.id = std::stoi(result["scene_id"][i]);
+				
+				auto persist = ProcessMultiValueField(result["persistent_entities"][i]);
+				for (int k = 0; k < persist.size(); k += 3)
+				{
+					SceneData::SceneEntityData data;
+					data.count = 1;
+					data.isActive = true;
+					data.isPersistent = true;
+					data.name = persist[k];
+					data.x = std::stof(persist[k + 1]);
+					data.y = std::stof(persist[k + 2]);
+					sd.entityData.push_back(data);
+				}
+
+				auto scene = ProcessMultiValueField(result["scene_entities"][i]);
+				for (int k = 0; k < scene.size(); k += 3)
+				{
+					SceneData::SceneEntityData data;
+					data.count = 1;
+					data.isActive = true;
+					data.isPersistent = false;
+					data.name = scene[k];
+					data.x = std::stof(scene[k + 1]);
+					data.y = std::stof(scene[k + 2]);
+					sd.entityData.push_back(data);
+				}
+
+				auto cache = ProcessMultiValueField(result["scene_cache_entities"][i]);
+				for (int k = 0; k < cache.size(); k += 2)
+				{
+					SceneData::SceneEntityData data;
+					data.count = std::stoi(cache[k + 1]);
+					data.isActive = false;
+					data.isPersistent = false;
+					data.name = cache[k];
+					data.x = 0.0f;
+					data.y = 0.0f;
+					sd.entityData.push_back(data);
+				}
+
+				auto subScenes = ProcessMultiValueField(result["sub_scenes"][i]);
+				for (int k = 0; k < subScenes.size(); ++k)
+				{
+					sd.subScenes.push_back(std::stoi(subScenes[k]));
+				}
+				sceneData[sd.id] = sd;
+			}
 			return true;
 		}
 	};

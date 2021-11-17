@@ -42,6 +42,9 @@
     <ClInclude Include="SimData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SceneData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sqlite3.c">

@@ -45,7 +45,7 @@ namespace systems
 			if (entityIter != sceneEntities->end())
 			{
 				entity->SetIsActive(false);
-				m_inactiveEntities.push_back(entity);
+				m_inactiveEntities.insert(entity);
 			}
 			else
 			{
@@ -57,10 +57,7 @@ namespace systems
 		// Spawn
 		for (const auto& data : m_spawnData)
 		{
-			if (data.isActive)
-			{
-				TrySpawn(data);
-			}
+			TrySpawn(data);
 		}
 		m_spawnData.clear();
 	}
@@ -76,23 +73,27 @@ namespace systems
 		float x, float y,
 		bool isActive, bool isPersistent, const std::string& data)
 	{
-		ecs::Entity* foundInactiveEntity = nullptr;
-		for (int i = 0; i < m_inactiveEntities.size(); ++i)
+		if (isActive)
 		{
-			if (m_inactiveEntities[i]->HasTag(name))
+			ecs::Entity* foundInactiveEntity = nullptr;
+			auto ieIter = std::find_if(m_inactiveEntities.begin(), m_inactiveEntities.end(),
+				[&](ecs::Entity* entity)
+				{
+					return entity->HasTag(name);
+				});
+			if (ieIter != m_inactiveEntities.end())
 			{
-				foundInactiveEntity = m_inactiveEntities[i];
-				m_inactiveEntities.erase(m_inactiveEntities.begin() + i);
-				break;
+				foundInactiveEntity = *ieIter;
+				m_inactiveEntities.erase(ieIter);
 			}
-		}
 
-		if (foundInactiveEntity != nullptr)
-		{
-			foundInactiveEntity->SetIsActive(true);
-			m_entityFactory->BuildEntityFromBlueprint(
-				name, sceneLayer, x, y, true, *foundInactiveEntity);
-			return foundInactiveEntity;
+			if (foundInactiveEntity != nullptr)
+			{
+				foundInactiveEntity->SetIsActive(true);
+				m_entityFactory->BuildEntityFromBlueprint(
+					name, sceneLayer, x, y, true, *foundInactiveEntity);
+				return foundInactiveEntity;
+			}
 		}
 
 		int persistIndex = isPersistent ?
@@ -105,7 +106,13 @@ namespace systems
 
 		auto& entityUptr = (*m_entities)[persistIndex].back();
 		m_entityFactory->BuildEntityFromBlueprint(
-			name, sceneLayer, x, y, true, *entityUptr);
+			name, sceneLayer, x, y, isActive, *entityUptr);
+
+		if (!isActive)
+		{
+			m_inactiveEntities.insert(entityUptr.get());
+		}
+
 		return entityUptr.get();
 	}
 

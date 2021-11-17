@@ -11,6 +11,11 @@
 #include "Transform.h"
 #include "../Components/ParticleComponent.h"
 
+namespace systems
+{
+	class SpawnSystem;
+}
+
 namespace ecs
 {
 	using ComponentVector = std::vector<std::unique_ptr<ComponentBase>>;
@@ -110,6 +115,8 @@ namespace ecs
 			m_sceneLayer = sceneLayer;
 		}
 
+		void Despawn();
+		
 		template<typename T>
 		T* const GetComponent()
 		{
@@ -137,11 +144,15 @@ namespace ecs
 			m_components.push_back(std::make_unique<T>(this, m_sceneLayer));
 			return static_cast<T*>(m_components.back().get());
 		}
+
+		static void SetSpawnSystem(systems::SpawnSystem* spawnSystem);
 	private:
 		ComponentVector m_components;
 		Transform m_transform;
 		std::unordered_set<std::string> m_tags;
 		bool m_isActive;
 		std::string m_sceneLayer;
+		
+		static systems::SpawnSystem* s_spawnSystemPtr;
 	};
 }

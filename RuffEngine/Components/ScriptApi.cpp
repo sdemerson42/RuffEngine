@@ -159,6 +159,12 @@ namespace components
 		return *m_spawnSystem->TrySpawn(name, x, y, true, false, "");
 	}
 
+	ecs::Entity& ScriptComponent::SpawnEntityOnLayer(const std::string& name, const std::string& sceneLayer,
+		float x, float y)
+	{
+		return *m_spawnSystem->TrySpawn(name, sceneLayer, x, y, true, false, "");
+	}
+
 	ScriptComponent& ScriptComponent::GetScriptFromEntity(ecs::Entity& entity)
 	{
 		return *entity.GetComponent<ScriptComponent>();

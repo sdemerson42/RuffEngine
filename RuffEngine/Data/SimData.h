@@ -17,5 +17,6 @@ namespace data
 		std::string soundPath;
 		std::vector<std::string> soundBuffers;
 		std::vector<systems::RenderSystem::RenderLayer> renderLayers;
+		int startScene;
 	};
 }

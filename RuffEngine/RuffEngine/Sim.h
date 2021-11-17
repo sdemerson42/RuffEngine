@@ -4,12 +4,19 @@
 #include "../ECSPrimitives/ISystem.h"
 #include "../Data/EntityFactory.h"
 #include "angelscript.h"
-#include "../Systems/RenderSystem.h"
 #include "../Data/SimData.h"
+#include "../Data/SceneData.h"
 
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
+
+namespace systems
+{
+	class SpawnSystem;
+	class SoundSystem;
+}
 
 namespace ruff_engine
 {
@@ -31,10 +38,14 @@ namespace ruff_engine
 		std::vector<std::vector<std::unique_ptr<ecs::Entity>>> m_entities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::unique_ptr<data::SimData> m_simData;
+		std::unordered_map<int, data::SceneData> m_sceneData;
+		
 		asIScriptEngine* m_scriptEngine;
+		systems::SpawnSystem* m_spawnSystemPtr;
+		systems::SoundSystem* m_soundSystemPtr;
 
 		bool MakeSystems();
-		bool LoadScene(const std::string& sceneName);
+		bool LoadScene(int sceneId);
 		bool PrepareScriptEngine();
 		bool RegisterScriptApi();
 		bool CompileScripts();

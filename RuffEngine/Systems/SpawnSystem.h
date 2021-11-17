@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <set>
 #include "SFML/System/Vector2.hpp"
 
 namespace systems
@@ -51,7 +52,7 @@ namespace systems
 		static void SetSceneLayer(const std::string& sceneLayer);
 	private:
 		std::vector<std::vector<std::unique_ptr<ecs::Entity>>>* m_entities;
-		std::vector<ecs::Entity*> m_inactiveEntities;
+		std::set<ecs::Entity*> m_inactiveEntities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::vector<SpawnData> m_spawnData;
 		std::vector<ecs::Entity*> m_despawnData;

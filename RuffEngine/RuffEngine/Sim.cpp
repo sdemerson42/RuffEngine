@@ -38,6 +38,16 @@ namespace ruff_engine
 			util::Logger::Log("Sim data loaded successfully.");
 		}
 
+		result = data::Parse::LoadSceneData(m_simData->dbPath, m_sceneData);
+		if (!result)
+		{
+			return false;
+		}
+		else
+		{
+			util::Logger::Log("Scene data loaded successfully.");
+		}
+
 		if (!PrepareScriptEngine())
 		{
 			util::Logger::Log("Warning: Script engine was not prepared successfully.");
@@ -56,10 +66,8 @@ namespace ruff_engine
 			util::Logger::Log("Warning: Sim systems were not created successfully.");
 			return false;
 		}
-		m_entityFactory->Initialize(m_simData->dbPath, m_scriptEngine, 
-			static_cast<systems::SpawnSystem*>(m_systems[0].get()),
-			static_cast<systems::SoundSystem*>(m_systems[6].get()),
-			m_simData->dbPath);
+		m_entityFactory->Initialize(m_simData->dbPath, m_scriptEngine,
+			m_spawnSystemPtr, m_soundSystemPtr, m_simData->dbPath);
 
 		m_entities.reserve(globals::TOTAL_ENTITIES);
 
@@ -74,6 +82,10 @@ namespace ruff_engine
 
 		m_systems.push_back(
 			std::make_unique<systems::SpawnSystem>(&m_entities, m_entityFactory));
+
+		m_spawnSystemPtr = static_cast<systems::SpawnSystem*>(m_systems.back().get());
+		ecs::Entity::SetSpawnSystem(m_spawnSystemPtr);
+
 		m_systems.push_back(
 			std::make_unique<systems::InputSystem>());
 		m_systems.push_back(
@@ -86,6 +98,9 @@ namespace ruff_engine
 			std::make_unique<systems::ParticleSystem>());
 		m_systems.push_back(
 			std::make_unique<systems::SoundSystem>(m_simData->soundPath, m_simData->soundBuffers));
+
+		m_soundSystemPtr = static_cast<systems::SoundSystem*>(m_systems.back().get());
+
 		m_systems.push_back(
 			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
 		
@@ -94,23 +109,38 @@ namespace ruff_engine
 		return true;
 	}
 
-	bool Sim::LoadScene(const std::string& sceneName)
+	bool Sim::LoadScene(int sceneId)
 	{
-		util::Logger::Log("Loading scene " + sceneName + "...");
+		util::Logger::Log("Loading scene " + std::to_string(sceneId) + "...");
 
-		static_cast<systems::SpawnSystem*>(m_systems[0].get())->Initialize();
-		systems::SpawnSystem::SetSceneLayer("main");
+		m_spawnSystemPtr->Initialize();
 
-		// TO DO: Replace test objects with data
+		std::vector<int> activeSceneIds;
+		activeSceneIds.push_back(sceneId);
+		const auto& mainScene = m_sceneData.at(sceneId);
 
-		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Field1", "main", 0.0f, 0.0f, true, false, "");
-		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Wizard", "main", 100.0f, 100.0f, true, false, "");
-		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Trees", "main", 200.0f, 200.0f, true, false, "");
-		static_cast<systems::SpawnSystem*>(m_systems[0].get())->
-			EnqueueSpawn("Clouds", "main", 400.0f, 300.0f, true, false, "");
+		for (int subId : mainScene.subScenes)
+		{
+			activeSceneIds.push_back(subId);
+		}
+
+		for (int currentId : activeSceneIds)
+		{
+			std::string sceneLayer = currentId == sceneId ?
+				"main" : "sub" + std::to_string(currentId);
+			const auto& currentScene = m_sceneData.at(currentId);
+
+			for (const auto& ed : currentScene.entityData)
+			{
+				for (int i = 0; i < ed.count; ++i)
+				{
+					m_spawnSystemPtr->EnqueueSpawn(
+						ed.name, sceneLayer, ed.x, ed.y, ed.isActive, ed.isPersistent, "");
+				}
+			}
+		}
+
+		m_spawnSystemPtr->SetSceneLayer("main");
 
 		util::Logger::Log("Scene loaded successfully.");
 
@@ -178,6 +208,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"Entity", "bool HasTag(const string& in)",
 			asMETHOD(ecs::Entity, HasTag), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"Entity", "void Despawn()",
+			asMETHOD(ecs::Entity, Despawn), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{
@@ -267,6 +300,9 @@ namespace ruff_engine
 			"ScriptComponent", "Entity@ SpawnEntity(const string& in, float, float)",
 			asMETHOD(components::ScriptComponent, SpawnEntity), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "Entity@ SpawnEntity(const string& in, const string& in, float, float)",
+			asMETHOD(components::ScriptComponent, SpawnEntityOnLayer), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "ScriptComponent@ GetScriptFromEntity(Entity@)",
 			asMETHOD(components::ScriptComponent, GetScriptFromEntity), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -352,7 +388,7 @@ namespace ruff_engine
 
 	void Sim::Execute()
 	{
-		LoadScene("");
+		LoadScene(m_simData->startScene);
 
 		// Main engine loop
 

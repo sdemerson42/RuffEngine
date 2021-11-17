@@ -68,6 +68,8 @@ namespace components
 		const sf::Vector2f& GetViewCenter() const;
 		void SetViewCenter(float x, float y);
 		ecs::Entity& SpawnEntity(const std::string& name, float x, float y);
+		ecs::Entity& SpawnEntityOnLayer(const std::string& name, const std::string& sceneLayer,
+			float x, float y);
 		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
 		void Despawn();
 		void SetSceneLayer(const std::string& layer);
