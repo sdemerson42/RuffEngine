@@ -33,7 +33,7 @@ namespace components
 		void AddSpawnSystem(systems::SpawnSystem* spawnSystem);
 		void AddSoundSystem(systems::SoundSystem* soundSystem);
 		void ExecuteScript();
-		void ExecuteCollision(ecs::Entity* collider);
+		void ExecuteCollision(ecs::Entity* collider, float xDir, float yDir);
 
 		// Script API methods
 		void Suspend(int cycles);
@@ -87,6 +87,8 @@ namespace components
 		void StopMusic();
 		float GetMusicVolume();
 		void SetMusicVolume(float value);
+		int RandomRangeInt(int min, int max);
+		void SetTextString(const std::string& text);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

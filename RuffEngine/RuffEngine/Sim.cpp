@@ -211,6 +211,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"Entity", "void Despawn()",
 			asMETHOD(ecs::Entity, Despawn), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"Entity", "const Vector2f& GetPosition()",
+			asMETHOD(ecs::Entity, GetPosition), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{
@@ -329,6 +332,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetMusicVolume(float)",
 			asMETHOD(components::ScriptComponent, SetMusicVolume), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "int RandomRangeInt(int, int)",
+			asMETHOD(components::ScriptComponent, RandomRangeInt), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetTextString(const string& in)",
+			asMETHOD(components::ScriptComponent, SetTextString), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

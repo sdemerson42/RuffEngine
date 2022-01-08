@@ -15,7 +15,7 @@ void Fireball_Main(ScriptComponent@ api)
 	}
 }
 
-void Fireball_OnCollision(ScriptComponent@ api, Entity@ collider)
+void Fireball_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float yDir)
 {
 	if (collider.HasTag("Wizard") || collider.HasTag("Fireball"))
 	{

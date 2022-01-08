@@ -206,4 +206,20 @@ namespace components
 	{
 		m_soundSystem->SetMusicVolume(value);
 	}
+
+	int ScriptComponent::RandomRangeInt(int min, int max)
+	{
+		int range = max - min + 1;
+		int value = rand() % range + min;
+		return value;
+	}
+
+	void ScriptComponent::SetTextString(const std::string& text)
+	{
+		auto textComponent = m_parent->GetComponent<components::TextComponent>();
+		if (textComponent != nullptr)
+		{
+			textComponent->SetTextString(text);
+		}
+	}
 }

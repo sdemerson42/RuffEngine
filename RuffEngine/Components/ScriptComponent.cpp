@@ -71,7 +71,8 @@ namespace components
 				m_mainScriptContext->Abort();
 			}
 		}
-		functionDecl = "void " + mainPrefix + "_OnCollision(ScriptComponent@ api, Entity@ collider)";
+		functionDecl = "void " + mainPrefix + 
+			"_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float yDir)";
 		m_collisionScriptFunction = scriptEngine->GetModule("main")->
 			GetFunctionByDecl(functionDecl.c_str());
 	}
@@ -86,11 +87,13 @@ namespace components
 		m_mainScriptContext->Execute();
 	}
 
-	void ScriptComponent::ExecuteCollision(ecs::Entity* collider)
+	void ScriptComponent::ExecuteCollision(ecs::Entity* collider, float xDir, float yDir)
 	{
 		m_collisionScriptContext->Prepare(m_collisionScriptFunction);
 		m_collisionScriptContext->SetArgObject(0, this);
 		m_collisionScriptContext->SetArgObject(1, collider);
+		m_collisionScriptContext->SetArgFloat(2, xDir);
+		m_collisionScriptContext->SetArgFloat(3, yDir);
 		m_collisionScriptContext->Execute();
 	}
 

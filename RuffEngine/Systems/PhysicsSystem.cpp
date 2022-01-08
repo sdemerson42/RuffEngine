@@ -356,18 +356,26 @@ namespace systems
 	{
 		for (Collision* collision : m_onCollisions)
 		{
-			components::ScriptComponent* aScript =
-				collision->a->component->GetParent()->GetComponent<components::ScriptComponent>();
-			if (aScript != nullptr)
+			for (int i = 0; i < 2; ++i)
 			{
-				aScript->ExecuteCollision(collision->b->component->GetParent());
-			}
-
-			components::ScriptComponent* bScript =
-				collision->b->component->GetParent()->GetComponent<components::ScriptComponent>();
-			if (bScript != nullptr)
-			{
-				bScript->ExecuteCollision(collision->a->component->GetParent());
+				ComponentCollisionData* collisionData = (i == 0 ?
+					collision->a : collision->b);
+				ComponentCollisionData* otherCollisionData = (i == 0 ?
+					collision->b : collision->a);
+				components::ScriptComponent* script =
+					collisionData->component->GetParent()->GetComponent<components::ScriptComponent>();
+				if (script != nullptr)
+				{
+					sf::Vector2f normal{ 0.0f, 0.0f };
+					if (collisionData->collisionFromLeft) normal.x = -1.0f;
+					if (collisionData->collisionFromRight) normal.x = 1.0f;
+					if (collisionData->collisionFromTop) normal.y = -1.0f;
+					if (collisionData->collisionFromBottom) normal.y = 1.0f;
+					script->ExecuteCollision(
+						otherCollisionData->component->GetParent(),
+						normal.x,
+						normal.y);
+				}
 			}
 		}
 	}

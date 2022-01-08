@@ -4,6 +4,9 @@ void Wizard_Main(ScriptComponent@ api)
 	const float shootRate = 0.25f;
 	float shootCounter = shootRate;
 
+	const float fbVelocityStraight = 500.0f;
+	const float fbVelocityDiag = fbVelocityStraight * sqrt(2) / 2.0f; 
+
 	while(true)
 	{
 		auto i = api.GetInput();
@@ -28,17 +31,17 @@ void Wizard_Main(ScriptComponent@ api)
 				if (i.rightStick.y < 0.0f)
 				{
 					fs.SetRotation(-45);
-					fs.SetVelocity(-200, -200);
+					fs.SetVelocity(-1.0f * fbVelocityDiag, -1.0f * fbVelocityDiag);
 				}
 				if (i.rightStick.y == 0.0f)
 				{
 					fs.SetRotation(-90);
-					fs.SetVelocity(-300, 0);
+					fs.SetVelocity(-1.0f * fbVelocityStraight, 0);
 				}
 				if (i.rightStick.y > 0.0f)
 				{
 					fs.SetRotation(-135);
-					fs.SetVelocity(-200, 200);
+					fs.SetVelocity(-1.0f * fbVelocityDiag, fbVelocityDiag);
 				}
 
 			}
@@ -48,13 +51,13 @@ void Wizard_Main(ScriptComponent@ api)
 				if (i.rightStick.y < 0.0f)
 				{
 					fs.SetRotation(0);
-					fs.SetVelocity(0, -300);
+					fs.SetVelocity(0, -1.0f * fbVelocityStraight);
 				}
 				
 				if (i.rightStick.y > 0.0f)
 				{
 					fs.SetRotation(180);
-					fs.SetVelocity(0, 300);
+					fs.SetVelocity(0, fbVelocityStraight);
 				}
 			}
 
@@ -63,17 +66,17 @@ void Wizard_Main(ScriptComponent@ api)
 				if (i.rightStick.y < 0.0f)
 				{
 					fs.SetRotation(45);
-					fs.SetVelocity(200, -200);
+					fs.SetVelocity(fbVelocityDiag, -1.0f * fbVelocityDiag);
 				}
 				if (i.rightStick.y == 0.0f)
 				{
 					fs.SetRotation(90);
-					fs.SetVelocity(300, 0);
+					fs.SetVelocity(fbVelocityStraight, 0);
 				}
 				if (i.rightStick.y > 0.0f)
 				{
 					fs.SetRotation(135);
-					fs.SetVelocity(200, 200);
+					fs.SetVelocity(fbVelocityDiag, fbVelocityDiag);
 				}
 			}
 
@@ -100,7 +103,7 @@ void Wizard_Main(ScriptComponent@ api)
 	}
 }
 
-void Wizard_OnCollision(ScriptComponent@ api, Entity@ collider)
+void Wizard_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float yDir)
 {
 	
 }

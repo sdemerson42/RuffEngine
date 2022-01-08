@@ -144,8 +144,9 @@ namespace data
 			int totalAnimations = queryResult.at("animation_id").size();
 			for (int i = 0; i < totalAnimations; ++i)
 			{
+				std::string animationName{ queryResult.at("name")[i] };
 				animationComponent->AddAnimation(
-					queryResult.at("name")[i],
+					animationName,
 					ecs::Box2f
 					{
 						std::stof(queryResult.at("start_center_x")[i]),
@@ -155,6 +156,19 @@ namespace data
 					},
 					std::stoi(queryResult.at("frames_per_row")[i]),
 					std::stoi(queryResult.at("total_frames")[i]));
+
+				bool isAutoAnimation = std::stoi(queryResult.at("auto_start")[i]);
+				if (isAutoAnimation)
+				{
+					float autoFps = std::stof(queryResult.at("auto_fps")[i]);
+					bool isPingPong = std::stoi(queryResult.at("auto_ping_pong")[i]);
+					bool isLooping = std::stoi(queryResult.at("auto_looping")[i]);
+					animationComponent->PlayAnimation(
+						animationName,
+						autoFps,
+						isPingPong,
+						isLooping);
+				}
 			}
 		}
 	}

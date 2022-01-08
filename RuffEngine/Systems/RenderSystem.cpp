@@ -341,6 +341,8 @@ namespace systems
 		// Draw each layer in order
 		for (const auto& layer : m_renderLayers)
 		{
+			m_window->setView(layer.isStatic ? s_defaultView : s_view);
+
 			const auto& vaGroupIter = layerGroup.find(layer.name);
 			if (vaGroupIter == std::end(layerGroup))
 			{
@@ -351,7 +353,6 @@ namespace systems
 
 			for (const auto& sprite : drawGroup.renderTextureSprites)
 			{
-				m_window->setView(layer.isStatic ? s_defaultView : s_view);
 				m_window->draw(sprite);
 			}
 
