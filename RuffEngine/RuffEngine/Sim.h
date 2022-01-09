@@ -6,6 +6,8 @@
 #include "angelscript.h"
 #include "../Data/SimData.h"
 #include "../Data/SceneData.h"
+#include "../Util/EventHandler.h"
+#include "../Util/Events.h"
 
 #include <memory>
 #include <vector>
@@ -20,7 +22,7 @@ namespace systems
 
 namespace ruff_engine
 {
-	class Sim
+	class Sim : public util::EventHandler
 	{
 	public:
 		enum class EntityVectorIndex
@@ -29,6 +31,7 @@ namespace ruff_engine
 			SCENE_ONLY = 1
 		};
 
+		Sim();
 		~Sim();
 		bool Initialize();
 		void Execute();
@@ -44,11 +47,17 @@ namespace ruff_engine
 		systems::SpawnSystem* m_spawnSystemPtr;
 		systems::SoundSystem* m_soundSystemPtr;
 
+		int m_nextSceneId;
+
 		bool MakeSystems();
+		bool ChangeScene();
+		bool UnloadScene();
 		bool LoadScene(int sceneId);
 		bool PrepareScriptEngine();
 		bool RegisterScriptApi();
 		bool CompileScripts();
 		bool ValidateScriptStep(int result, const std::string& msg);
+
+		void OnChangeSceneEvent(const util::ChangeSceneEvent* event);
 	};
 };

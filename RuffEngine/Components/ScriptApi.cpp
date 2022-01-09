@@ -6,6 +6,7 @@
 #include "../Systems/SpawnSystem.h"
 #include "../Systems/SoundSystem.h"
 #include "../Util/Time.h"
+#include "../Util/Events.h"
 
 namespace components
 {
@@ -221,5 +222,12 @@ namespace components
 		{
 			textComponent->SetTextString(text);
 		}
+	}
+
+	void ScriptComponent::ChangeScene(int sceneId)
+	{
+		util::ChangeSceneEvent event;
+		event.sceneId = sceneId;
+		SendEvent(&event);
 	}
 }

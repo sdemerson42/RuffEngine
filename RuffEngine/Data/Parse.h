@@ -99,6 +99,7 @@ namespace data
 					data.count = 1;
 					data.isActive = true;
 					data.isPersistent = true;
+					data.isCreated = false;
 					data.name = persist[k];
 					data.x = std::stof(persist[k + 1]);
 					data.y = std::stof(persist[k + 2]);

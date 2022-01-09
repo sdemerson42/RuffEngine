@@ -151,6 +151,7 @@
     <ClCompile Include="..\AngelScript\add_on\scriptstdstring\scriptstdstring.cpp" />
     <ClCompile Include="RuffEngine.cpp" />
     <ClCompile Include="Sim.cpp" />
+    <ClCompile Include="SimPrepareScripting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Globals.h" />

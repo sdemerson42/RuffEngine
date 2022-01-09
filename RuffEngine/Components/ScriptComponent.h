@@ -5,6 +5,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "../Systems/InputSystem.h"
 #include "../ECSPrimitives/Autolist.h"
+#include "../Util/EventHandler.h"
 
 #include <string>
 #include <unordered_map>
@@ -22,7 +23,8 @@ namespace ecs
 
 namespace components
 {
-	class ScriptComponent : public ecs::ComponentBase, public ecs::Autolist<ScriptComponent>
+	class ScriptComponent : public ecs::ComponentBase, public ecs::Autolist<ScriptComponent>,
+		public util::EventHandler
 	{
 	public:
 		ScriptComponent(ecs::Entity* parent, const std::string& sceneLayer);
@@ -89,6 +91,7 @@ namespace components
 		void SetMusicVolume(float value);
 		int RandomRangeInt(int min, int max);
 		void SetTextString(const std::string& text);
+		void ChangeScene(int sceneId);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

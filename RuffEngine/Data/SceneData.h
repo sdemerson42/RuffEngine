@@ -13,6 +13,7 @@ namespace data
 			float x;
 			float y;
 			bool isPersistent;
+			bool isCreated;
 			bool isActive;
 			int count;
 		};
