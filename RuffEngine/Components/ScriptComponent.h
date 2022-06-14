@@ -92,6 +92,8 @@ namespace components
 		int RandomRangeInt(int min, int max);
 		void SetTextString(const std::string& text);
 		void ChangeScene(int sceneId);
+		void AddDynamicTileMap(int id, int tileSetId, int rowSize, const std::string& tiles, const std::string& tileColors,
+			const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

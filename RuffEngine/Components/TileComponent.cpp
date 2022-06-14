@@ -9,6 +9,7 @@
 namespace components
 {
 	std::unordered_map<int, TileComponent::TileSet> TileComponent::s_tileSets;
+	std::unordered_map<int, data::SqlQueryResult> TileComponent::s_dynamicTileMaps;
 
 	TileComponent::TileComponent(ecs::Entity* parent, const std::string& sceneLayer) :
 		ecs::ComponentBase{ parent }, Autolist<TileComponent>{ sceneLayer }
@@ -21,9 +22,29 @@ namespace components
 		m_dbPathName = pathName;
 	}
 
-	void TileComponent::PostInitialize(const std::vector<int>& tileMapIds)
+	void TileComponent::PostInitialize(const std::vector<int>& tileMapIds, const std::vector<int>& dynamicTileMapIds)
 	{
 		m_renderTextureData.clear();
+
+		bool isDynamic = false;
+		if (!dynamicTileMapIds.empty())
+		{
+			for (int id : dynamicTileMapIds)
+			{
+				auto resultIter = s_dynamicTileMaps.find(id);
+				if (resultIter != std::end(s_dynamicTileMaps))
+				{
+					BuildTileMap(resultIter->second);
+					isDynamic = true;
+				}
+				else
+				{
+					util::Logger::Log("Warning: Tile Component failed to access dynamic tilemap data.");
+				}
+			}
+		}
+
+		if (isDynamic) return;
 
 		data::SqlQueryResult result;
 		for (int id : tileMapIds)
@@ -374,5 +395,10 @@ namespace components
 		}
 		util::Logger::Log("Info: TileMap physics layer created " +
 			std::to_string(logCount) + " physics components.");
+	}
+
+	void TileComponent::AddDynamicTileMap(int id, const data::SqlQueryResult& tileMap)
+	{
+		s_dynamicTileMaps[id] = tileMap;
 	}
 }

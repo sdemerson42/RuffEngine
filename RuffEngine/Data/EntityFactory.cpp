@@ -402,8 +402,17 @@ namespace data
 				{
 					tileMapIds.push_back(std::stoi(idString));
 				}
+
+				idStrings = Parse::ProcessMultiValueField(
+					queryResult.at("dynamic_tile_maps")[i]);
+				std::vector<int> dynamicTileMapIds;
+				for (const auto& idString : idStrings)
+				{
+					dynamicTileMapIds.push_back(std::stoi(idString));
+				}
+
 				tileComponent->SetDbPathName(m_dbPathName);
-				tileComponent->PostInitialize(tileMapIds);
+				tileComponent->PostInitialize(tileMapIds, dynamicTileMapIds);
 			}
 		}
 	}

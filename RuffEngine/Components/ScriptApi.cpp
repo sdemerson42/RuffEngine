@@ -230,4 +230,19 @@ namespace components
 		event.sceneId = sceneId;
 		SendEvent(&event);
 	}
+
+	void ScriptComponent::AddDynamicTileMap(int id, int tileSetId, int rowSize, const std::string& tiles,
+		const std::string& tileColors, const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers)
+	{
+		data::SqlQueryResult tileMap;
+		tileMap["using_tile_set_id"].push_back(std::to_string(tileSetId));
+		tileMap["row_size"].push_back(std::to_string(rowSize));
+		tileMap["tiles"].push_back(tiles);
+		tileMap["tile_colors"].push_back(tileColors);
+		tileMap["tile_animations"].push_back(tileAnimations);
+		tileMap["render_layer"].push_back(renderLayer);
+		tileMap["physics_layers"].push_back(physicsLayers);
+
+		components::TileComponent::AddDynamicTileMap(id, tileMap);
+	}
 }

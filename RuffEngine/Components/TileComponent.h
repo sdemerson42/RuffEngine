@@ -50,12 +50,14 @@ namespace components
 			m_animationRenderRefs.clear();
 		}
 		void SetDbPathName(const std::string& pathName);
-		void PostInitialize(const std::vector<int>& tileMapIds);
+		void PostInitialize(const std::vector<int>& tileMapIds, const std::vector<int>& dynamicTileMapIds);
 		void Update();
 		const std::vector<RenderTextureData>& GetRenderTextures()
 		{
 			return m_renderTextureData;
 		}
+		
+		static void AddDynamicTileMap(int id, const data::SqlQueryResult& tileMap);
 	private:
 		void BuildTileMap(const data::SqlQueryResult& data);
 		int VerifyTileSet(int index);
@@ -70,5 +72,6 @@ namespace components
 		std::vector<RenderTextureData> m_renderTextureData;
 
 		static std::unordered_map<int, TileSet> s_tileSets;
+		static std::unordered_map<int, data::SqlQueryResult> s_dynamicTileMaps;
 	};
 };
