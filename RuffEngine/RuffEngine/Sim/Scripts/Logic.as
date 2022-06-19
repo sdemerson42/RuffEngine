@@ -7,6 +7,15 @@ void Logic_Main(ScriptComponent@ api)
 	api.SetInt("batCount", 0);
 	api.SetInt("score", 0);
 
+	string s = api.ReadFile("Sim/Data/ArenaMap.txt");
+	auto div = s.findFirst("*");
+	string t1 = s.substr(0, div);
+	string t2 = s.substr(div + 1, s.length() - (div + 1));
+
+	api.AddDynamicTileMap(1, 1, 32, t1, "", "", "default", "");
+	api.AddDynamicTileMap(2, 1, 32, t2, "", "", "default", "ground");
+	api.ChangeScene(1);
+
 	while(true)
 	{
 		spawnTimer += api.DeltaTime();

@@ -8,6 +8,8 @@
 #include "../Util/Time.h"
 #include "../Util/Events.h"
 
+#include <fstream>
+
 namespace components
 {
 	void ScriptComponent::Suspend(int cycles = 0)
@@ -244,5 +246,25 @@ namespace components
 		tileMap["physics_layers"].push_back(physicsLayers);
 
 		components::TileComponent::AddDynamicTileMap(id, tileMap);
+	}
+
+	std::string ScriptComponent::ReadFile(const std::string& fName)
+	{
+		std::string data;
+		std::string s;
+		std::ifstream ifs{ fName };
+
+		if (!ifs)
+		{
+			util::Logger::Log("Warning: Script API failed to open file " + fName);
+		}
+
+		std::getline(ifs, s);
+		data += s;
+		while (std::getline(ifs, s))
+		{
+			data += "\n" + s;
+		}
+		return data;
 	}
 }

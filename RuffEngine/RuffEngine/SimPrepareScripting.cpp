@@ -244,6 +244,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void AddDynamicTileMap(int, int, int, const string& in, const string& in, const string& in, const string& in, const string& in)",
 			asMETHOD(components::ScriptComponent, AddDynamicTileMap), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "string ReadFile(const string& in)",
+			asMETHOD(components::ScriptComponent, ReadFile), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{
