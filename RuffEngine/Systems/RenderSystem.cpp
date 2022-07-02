@@ -339,8 +339,10 @@ namespace systems
 		m_window->clear();
 
 		// Draw each layer in order
-		for (const auto& layer : m_renderLayers)
+		for (size_t i = 0; i < m_renderLayers.size(); ++i)
 		{
+			const auto& layer = m_renderLayers[i];
+
 			m_window->setView(layer.isStatic ? s_defaultView : s_view);
 
 			const auto& vaGroupIter = layerGroup.find(layer.name);
@@ -351,26 +353,64 @@ namespace systems
 
 			const auto& drawGroup = layerGroup.at(layer.name);
 
+			if (layer.groupIndex != -1)
+			{
+				if (i == 0 || m_renderLayers[i - 1].groupIndex != layer.groupIndex)
+				{
+					if (!drawGroup.renderTextureSprites.empty())
+					{
+						const auto* renderTexture = drawGroup.renderTextureSprites[0].getTexture();
+						m_compositeRenderTexture.create(renderTexture->getSize().x, renderTexture->getSize().y);
+					}
+					else
+					{
+						m_compositeRenderTexture.create(m_window->getSize().x, m_window->getSize().y);
+					}
+				}
+			}
+
+			sf::RenderTarget* target{ nullptr };
+			if (layer.groupIndex != -1)
+			{
+				target = &m_compositeRenderTexture;
+			}
+			else
+			{
+				target = m_window.get();
+			}
+
 			for (const auto& sprite : drawGroup.renderTextureSprites)
 			{
-				m_window->draw(sprite);
+				target->draw(sprite);
 			}
 
 			for (const auto& vaPair : drawGroup.vertexArrays)
 			{
 				const sf::Texture& texture = m_textureMap.at(vaPair.first);
 				sf::RenderStates states{ &texture };
-				m_window->draw(vaPair.second, states);
+				target->draw(vaPair.second, states);
 			}
 
 			for (const auto& text : drawGroup.texts)
 			{
-				m_window->draw(*text);
+				target->draw(*text);
 			}
 
 			if (globals::DEBUG_MODE)
 			{
-				m_window->draw(m_debugVertexArray);
+				target->draw(m_debugVertexArray);
+			}
+
+			// If we've finished a composite group, draw it now
+			if (layer.groupIndex != -1)
+			{
+				if (i == m_renderLayers.size() - 1 || m_renderLayers[i + 1].groupIndex != layer.groupIndex)
+				{
+					m_compositeRenderTexture.display();
+					sf::Sprite compositeSprite;
+					compositeSprite.setTexture(m_compositeRenderTexture.getTexture());
+					m_window->draw(compositeSprite);
+				}
 			}
 		}
 		m_window->display();

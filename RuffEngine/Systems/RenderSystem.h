@@ -34,6 +34,7 @@ namespace systems
 		{
 			std::string name;
 			bool isStatic;
+			int groupIndex = -1;
 		};
 
 		RenderSystem(
@@ -49,6 +50,7 @@ namespace systems
 		std::unordered_map<std::string, sf::Font> m_fontMap;
 		std::vector<RenderLayer> m_renderLayers;
 		sf::VertexArray m_debugVertexArray;
+		sf::RenderTexture m_compositeRenderTexture;
 
 		void ProcessTexturePath(const std::string& texturePath);
 		void ProcessFontPath(const std::string& fontPath);

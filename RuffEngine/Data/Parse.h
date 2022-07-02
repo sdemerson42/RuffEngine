@@ -62,11 +62,34 @@ namespace data
 			simData.soundBuffers = ProcessMultiValueField(query["sound_buffers"][0]);
 			
 			auto renderLayerData = ProcessMultiValueField(query["render_layers"][0]);
+			int groupIndexCounter = 0;
+			bool inLayer = false;
 			for (int i = 0; i < renderLayerData.size(); i += 2)
 			{
+				int groupIndex = -1;
+				auto layerName = renderLayerData[i];
+
+				// Texture grouping logic
+				if (layerName[0] == '[')
+				{
+					layerName = layerName.substr(1);
+					inLayer = true;
+				}
+				if (layerName[layerName.length() - 1] == ']')
+				{
+					layerName = layerName.substr(0, layerName.length() - 1);
+					inLayer = false;
+					groupIndex = groupIndexCounter++;
+				}
+				if (inLayer)
+				{
+					groupIndex = groupIndexCounter;
+				}
+
 				systems::RenderSystem::RenderLayer layer{
-					renderLayerData[i],
-					renderLayerData[i + 1] == "static" ? true : false };
+					layerName,
+					renderLayerData[i + 1] == "static" ? true : false,
+					groupIndex };
 				simData.renderLayers.push_back(layer);
 			}
 
