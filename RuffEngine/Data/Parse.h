@@ -64,9 +64,11 @@ namespace data
 			auto renderLayerData = ProcessMultiValueField(query["render_layers"][0]);
 			int groupIndexCounter = 0;
 			bool inLayer = false;
+
 			for (int i = 0; i < renderLayerData.size(); i += 2)
 			{
 				int groupIndex = -1;
+				bool isLit = false;
 				auto layerName = renderLayerData[i];
 
 				// Texture grouping logic
@@ -74,6 +76,7 @@ namespace data
 				{
 					layerName = layerName.substr(1);
 					inLayer = true;
+					isLit = true;
 				}
 				if (layerName[layerName.length() - 1] == ']')
 				{
@@ -84,12 +87,14 @@ namespace data
 				if (inLayer)
 				{
 					groupIndex = groupIndexCounter;
+					isLit = true;
 				}
 
 				systems::RenderSystem::RenderLayer layer{
 					layerName,
 					renderLayerData[i + 1] == "static" ? true : false,
-					groupIndex };
+					groupIndex,
+					isLit };
 				simData.renderLayers.push_back(layer);
 			}
 

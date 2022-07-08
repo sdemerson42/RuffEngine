@@ -35,6 +35,7 @@ namespace systems
 			std::string name;
 			bool isStatic;
 			int groupIndex = -1;
+			bool isLit;
 		};
 
 		RenderSystem(
@@ -51,6 +52,11 @@ namespace systems
 		std::vector<RenderLayer> m_renderLayers;
 		sf::VertexArray m_debugVertexArray;
 		sf::RenderTexture m_compositeRenderTexture;
+		sf::Shader m_lightingShader;
+		sf::Vector3f m_darknessColor;
+		std::vector<sf::Glsl::Vec2> m_lightPositions;
+		std::vector<sf::Glsl::Vec4> m_lightColors;
+		std::vector<float> m_lightRadii;
 
 		void ProcessTexturePath(const std::string& texturePath);
 		void ProcessFontPath(const std::string& fontPath);
@@ -64,6 +70,7 @@ namespace systems
 			/*out*/LayerGroup& layerGroup);
 		void AddTextToGroup(components::TextComponent& textComponent,
 			/*out*/LayerGroup& layerGroup);
+		void AddPointLights(const sf::Vector2u& texSize);
 		void DebugDrawEntityCenter(const components::RenderComponent& renderComponent);
 		bool ValidateRenderLayer(const std::string& layer);
 		void RenderAllLayers(const LayerGroup& layerGroup);

@@ -65,6 +65,7 @@ namespace data
 		AddParticleComponents(*blueprintIter, entity);
 		AddTextComponents(*blueprintIter, entity);
 		AddTileComponents(*blueprintIter, entity);
+		AddLightComponents(*blueprintIter, entity);
 
 		// Set position
 		entity.SetPosition(positionX, positionY);
@@ -413,6 +414,40 @@ namespace data
 
 				tileComponent->SetDbPathName(m_dbPathName);
 				tileComponent->PostInitialize(tileMapIds, dynamicTileMapIds);
+			}
+		}
+	}
+
+	void EntityFactory::AddLightComponents(
+		const data::Blueprint& blueprint,
+		/*out*/ecs::Entity& entity)
+	{
+		for (const auto& queryResult : blueprint.componentData)
+		{
+			if (queryResult.find("light_id") == std::end(queryResult))
+			{
+				continue;
+			}
+
+			// Connect light components
+			int totalComponents = queryResult.at("light_id").size();
+			for (int i = 0; i < totalComponents; ++i)
+			{
+				LightComponent* lightComponent = entity.GetComponent<LightComponent>();
+				if (lightComponent == nullptr)
+				{
+					lightComponent = entity.AddComponent<LightComponent>();
+				}
+				lightComponent->Initialize();
+				lightComponent->SetIsActive(true);
+				lightComponent->SetOffset(
+					std::stof(queryResult.at("offset_x")[i]),
+					std::stof(queryResult.at("offset_y")[i]));
+				lightComponent->SetColor(
+					std::stof(queryResult.at("color_r")[i]),
+					std::stof(queryResult.at("color_g")[i]),
+					std::stof(queryResult.at("color_b")[i]));
+				lightComponent->SetRadius(std::stof(queryResult.at("radius")[i]));
 			}
 		}
 	}

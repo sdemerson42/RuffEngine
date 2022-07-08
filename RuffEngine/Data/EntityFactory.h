@@ -61,5 +61,9 @@ namespace data
 		void AddTileComponents(
 			const data::Blueprint& blueprint,
 			/*out*/ecs::Entity& entity);
+
+		void AddLightComponents(
+			const data::Blueprint& blueprint,
+			/*out*/ecs::Entity& entity);
 	};
 }

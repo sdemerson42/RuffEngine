@@ -7,3 +7,4 @@
 #include "ParticleComponent.h"
 #include "TextComponent.h"
 #include "TileComponent.h"
+#include "LightComponent.h"

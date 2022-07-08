@@ -8,6 +8,7 @@
 #include "../Components/RenderComponent.h"
 #include "../Components/ParticleComponent.h"
 #include "../Components/TextComponent.h"
+#include "../Components//LightComponent.h"
 
 #include <algorithm>
 
@@ -27,6 +28,17 @@ namespace systems
 		s_view.setCenter(windowSize.x / 2.0f, windowSize.y / 2.0f);
 		s_defaultView.setSize(windowSize);
 		s_defaultView.setCenter(windowSize.x / 2.0f, windowSize.y / 2.0f);
+		
+		if (!m_lightingShader.loadFromFile("Sim/Shaders/Lighting.vert", sf::Shader::Vertex))
+		{
+			util::Logger::Log("Warning: Lighting vertex shader not loaded.");
+		}
+		if (!m_lightingShader.loadFromFile("Sim/Shaders/Lighting.frag", sf::Shader::Fragment))
+		{
+			util::Logger::Log("Warning: Lighting fragment shader not loaded.");
+		}
+		// TODO: Configurable darkness values
+		m_darknessColor = sf::Vector3f{ 0.01f, 0.01f, 0.01f };
 	}
 
 	void RenderSystem::Execute()
@@ -82,7 +94,6 @@ namespace systems
 			ProcessFontPath(textComponent->GetFontPath());
 			AddTextToGroup(*textComponent, layerGroup);
 		}
-
 
 		RenderAllLayers(layerGroup);
 	}
@@ -305,6 +316,56 @@ namespace systems
 		drawGroup.texts.push_back(&textComponent.GetText());
 	}
 
+	void RenderSystem::AddPointLights(const sf::Vector2u& texSize)
+	{
+		// Todo: Set these two values once per scene.
+		m_lightingShader.setUniform("texSize", sf::Glsl::Vec2{ texSize });
+		m_lightingShader.setUniform("dark", sf::Glsl::Vec4{ m_darknessColor.x, m_darknessColor.y, m_darknessColor.z, 1.0f });
+
+		m_lightPositions.clear();
+		m_lightColors.clear();
+		m_lightRadii.clear();
+
+		const auto sz = ecs::Autolist<components::LightComponent>::SizeAll();
+		for (size_t i = 0; i < sz; ++i)
+		{
+			auto lightComponent = ecs::Autolist<components::LightComponent>::GetAll(i);
+
+			if (!lightComponent->GetParent()->GetIsActive() || !lightComponent->GetIsActive())
+			{
+				continue;
+			}
+
+			m_lightPositions.push_back(sf::Glsl::Vec2{ lightComponent->GetOffset() });
+			const auto& position = lightComponent->GetParent()->GetPosition();
+			m_lightPositions.back().x += position.x;
+			m_lightPositions.back().y += position.y;
+			
+			m_lightColors.push_back(sf::Glsl::Vec4{});
+			auto& currentColor = m_lightColors.back();
+			const auto& color = lightComponent->GetColor();
+			currentColor.w = 1.0f;
+			currentColor.x = color.x;
+			currentColor.y = color.y;
+			currentColor.z = color.z;
+			
+			m_lightRadii.push_back(lightComponent->GetRadius());
+		}
+
+		int lightTotal = int(m_lightPositions.size());
+
+		if (m_lightPositions.empty())
+		{
+			m_lightingShader.setUniform("lightTotal", 0);
+			return;
+		}
+
+		m_lightingShader.setUniformArray("pointPositions", &m_lightPositions[0], lightTotal);
+		m_lightingShader.setUniformArray("pointColors", &m_lightColors[0], lightTotal);
+		m_lightingShader.setUniformArray("pointRadii", &m_lightRadii[0], lightTotal);
+		m_lightingShader.setUniform("lightTotal", lightTotal);
+	}
+
 	void RenderSystem::DebugDrawEntityCenter(
 		const components::RenderComponent& renderComponent)
 	{
@@ -409,7 +470,15 @@ namespace systems
 					m_compositeRenderTexture.display();
 					sf::Sprite compositeSprite;
 					compositeSprite.setTexture(m_compositeRenderTexture.getTexture());
-					m_window->draw(compositeSprite);
+					sf::RenderStates states;
+
+					if (layer.isLit)
+					{
+						AddPointLights(m_compositeRenderTexture.getSize());
+						states.shader = &m_lightingShader;
+					}
+					
+					m_window->draw(compositeSprite, states);
 				}
 			}
 		}
