@@ -319,7 +319,7 @@ namespace systems
 	void RenderSystem::AddPointLights(const sf::Vector2u& texSize)
 	{
 		// Todo: Set these two values once per scene.
-		m_lightingShader.setUniform("texSize", sf::Glsl::Vec2{ texSize });
+		m_lightingShader.setUniform("texSize", float(texSize.x));
 		m_lightingShader.setUniform("dark", sf::Glsl::Vec4{ m_darknessColor.x, m_darknessColor.y, m_darknessColor.z, 1.0f });
 
 		m_lightPositions.clear();
@@ -351,14 +351,14 @@ namespace systems
 			
 			m_lightRadii.push_back(lightComponent->GetRadius());
 		}
-
-		int lightTotal = int(m_lightPositions.size());
-
+		
 		if (m_lightPositions.empty())
 		{
 			m_lightingShader.setUniform("lightTotal", 0);
 			return;
 		}
+		
+		int lightTotal = int(m_lightPositions.size());
 
 		m_lightingShader.setUniformArray("pointPositions", &m_lightPositions[0], lightTotal);
 		m_lightingShader.setUniformArray("pointColors", &m_lightColors[0], lightTotal);
@@ -421,12 +421,15 @@ namespace systems
 					if (!drawGroup.renderTextureSprites.empty())
 					{
 						const auto* renderTexture = drawGroup.renderTextureSprites[0].getTexture();
-						m_compositeRenderTexture.create(renderTexture->getSize().x, renderTexture->getSize().y);
+						const auto size = std::max(renderTexture->getSize().x, renderTexture->getSize().y);
+						m_compositeRenderTexture.create(size, size);
 					}
 					else
 					{
-						m_compositeRenderTexture.create(m_window->getSize().x, m_window->getSize().y);
+						const auto size = std::max(m_window->getSize().x, m_window->getSize().y);
+						m_compositeRenderTexture.create(size, size);
 					}
+					m_compositeRenderTexture.clear(sf::Color::Black);
 				}
 			}
 

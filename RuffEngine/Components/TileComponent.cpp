@@ -196,8 +196,8 @@ namespace components
 
 			ecs::Box2f texBox;
 			texBox.center = {
-				float(tile % rowSize * 2) * tileHalfSize.x + tileHalfSize.x,
-				float(tile / rowSize * 2) * tileHalfSize.y + tileHalfSize.y };
+				float(tile % tileSet.rowSize * 2) * tileHalfSize.x + tileHalfSize.x,
+				float(tile / tileSet.rowSize * 2) * tileHalfSize.y + tileHalfSize.y };
 			texBox.halfSize = drawBox.halfSize;
 
 			sf::Color drawColor{ sf::Color::White };

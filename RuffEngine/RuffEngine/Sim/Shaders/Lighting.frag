@@ -4,7 +4,7 @@ uniform vec2 pointPositions[10];
 uniform vec4 pointColors[10];
 uniform float pointRadii[10];
 uniform int lightTotal;
-uniform vec2 texSize;
+uniform float texSize;
 uniform vec4 dark;
 
 void main()
@@ -38,8 +38,8 @@ void main()
 
     for (int i = 0; i < lightTotal; ++i)
     {
-        vec2 pl = vec2(pointPositions[i].x / texSize.x, (texSize.y - pointPositions[i].y) / texSize.y);
-        float radius = pointRadii[i] / texSize.x;
+        vec2 pl = vec2(pointPositions[i].x / texSize, (texSize - pointPositions[i].y) / texSize);
+        float radius = pointRadii[i] / texSize;
         float dist = distance(pl, vec2(gl_TexCoord[0].xy));
         if (dist < radius)
         {
