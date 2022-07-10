@@ -318,10 +318,6 @@ namespace systems
 
 	void RenderSystem::AddPointLights(const sf::Vector2u& texSize)
 	{
-		// Todo: Set these two values once per scene.
-		m_lightingShader.setUniform("texSize", float(texSize.x));
-		m_lightingShader.setUniform("dark", sf::Glsl::Vec4{ m_darknessColor.x, m_darknessColor.y, m_darknessColor.z, 1.0f });
-
 		m_lightPositions.clear();
 		m_lightColors.clear();
 		m_lightRadii.clear();
@@ -336,10 +332,26 @@ namespace systems
 				continue;
 			}
 
-			m_lightPositions.push_back(sf::Glsl::Vec2{ lightComponent->GetOffset() });
-			const auto& position = lightComponent->GetParent()->GetPosition();
-			m_lightPositions.back().x += position.x;
-			m_lightPositions.back().y += position.y;
+			const auto& position = lightComponent->GetOffset() + lightComponent->GetParentTransform().position;
+			const auto& radius = lightComponent->GetRadius();
+			const auto& viewCenter = s_view.getCenter();
+			const auto& viewSize = s_view.getSize();
+
+			float x1 = viewCenter.x - viewSize.x / 2;
+			float y1 = viewCenter.y - viewSize.y / 2;
+			float x2 = viewCenter.x + viewSize.x / 2;
+			float y2 = viewCenter.y + viewSize.y / 2;
+
+			float xn = std::max(x1, std::min(viewCenter.x, x2));
+			float yn = std::max(y1, std::min(viewCenter.y, y2));
+			float dx = xn - viewCenter.x;
+			float dy = yn - viewCenter.y;
+			if (dx * dx + dy * dy > radius * radius)
+			{
+				continue;
+			}
+
+			m_lightPositions.push_back(sf::Glsl::Vec2{ position });
 			
 			m_lightColors.push_back(sf::Glsl::Vec4{});
 			auto& currentColor = m_lightColors.back();
@@ -348,8 +360,7 @@ namespace systems
 			currentColor.x = color.x;
 			currentColor.y = color.y;
 			currentColor.z = color.z;
-			
-			m_lightRadii.push_back(lightComponent->GetRadius());
+			m_lightRadii.push_back(radius);
 		}
 		
 		if (m_lightPositions.empty())
@@ -418,17 +429,19 @@ namespace systems
 			{
 				if (i == 0 || m_renderLayers[i - 1].groupIndex != layer.groupIndex)
 				{
+					unsigned int size = 0;
 					if (!drawGroup.renderTextureSprites.empty())
 					{
 						const auto* renderTexture = drawGroup.renderTextureSprites[0].getTexture();
-						const auto size = std::max(renderTexture->getSize().x, renderTexture->getSize().y);
-						m_compositeRenderTexture.create(size, size);
+						size = std::max(renderTexture->getSize().x, renderTexture->getSize().y);
 					}
 					else
 					{
-						const auto size = std::max(m_window->getSize().x, m_window->getSize().y);
-						m_compositeRenderTexture.create(size, size);
+						size = std::max(m_window->getSize().x, m_window->getSize().y);
 					}
+					m_lightingShader.setUniform("texSize", float(size));
+					m_lightingShader.setUniform("dark", sf::Glsl::Vec4{ m_darknessColor.x, m_darknessColor.y, m_darknessColor.z, 1.0f });
+					m_compositeRenderTexture.create(size, size);
 					m_compositeRenderTexture.clear(sf::Color::Black);
 				}
 			}
