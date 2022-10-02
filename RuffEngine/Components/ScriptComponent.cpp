@@ -32,11 +32,18 @@ namespace components
 		}
 		m_mainScriptContext->SetArgObject(0, this);
 
+		result = m_pauseScriptContext->Prepare(m_pauseScriptFunction);
+		if (result >= 0)
+		{
+			m_pauseScriptContext->SetArgObject(0, this);
+		}
+
 		m_apiStateInt.clear();
 		m_apiStateFloat.clear();
 		m_apiStateStr.clear();
 
 		m_suspendCycleCounter = 0;
+		m_pauseSuspendCycleCounter = 0;
 	}
 
 	void ScriptComponent::PrepareScriptContext(
@@ -68,12 +75,28 @@ namespace components
 			auto collisionState = m_collisionScriptContext->GetState();
 			if (collisionState == asEXECUTION_SUSPENDED || collisionState == asEXECUTION_ABORTED)
 			{
-				m_mainScriptContext->Abort();
+				m_collisionScriptContext->Abort();
 			}
 		}
 		functionDecl = "void " + mainPrefix + 
 			"_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float yDir)";
 		m_collisionScriptFunction = scriptEngine->GetModule("main")->
+			GetFunctionByDecl(functionDecl.c_str());
+
+		if (m_pauseScriptContext == nullptr)
+		{
+			m_pauseScriptContext = scriptEngine->CreateContext();
+		}
+		else
+		{
+			auto pauseState = m_pauseScriptContext->GetState();
+			if (pauseState == asEXECUTION_SUSPENDED || pauseState == asEXECUTION_ABORTED)
+			{
+				m_pauseScriptContext->Abort();
+			}
+		}
+		functionDecl = "void " + mainPrefix + "_OnPause(ScriptComponent@ api)";
+		m_pauseScriptFunction = scriptEngine->GetModule("main")->
 			GetFunctionByDecl(functionDecl.c_str());
 	}
 
@@ -95,6 +118,16 @@ namespace components
 		m_collisionScriptContext->SetArgFloat(2, xDir);
 		m_collisionScriptContext->SetArgFloat(3, yDir);
 		m_collisionScriptContext->Execute();
+	}
+
+	void ScriptComponent::ExecutePause()
+	{
+		if (m_pauseSuspendCycleCounter++ < m_pauseSuspendCycleTotal)
+		{
+			return;
+		}
+
+		m_pauseScriptContext->Execute();
 	}
 
 	void ScriptComponent::AddSpawnSystem(systems::SpawnSystem* spawnSystem)

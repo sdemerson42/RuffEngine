@@ -19,6 +19,13 @@ namespace components
 		m_mainScriptContext->Suspend();
 	}
 
+	void ScriptComponent::PauseSuspend(int cycles = 0)
+	{
+		m_pauseSuspendCycleCounter = 0;
+		m_pauseSuspendCycleTotal = cycles;
+		m_pauseScriptContext->Suspend();
+	}
+
 	void ScriptComponent::Log(const std::string& msg) const
 	{
 		util::Logger::Log("FROM SCRIPT: " + msg);
@@ -266,5 +273,12 @@ namespace components
 			data += "\n" + s;
 		}
 		return data;
+	}
+
+	void ScriptComponent::SetPause(bool value)
+	{
+		util::SetPauseEvent event;
+		event.value = value;
+		SendEvent(&event);
 	}
 }

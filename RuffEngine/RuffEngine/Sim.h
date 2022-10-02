@@ -37,7 +37,8 @@ namespace ruff_engine
 		void Execute();
 	private:
 		std::shared_ptr<sf::RenderWindow> m_window;
-		std::vector<std::unique_ptr<ecs::ISystem>> m_systems;
+		std::vector<std::shared_ptr<ecs::ISystem>> m_systems;
+		std::vector<std::shared_ptr<ecs::ISystem>> m_pauseFilteredsystems;
 		std::vector<std::vector<std::unique_ptr<ecs::Entity>>> m_entities;
 		std::shared_ptr<data::EntityFactory> m_entityFactory;
 		std::unique_ptr<data::SimData> m_simData;
@@ -48,6 +49,7 @@ namespace ruff_engine
 		systems::SoundSystem* m_soundSystemPtr;
 
 		int m_nextSceneId;
+		bool m_isPaused;
 
 		bool MakeSystems();
 		bool ChangeScene();
@@ -59,5 +61,6 @@ namespace ruff_engine
 		bool ValidateScriptStep(int result, const std::string& msg);
 
 		void OnChangeSceneEvent(const util::ChangeSceneEvent* event);
+		void OnSetPauseEvent(const util::SetPauseEvent* event);
 	};
 };

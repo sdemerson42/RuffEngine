@@ -36,9 +36,11 @@ namespace components
 		void AddSoundSystem(systems::SoundSystem* soundSystem);
 		void ExecuteScript();
 		void ExecuteCollision(ecs::Entity* collider, float xDir, float yDir);
+		void ExecutePause();
 
 		// Script API methods
 		void Suspend(int cycles);
+		void PauseSuspend(int cycles);
 		void Log(const std::string& msg) const;
 		float DeltaTime() const;
 		
@@ -95,15 +97,20 @@ namespace components
 		void AddDynamicTileMap(int id, int tileSetId, int rowSize, const std::string& tiles, const std::string& tileColors,
 			const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers);
 		std::string ReadFile(const std::string& fName);
+		void SetPause(bool value);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };
+		asIScriptContext* m_pauseScriptContext{ nullptr };
 		asIScriptFunction* m_mainScriptFunction{ nullptr };
 		asIScriptFunction* m_collisionScriptFunction{ nullptr };
+		asIScriptFunction* m_pauseScriptFunction{ nullptr };
 		systems::SpawnSystem* m_spawnSystem;
 		systems::SoundSystem* m_soundSystem;
 		int m_suspendCycleCounter;
 		int m_suspendCycleTotal;
+		int m_pauseSuspendCycleCounter;
+		int m_pauseSuspendCycleTotal;
 
 		// API State
 		std::unordered_map<std::string, int> m_apiStateInt;

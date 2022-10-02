@@ -8,4 +8,9 @@ namespace util
 	{
 		int sceneId;
 	};
+
+	struct SetPauseEvent : public EventBase
+	{
+		bool value;
+	};
 }

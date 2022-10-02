@@ -131,6 +131,9 @@ namespace ruff_engine
 			"ScriptComponent", "void Suspend(int = 0)",
 			asMETHOD(components::ScriptComponent, Suspend), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void PauseSuspend(int = 0)",
+			asMETHOD(components::ScriptComponent, PauseSuspend), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "const Vector2f& GetPosition()",
 			asMETHOD(components::ScriptComponent, GetPosition), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -247,6 +250,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "string ReadFile(const string& in)",
 			asMETHOD(components::ScriptComponent, ReadFile), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetPause(bool)",
+			asMETHOD(components::ScriptComponent, SetPause), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

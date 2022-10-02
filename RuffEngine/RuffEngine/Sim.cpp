@@ -15,7 +15,9 @@ namespace ruff_engine
 	Sim::Sim()
 	{
 		RegisterMethod(this, &Sim::OnChangeSceneEvent);
+		RegisterMethod(this, &Sim::OnSetPauseEvent);
 		m_nextSceneId = -1;
+		m_isPaused = false;
 	}
 
 	Sim::~Sim()
@@ -83,28 +85,38 @@ namespace ruff_engine
 		util::Logger::Log("Creating Systems...");
 
 		m_systems.push_back(
-			std::make_unique<systems::SpawnSystem>(&m_entities, m_entityFactory));
+			std::make_shared<systems::SpawnSystem>(&m_entities, m_entityFactory));
+		m_pauseFilteredsystems.emplace_back(m_systems.back());
 
 		m_spawnSystemPtr = static_cast<systems::SpawnSystem*>(m_systems.back().get());
 		ecs::Entity::SetSpawnSystem(m_spawnSystemPtr);
 
 		m_systems.push_back(
-			std::make_unique<systems::InputSystem>());
+			std::make_shared<systems::InputSystem>());
+		m_pauseFilteredsystems.emplace_back(m_systems.back());
+
 		m_systems.push_back(
-			std::make_unique<systems::ScriptSystem>());
+			std::make_shared<systems::ScriptSystem>());
+		m_pauseFilteredsystems.emplace_back(m_systems.back());
+
 		m_systems.push_back(
-			std::make_unique<systems::AnimationSystem>());
+			std::make_shared<systems::AnimationSystem>());
+
 		m_systems.push_back(
-			std::make_unique<systems::PhysicsSystem>());
+			std::make_shared<systems::PhysicsSystem>());
+
 		m_systems.push_back(
-			std::make_unique<systems::ParticleSystem>());
+			std::make_shared<systems::ParticleSystem>());
+
 		m_systems.push_back(
-			std::make_unique<systems::SoundSystem>(m_simData->soundPath, m_simData->soundBuffers));
+			std::make_shared<systems::SoundSystem>(m_simData->soundPath, m_simData->soundBuffers));
+		m_pauseFilteredsystems.emplace_back(m_systems.back());
 
 		m_soundSystemPtr = static_cast<systems::SoundSystem*>(m_systems.back().get());
 
 		m_systems.push_back(
-			std::make_unique<systems::RenderSystem>(m_window, m_simData->renderLayers));
+			std::make_shared<systems::RenderSystem>(m_window, m_simData->renderLayers));
+		m_pauseFilteredsystems.emplace_back(m_systems.back());
 		
 		util::Logger::Log("Systems created successfully.");
 
@@ -223,7 +235,9 @@ namespace ruff_engine
 				}
 			}
 
-			for (auto& system : m_systems)
+			auto& systemGroup = m_isPaused ? m_pauseFilteredsystems : m_systems;
+
+			for (auto& system : systemGroup)
 			{
 				system->Execute();
 			}
@@ -235,5 +249,10 @@ namespace ruff_engine
 	void Sim::OnChangeSceneEvent(const util::ChangeSceneEvent* event)
 	{
 		m_nextSceneId = event->sceneId;
+	}
+
+	void Sim::OnSetPauseEvent(const util::SetPauseEvent* event)
+	{
+		m_isPaused = event->value;
 	}
 }

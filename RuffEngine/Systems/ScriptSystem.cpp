@@ -6,6 +6,11 @@
 
 namespace systems
 {
+	ScriptSystem::ScriptSystem()
+	{
+		RegisterMethod(this, &ScriptSystem::OnSetPauseEvent);
+	}
+
 	void ScriptSystem::Execute()
 	{
 		const auto& sceneLayer = SpawnSystem::GetSceneLayer();
@@ -16,8 +21,20 @@ namespace systems
 				ecs::Autolist<components::ScriptComponent>::Get(sceneLayer, i);
 			if (sc->GetIsActive() && sc->GetParent()->GetIsActive())
 			{
-				sc->ExecuteScript();
+				if (!m_isPaused)
+				{
+					sc->ExecuteScript();
+				}
+				else
+				{
+					sc->ExecutePause();
+				}
 			}
 		}
+	}
+
+	void ScriptSystem::OnSetPauseEvent(const util::SetPauseEvent* event)
+	{
+		m_isPaused = event->value;
 	}
 }
