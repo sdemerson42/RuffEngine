@@ -91,6 +91,10 @@ namespace systems
 		for (int i = 0; i < sz; ++i)
 		{
 			auto textComponent = ecs::Autolist<components::TextComponent>::GetAll(i);
+			if (!textComponent->GetIsActive() || !textComponent->GetParent()->GetIsActive())
+			{
+				continue;
+			}
 			ProcessFontPath(textComponent->GetFontPath());
 			AddTextToGroup(*textComponent, layerGroup);
 		}
