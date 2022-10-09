@@ -346,10 +346,10 @@ namespace systems
 			float x2 = viewCenter.x + viewSize.x / 2;
 			float y2 = viewCenter.y + viewSize.y / 2;
 
-			float xn = std::max(x1, std::min(viewCenter.x, x2));
-			float yn = std::max(y1, std::min(viewCenter.y, y2));
-			float dx = xn - viewCenter.x;
-			float dy = yn - viewCenter.y;
+			float xn = std::max(x1, std::min(position.x, x2));
+			float yn = std::max(y1, std::min(position.y, y2));
+			float dx = xn - position.x;
+			float dy = yn - position.y;
 			if (dx * dx + dy * dy > radius * radius)
 			{
 				continue;
