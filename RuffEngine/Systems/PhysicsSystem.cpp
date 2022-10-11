@@ -13,6 +13,7 @@ namespace systems
 {
 	PhysicsSystem::PhysicsSystem()
 	{
+		RegisterMethod(this, &PhysicsSystem::OnPhysicsCellSizeEvent);
 	}
 
 	void PhysicsSystem::Initialize()
@@ -484,5 +485,10 @@ namespace systems
 	int PhysicsSystem::GetCellHash(int x, int y)
 	{
 		return 1000 * x + y;
+	}
+
+	void PhysicsSystem::OnPhysicsCellSizeEvent(const util::SetPhysicsCellSizeEvent* event)
+	{
+		m_staticCellSize = { event->x, event->y };
 	}
 }

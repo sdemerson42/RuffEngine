@@ -7,6 +7,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "../Data/Parse.h"
 #include "../Data/SqlQuery.h"
+#include "../Util/EventHandler.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +16,7 @@
 
 namespace components
 {
-	class TileComponent : public ecs::ComponentBase, public ecs::Autolist<TileComponent>
+	class TileComponent : public ecs::ComponentBase, public ecs::Autolist<TileComponent>, public util::EventHandler
 	{
 	public:
 		struct TileSet
@@ -25,6 +26,7 @@ namespace components
 			sf::Vector2f tileHalfSize;
 			int rowSize;
 			int columnSize;
+			sf::Vector2i physicsCellSize;
 		};
 
 		struct TileAnimation

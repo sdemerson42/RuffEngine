@@ -3,6 +3,7 @@
 #include "../Util/Logger.h"
 #include "../ECSPrimitives/Entity.h"
 #include "../Util/Time.h"
+#include "../Util/Events.h"
 
 #include <unordered_set>
 
@@ -104,6 +105,15 @@ namespace components
 		{
 			BuildPhysics(tiles, physicsLayers, rowSize);
 		}
+
+		const auto& tileSet = s_tileSets[tileSetId];
+		if (tileSet.physicsCellSize.x != 0 && tileSet.physicsCellSize.y != 0)
+		{
+			util::SetPhysicsCellSizeEvent event;
+			event.x = tileSet.physicsCellSize.x;
+			event.y = tileSet.physicsCellSize.y;
+			SendEvent(&event);
+		}
 	}
 
 	int TileComponent::VerifyTileSet(int id)
@@ -130,6 +140,13 @@ namespace components
 			std::stof(result.at("tile_half_y")[0]) };
 		tileSet.rowSize = std::stoi(result.at("row_size")[0]);
 		tileSet.columnSize = std::stoi(result.at("column_size")[0]);
+
+		auto cellXstring = result.at("physics_static_cell_x")[0];
+		auto cellYstring = result.at("physics_static_cell_y")[0];
+		if (cellXstring != "" && cellYstring != "")
+		{
+			tileSet.physicsCellSize = { std::stoi(cellXstring), std::stoi(cellYstring) };
+		}
 
 		util::Logger::Log("Info: Successfully loaded TileSet with id "
 			+ std::to_string(id) + ".");

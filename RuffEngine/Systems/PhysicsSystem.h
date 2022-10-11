@@ -3,6 +3,8 @@
 #include "../ECSPrimitives/ISystem.h"
 #include "../ECSPrimitives/Box2f.h"
 #include "SFML/System/Vector2.hpp"
+#include "../Util/EventHandler.h"
+#include "../Util/Events.h"
 
 #include <vector>
 #include <string>
@@ -17,7 +19,7 @@ namespace components
 
 namespace systems
 {
-	class PhysicsSystem : public ecs::ISystem
+	class PhysicsSystem : public ecs::ISystem, public util::EventHandler
 	{
 	public:
 		PhysicsSystem();
@@ -62,6 +64,7 @@ namespace systems
 		void UpdateScripts();
 		bool Collide(const Collision& collision);
 		int GetCellHash(int x, int y);
+		void OnPhysicsCellSizeEvent(const util::SetPhysicsCellSizeEvent* event);
 
 		const float m_displacementError = 0.2f;
 		sf::Vector2i m_staticCellSize{ 100, 100 };

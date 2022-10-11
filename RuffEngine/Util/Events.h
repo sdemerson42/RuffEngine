@@ -13,4 +13,10 @@ namespace util
 	{
 		bool value;
 	};
+
+	struct SetPhysicsCellSizeEvent : public EventBase
+	{
+		int x;
+		int y;
+	};
 }
