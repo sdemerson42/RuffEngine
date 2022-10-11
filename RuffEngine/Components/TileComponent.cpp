@@ -369,7 +369,7 @@ namespace components
 					// Area found...
 					++logCount;
 
-					PhysicsComponent* pc = parent->AddComponent<PhysicsComponent>();
+					PhysicsComponent* pc = parent->AddComponent<PhysicsComponent>(true);
 					pc->SetDrag(0.0f);
 					pc->SetIsActive(true);
 					pc->SetIsIgnoreGravity(true);

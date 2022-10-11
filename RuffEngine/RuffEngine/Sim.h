@@ -18,6 +18,7 @@ namespace systems
 {
 	class SpawnSystem;
 	class SoundSystem;
+	class PhysicsSystem;
 }
 
 namespace ruff_engine
@@ -47,6 +48,7 @@ namespace ruff_engine
 		asIScriptEngine* m_scriptEngine;
 		systems::SpawnSystem* m_spawnSystemPtr;
 		systems::SoundSystem* m_soundSystemPtr;
+		systems::PhysicsSystem* m_physicsSystemPtr;
 
 		int m_nextSceneId;
 		bool m_isPaused;

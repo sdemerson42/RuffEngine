@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 
 namespace components
 {
@@ -43,6 +44,7 @@ namespace systems
 			ComponentCollisionData* b;
 		};
 
+		std::unordered_map<int, std::vector<ComponentCollisionData>> m_staticComponentData;
 		sf::Vector2f m_checkProximityBuffer;
 		std::vector<Collision> m_collisions;
 		std::unordered_set<Collision*> m_onCollisions;
@@ -50,6 +52,7 @@ namespace systems
 		
 		float m_gravity;
 
+		void PopulateStatics();
 		void PopulateCollisions();
 		void GetCollisionData();
 		void ResolveCollisions(bool hPass);
@@ -58,7 +61,9 @@ namespace systems
 		void UpdateEntities();
 		void UpdateScripts();
 		bool Collide(const Collision& collision);
+		int GetCellHash(int x, int y);
 
 		const float m_displacementError = 0.2f;
+		sf::Vector2i m_staticCellSize{ 100, 100 };
 	};
 }

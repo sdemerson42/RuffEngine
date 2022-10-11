@@ -10,6 +10,7 @@
 #include "ComponentBase.h"
 #include "Transform.h"
 #include "../Components/ParticleComponent.h"
+#include "../Components/PhysicsComponent.h"
 
 namespace systems
 {
@@ -145,7 +146,22 @@ namespace ecs
 			return static_cast<T*>(m_components.back().get());
 		}
 
+		template<typename T = components::PhysicsComponent>
+		T* AddComponent(bool isStatic)
+		{
+			if (!isStatic)
+			{
+				m_components.push_back(std::make_unique<T>(this, m_sceneLayer));
+			}
+			else
+			{
+				m_components.push_back(std::make_unique<T>(this, s_staticPhysicsLayerTag + m_sceneLayer));
+			}
+			return static_cast<T*>(m_components.back().get());
+		}
+
 		static void SetSpawnSystem(systems::SpawnSystem* spawnSystem);
+		static const std::string& GetStaticPhysicsLayerTag();
 	private:
 		ComponentVector m_components;
 		Transform m_transform;
@@ -154,5 +170,6 @@ namespace ecs
 		std::string m_sceneLayer;
 		
 		static systems::SpawnSystem* s_spawnSystemPtr;
+		static std::string s_staticPhysicsLayerTag;
 	};
 }

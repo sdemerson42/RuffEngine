@@ -8,6 +8,7 @@
 #include "Globals.h"
 
 #include <cassert>
+#include <typeindex>
 
 namespace ruff_engine
 {
@@ -104,6 +105,7 @@ namespace ruff_engine
 
 		m_systems.push_back(
 			std::make_shared<systems::PhysicsSystem>());
+		m_physicsSystemPtr = static_cast<systems::PhysicsSystem*>(m_systems.back().get());
 
 		m_systems.push_back(
 			std::make_shared<systems::ParticleSystem>());
@@ -199,8 +201,8 @@ namespace ruff_engine
 		}
 
 		m_spawnSystemPtr->SetSceneLayer("main");
-
-		util::Logger::Log("Scene loaded successfully.");
+		m_spawnSystemPtr->Execute();
+		m_physicsSystemPtr->Initialize();
 
 		return true;
 	}

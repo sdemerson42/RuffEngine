@@ -13,14 +13,49 @@ namespace systems
 {
 	PhysicsSystem::PhysicsSystem()
 	{
-		Initialize();
 	}
 
 	void PhysicsSystem::Initialize()
 	{
-		// TO DO: Initialize should be called at the beginning of every scene load.
 		m_checkProximityBuffer = { 32.0f, 32.0f };
 		m_gravity = { 100.0f };
+		PopulateStatics();
+	}
+
+	void PhysicsSystem::PopulateStatics()
+	{ 
+		m_staticComponentData.clear();
+
+		const auto& sceneLayer = ecs::Entity::GetStaticPhysicsLayerTag() + SpawnSystem::GetSceneLayer();
+		auto sz = ecs::Autolist<components::PhysicsComponent>::Size(sceneLayer);
+		for (int i = 0; i < sz; ++i)
+		{
+			auto pc = ecs::Autolist<components::PhysicsComponent>::Get(sceneLayer, i);
+			if (!pc->GetIsActive() || !pc->GetParent()->GetIsActive())
+			{
+				continue;
+			}
+
+			ComponentCollisionData ccd;
+			ccd.component = &*pc;
+			ccd.aabb = ccd.component->GetAABB();
+			ccd.startCenter = ccd.aabb.center;
+			ccd.endVelocity = ccd.startVelocity;
+			ccd.absoluteChange = 0.0f;
+
+			int xLeft = int(ccd.aabb.GetLeft()) / m_staticCellSize.x;
+			int xRight = int(ccd.aabb.GetRight()) / m_staticCellSize.x;
+			int yLeft = int(ccd.aabb.GetTop()) / m_staticCellSize.y;
+			int yRight = int(ccd.aabb.GetBottom()) / m_staticCellSize.y;
+
+			for (int i = xLeft; i <= xRight; ++i)
+			{
+				for (int j = yLeft; j <= yRight; ++j)
+				{
+					m_staticComponentData[GetCellHash(i, j)].push_back(ccd);
+				}
+			}
+		}
 	}
 
 	void PhysicsSystem::Execute()
@@ -36,7 +71,7 @@ namespace systems
 	void PhysicsSystem::PopulateCollisions()
 	{
 		GetCollisionData();
-
+		
 		m_collisions.clear();
 		m_onCollisions.clear();
 		
@@ -44,11 +79,49 @@ namespace systems
 		{
 			auto& aData = m_componentData[i];
 			const auto& aLayers = aData.component->GetActiveCollisionLayers();
+			
+			// Match statics
+
+			sf::Vector2f aTl{
+				aData.aabb.GetLeft() - m_checkProximityBuffer.x,
+				aData.aabb.GetTop() - m_checkProximityBuffer.y };
+			sf::Vector2f aBr{
+				aData.aabb.GetRight() + m_checkProximityBuffer.x,
+				aData.aabb.GetBottom() + m_checkProximityBuffer.y };
+			int xLeft = int(aTl.x) / m_staticCellSize.x;
+			int xRight = int(aBr.x) / m_staticCellSize.x;
+			int yLeft = int(aTl.y) / m_staticCellSize.y;
+			int yRight = int(aBr.y) / m_staticCellSize.y;
+			
+			for (int i = xLeft; i <= xRight; ++i)
+			{
+				for (int j = yLeft; j <= yRight; ++j)
+				{
+					for (auto& bData : m_staticComponentData[GetCellHash(i, j)])
+					{
+						bool sharedLayer = false;
+						for (const std::string& layer : aLayers)
+						{
+							if (bData.component->HasActiveCollisionLayer(layer))
+							{
+								sharedLayer = true;
+								break;
+							}
+						}
+						if (!sharedLayer) continue;
+
+						Collision collision;
+						collision.a = &aData;
+						collision.b = &bData;
+						m_collisions.push_back(collision);
+					}
+				}
+			}
+
 			for (size_t j = i + 1; j < m_componentData.size(); ++j)
 			{
 				auto& bData = m_componentData[j];
 
-				// Check collision layers
 				bool sharedLayer = false;
 				for (const std::string& layer : aLayers)
 				{
@@ -59,13 +132,6 @@ namespace systems
 					}
 				}
 				if (!sharedLayer) continue;
-
-				sf::Vector2f aTl{
-				aData.aabb.GetLeft() - m_checkProximityBuffer.x,
-				aData.aabb.GetTop() - m_checkProximityBuffer.y };
-				sf::Vector2f aBr{
-					aData.aabb.GetRight() + m_checkProximityBuffer.x,
-					aData.aabb.GetBottom() + m_checkProximityBuffer.y };
 
 				const auto& aabb = bData.aabb;
 				if (aabb.GetLeft() > aTl.x
@@ -80,7 +146,6 @@ namespace systems
 				}
 			}
 		}
-
 	}
 
 	void PhysicsSystem::GetCollisionData()
@@ -138,6 +203,34 @@ namespace systems
 				cData.absoluteChange = abs(change);
 			}
 		}
+
+
+		/*for (auto& pr : m_staticComponentData)
+		{
+			for (auto& cData : pr.second)
+			{
+				if (hPass)
+				{
+					float change = cData.startVelocity.x * util::Time::DeltaTime();
+					cData.aabb.center.x += change;
+					cData.absoluteChange = abs(change);
+					if (cData.absoluteChange < 0.0f)
+					{
+						int x = 0;
+					}
+				}
+				else
+				{
+					float change = cData.startVelocity.y * util::Time::DeltaTime();
+					cData.aabb.center.y += change;
+					cData.absoluteChange = abs(change);
+					if (cData.absoluteChange < 0.0f)
+					{
+						int x = 0;
+					}
+				}
+			}
+		}*/
 
 		for (auto& collision : m_collisions)
 		{
@@ -386,5 +479,10 @@ namespace systems
 			&& collision.a->aabb.GetLeft() < collision.b->aabb.GetRight() - m_displacementError
 			&& collision.a->aabb.GetBottom() > collision.b->aabb.GetTop() + m_displacementError
 			&& collision.a->aabb.GetTop() < collision.b->aabb.GetBottom() - m_displacementError;
+	}
+
+	int PhysicsSystem::GetCellHash(int x, int y)
+	{
+		return 1000 * x + y;
 	}
 }

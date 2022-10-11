@@ -6,6 +6,7 @@
 namespace ecs
 {
 	systems::SpawnSystem* Entity::s_spawnSystemPtr{ nullptr };
+	std::string Entity::s_staticPhysicsLayerTag{ "staticPhysics_" };
 
 	Entity::Entity()
 	{
@@ -27,4 +28,10 @@ namespace ecs
 	{
 		s_spawnSystemPtr = spawnSystem;
 	}
+
+	const std::string& Entity::GetStaticPhysicsLayerTag()
+	{
+		return s_staticPhysicsLayerTag;
+	}
+
 }

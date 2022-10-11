@@ -222,7 +222,7 @@ namespace data
 				PhysicsComponent* physicsComponent = entity.GetComponent<PhysicsComponent>();
 				if (physicsComponent == nullptr)
 				{
-					physicsComponent = entity.AddComponent<PhysicsComponent>();
+					physicsComponent = entity.AddComponent<PhysicsComponent>(false);
 				}
 				physicsComponent->Initialize();
 				physicsComponent->SetIsActive(true);
