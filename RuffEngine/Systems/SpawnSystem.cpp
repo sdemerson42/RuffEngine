@@ -91,7 +91,7 @@ namespace systems
 			{
 				foundInactiveEntity->SetIsActive(true);
 				m_entityFactory->BuildEntityFromBlueprint(
-					name, sceneLayer, x, y, true, *foundInactiveEntity);
+					name, sceneLayer, x, y, true, data, *foundInactiveEntity);
 				return foundInactiveEntity;
 			}
 		}
@@ -106,7 +106,7 @@ namespace systems
 
 		auto& entityUptr = (*m_entities)[persistIndex].back();
 		m_entityFactory->BuildEntityFromBlueprint(
-			name, sceneLayer, x, y, isActive, *entityUptr);
+			name, sceneLayer, x, y, isActive, data, *entityUptr);
 
 		if (!isActive)
 		{

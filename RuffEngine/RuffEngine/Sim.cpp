@@ -190,7 +190,7 @@ namespace ruff_engine
 					}
 
 					m_spawnSystemPtr->EnqueueSpawn(
-						ed.name, sceneLayer, ed.x, ed.y, ed.isActive, ed.isPersistent, "");
+						ed.name, sceneLayer, ed.x, ed.y, ed.isActive, ed.isPersistent, ed.initData);
 
 					if (ed.isPersistent)
 					{

@@ -16,6 +16,7 @@ namespace data
 			bool isCreated;
 			bool isActive;
 			int count;
+			std::string initData;
 		};
 
 		int id;

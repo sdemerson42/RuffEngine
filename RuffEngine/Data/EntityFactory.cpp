@@ -35,6 +35,7 @@ namespace data
 		float positionX,
 		float positionY,
 		bool isActive,
+		const std::string& initData,
 		/*out*/ecs::Entity& entity)
 	{
 		auto blueprintIter = std::find_if(
@@ -60,7 +61,7 @@ namespace data
 		// Add components
 		AddRenderComponents(*blueprintIter, entity);
 		AddAnimationComponents(*blueprintIter, entity);
-		AddScriptComponents(*blueprintIter, entity);
+		AddScriptComponents(*blueprintIter, initData, entity);
 		AddPhysicsComponents(*blueprintIter, entity);
 		AddParticleComponents(*blueprintIter, entity);
 		AddTextComponents(*blueprintIter, entity);
@@ -176,6 +177,7 @@ namespace data
 
 	void EntityFactory::AddScriptComponents(
 		const data::Blueprint& blueprint,
+		const std::string& initData,
 		/*out*/ecs::Entity& entity)
 	{
 		for (const auto& queryResult : blueprint.componentData)
@@ -200,6 +202,7 @@ namespace data
 				scriptComponent->SetIsActive(true);
 				scriptComponent->AddSpawnSystem(m_spawnSystem);
 				scriptComponent->AddSoundSystem(m_soundSystem);
+				scriptComponent->SetString("init", initData);
 			}
 		}
 	}

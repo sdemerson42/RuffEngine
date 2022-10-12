@@ -26,6 +26,7 @@ namespace data
 			float positionX,
 			float positionY,
 			bool isActive,
+			const std::string& initData,
 			/*out*/ecs::Entity& entity);
 	private:
 		std::vector<Blueprint> m_blueprints;
@@ -44,6 +45,7 @@ namespace data
 
 		void AddScriptComponents(
 			const data::Blueprint& blueprint,
+			const std::string& initData,
 			/*out*/ecs::Entity& entity);
 
 		void AddPhysicsComponents(

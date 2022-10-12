@@ -121,7 +121,7 @@ namespace data
 				sd.id = std::stoi(result["scene_id"][i]);
 				
 				auto persist = ProcessMultiValueField(result["persistent_entities"][i]);
-				for (int k = 0; k < persist.size(); k += 3)
+				for (int k = 0; k < persist.size(); k += 4)
 				{
 					SceneData::SceneEntityData data;
 					data.count = 1;
@@ -131,11 +131,12 @@ namespace data
 					data.name = persist[k];
 					data.x = std::stof(persist[k + 1]);
 					data.y = std::stof(persist[k + 2]);
+					data.initData = persist[k + 3];
 					sd.entityData.push_back(data);
 				}
 
 				auto scene = ProcessMultiValueField(result["scene_entities"][i]);
-				for (int k = 0; k < scene.size(); k += 3)
+				for (int k = 0; k < scene.size(); k += 4)
 				{
 					SceneData::SceneEntityData data;
 					data.count = 1;
@@ -144,6 +145,7 @@ namespace data
 					data.name = scene[k];
 					data.x = std::stof(scene[k + 1]);
 					data.y = std::stof(scene[k + 2]);
+					data.initData = scene[k + 3];
 					sd.entityData.push_back(data);
 				}
 

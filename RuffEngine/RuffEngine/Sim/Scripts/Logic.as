@@ -14,6 +14,7 @@ void Logic_Main(ScriptComponent@ api)
 
 	api.AddDynamicTileMap(1, 1, 32, t1, "", "", "default", "");
 	api.AddDynamicTileMap(2, 1, 32, t2, "", "", "default", "ground");
+	api.Log(api.GetString("init"));
 	api.ChangeScene(1);
 
 	while(true)
