@@ -59,13 +59,13 @@ namespace data
 		entity.SetSceneLayer(sceneLayer);
 
 		// Add components
+		AddTileComponents(*blueprintIter, entity);
 		AddRenderComponents(*blueprintIter, entity);
 		AddAnimationComponents(*blueprintIter, entity);
 		AddScriptComponents(*blueprintIter, initData, entity);
 		AddPhysicsComponents(*blueprintIter, entity);
 		AddParticleComponents(*blueprintIter, entity);
 		AddTextComponents(*blueprintIter, entity);
-		AddTileComponents(*blueprintIter, entity);
 		AddLightComponents(*blueprintIter, entity);
 
 		// Set position
@@ -101,7 +101,11 @@ namespace data
 				renderComponent->SetIsActive(true);
 				
 				renderComponent->SetTexturePath(queryResult.at("texture_path")[i]);
-				renderComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
+				
+				auto layer = queryResult.at("render_layer")[i];
+				if (layer == "tilemap") renderComponent->SetRenderLayer(m_tileTopRenderLayer);
+				else renderComponent->SetRenderLayer(layer);
+				
 				renderComponent->SetTextureBox(
 					std::stof(queryResult.at("texture_center_x")[i]),
 					std::stof(queryResult.at("texture_center_y")[i]),
@@ -292,7 +296,11 @@ namespace data
 				}
 
 				particleComponent->SetTexturePath(queryResult.at("texture_path")[i]);
-				particleComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
+
+				auto layer = queryResult.at("render_layer")[i];
+				if (layer == "tilemap") particleComponent->SetRenderLayer(m_tileTopRenderLayer);
+				else particleComponent->SetRenderLayer(layer);
+
 				particleComponent->SetTextureBox(
 					std::stof(queryResult.at("texture_center_x")[i]),
 					std::stof(queryResult.at("texture_center_y")[i]),
@@ -371,7 +379,10 @@ namespace data
 					std::stoi(queryResult.at("size")[i]));
 				textComponent->SetOutlineThickness(
 					std::stof(queryResult.at("outline_thickness")[i]));
-				textComponent->SetRenderLayer(queryResult.at("render_layer")[i]);
+
+				auto layer = queryResult.at("render_layer")[i];
+				if (layer == "tilemap") textComponent->SetRenderLayer(m_tileTopRenderLayer);
+				else textComponent->SetRenderLayer(layer);
 			}
 		}
 	}
@@ -417,6 +428,8 @@ namespace data
 
 				tileComponent->SetDbPathName(m_dbPathName);
 				tileComponent->PostInitialize(tileMapIds, dynamicTileMapIds);
+
+				m_tileTopRenderLayer = tileComponent->GetTopRenderLayer();
 			}
 		}
 	}

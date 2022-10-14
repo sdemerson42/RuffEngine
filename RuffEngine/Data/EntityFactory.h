@@ -34,6 +34,7 @@ namespace data
 		systems::SpawnSystem* m_spawnSystem;
 		systems::SoundSystem* m_soundSystem;
 		std::string m_dbPathName;
+		std::string m_tileTopRenderLayer;
 
 		void AddRenderComponents(
 			const data::Blueprint& blueprint, 

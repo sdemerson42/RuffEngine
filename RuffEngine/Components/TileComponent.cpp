@@ -114,6 +114,8 @@ namespace components
 			event.y = tileSet.physicsCellSize.y;
 			SendEvent(&event);
 		}
+
+		m_topRenderLayer = renderLayer;
 	}
 
 	int TileComponent::VerifyTileSet(int id)

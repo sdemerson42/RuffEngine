@@ -58,6 +58,10 @@ namespace components
 		{
 			return m_renderTextureData;
 		}
+		const std::string& GetTopRenderLayer() const
+		{
+			return m_topRenderLayer;
+		}
 		
 		static void AddDynamicTileMap(int id, const data::SqlQueryResult& tileMap);
 	private:
@@ -66,12 +70,13 @@ namespace components
 		void BuildImageAndAnimations(const std::string& tiles, const std::string& animations, int rowSize,
 			const std::string& renderLayer, const std::string& colors);
 		void BuildPhysics(const std::string& tiles, const std::string& physicsLayers, int rowSize);
-
+		
 		std::string m_dbPathName;
 		int m_tileSetIndex;
 		std::vector<TileAnimation> m_tileAnimations;
 		std::unordered_map<int, std::vector<components::RenderComponent*>> m_animationRenderRefs;
 		std::vector<RenderTextureData> m_renderTextureData;
+		std::string m_topRenderLayer;
 
 		static std::unordered_map<int, TileSet> s_tileSets;
 		static std::unordered_map<int, data::SqlQueryResult> s_dynamicTileMaps;
