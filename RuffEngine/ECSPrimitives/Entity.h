@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <typeindex>
 #include <string>
-#include <unordered_set>
+#include <set>
 #include <memory>
 
 #include "ComponentBase.h"
@@ -81,7 +81,7 @@ namespace ecs
 			return m_transform;
 		}
 
-		inline const std::unordered_set<std::string>& GetTags() const
+		inline const std::set<std::string>& GetTags() const
 		{
 			return m_tags;
 		}
@@ -165,7 +165,7 @@ namespace ecs
 	private:
 		ComponentVector m_components;
 		Transform m_transform;
-		std::unordered_set<std::string> m_tags;
+		std::set<std::string> m_tags;
 		bool m_isActive;
 		std::string m_sceneLayer;
 		

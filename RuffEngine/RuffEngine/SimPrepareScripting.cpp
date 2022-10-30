@@ -215,6 +215,12 @@ namespace ruff_engine
 			"ScriptComponent", "void Despawn()",
 			asMETHOD(components::ScriptComponent, Despawn), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SceneDespawn()",
+			asMETHOD(components::ScriptComponent, SceneDespawn), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SceneDespawnAt(int, const string& in)",
+			asMETHOD(components::ScriptComponent, SceneDespawnAt), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetSceneLayer(const string& in)",
 			asMETHOD(components::ScriptComponent, SetSceneLayer), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -253,6 +259,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetPause(bool)",
 			asMETHOD(components::ScriptComponent, SetPause), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetRenderColor(int, int, int, int)",
+			asMETHOD(components::ScriptComponent, SetRenderColor), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetComponentActive(const string& in, bool)",
+			asMETHOD(components::ScriptComponent, SetComponentActive), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

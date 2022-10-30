@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <typeindex>
+#include <algorithm>
 
 namespace ruff_engine
 {
@@ -17,6 +18,8 @@ namespace ruff_engine
 	{
 		RegisterMethod(this, &Sim::OnChangeSceneEvent);
 		RegisterMethod(this, &Sim::OnSetPauseEvent);
+		RegisterMethod(this, &Sim::OnSceneDespawn);
+		m_currentSceneId = -1;
 		m_nextSceneId = -1;
 		m_isPaused = false;
 	}
@@ -141,6 +144,7 @@ namespace ruff_engine
 			return false;
 		}
 
+		m_currentSceneId = m_nextSceneId;
 		m_nextSceneId = -1;
 
 		return true;
@@ -256,5 +260,22 @@ namespace ruff_engine
 	void Sim::OnSetPauseEvent(const util::SetPauseEvent* event)
 	{
 		m_isPaused = event->value;
+	}
+
+	void Sim::OnSceneDespawn(const util::SceneDespawnEvent* event)
+	{
+		auto sceneId = event->sceneId;
+		if (sceneId == -1) sceneId = m_currentSceneId;
+		auto& entityData = m_sceneData[sceneId].entityData;
+		
+		auto result = std::find_if(entityData.begin(), entityData.end(), [=](const data::SceneData::SceneEntityData& sed)
+			{
+				return sed.name == event->name;
+			});
+		
+		if (result != entityData.end())
+		{
+			entityData.erase(result);
+		}
 	}
 }

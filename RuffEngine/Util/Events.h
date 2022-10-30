@@ -19,4 +19,10 @@ namespace util
 		int x;
 		int y;
 	};
+
+	struct SceneDespawnEvent : public EventBase
+	{
+		int sceneId;
+		std::string name;
+	};
 }

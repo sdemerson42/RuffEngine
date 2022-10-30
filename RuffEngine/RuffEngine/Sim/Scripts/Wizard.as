@@ -105,5 +105,10 @@ void Wizard_Main(ScriptComponent@ api)
 
 void Wizard_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float yDir)
 {
-	
+	if (collider.HasTag("Bat"))
+	{
+		api.StopMusic();
+		api.PlaySound("Boom.wav", 1, 50, 1.0f, 0.0f, 0.0f, 0.0f, false);
+		api.ChangeScene(5);
+	}
 }

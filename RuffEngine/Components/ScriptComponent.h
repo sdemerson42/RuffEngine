@@ -76,6 +76,8 @@ namespace components
 			float x, float y);
 		ScriptComponent& GetScriptFromEntity(ecs::Entity& entity);
 		void Despawn();
+		void SceneDespawn();
+		void SceneDespawnAt(int sceneId, const std::string& name);
 		void SetSceneLayer(const std::string& layer);
 		void PlaySound(
 			const std::string& name,
@@ -98,6 +100,8 @@ namespace components
 			const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers);
 		std::string ReadFile(const std::string& fName);
 		void SetPause(bool value);
+		void SetRenderColor(int r, int g, int b, int a);
+		void SetComponentActive(const std::string& type, bool value);
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

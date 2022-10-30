@@ -94,6 +94,8 @@ namespace systems
 
 	void SoundSystem::PlayMusic(const std::string& name, float volume, bool isLooping)
 	{
+		if (name == m_currentMusic) return;
+
 		m_music.stop();
 		if (!m_music.openFromFile(m_soundPath + name))
 		{
@@ -102,6 +104,7 @@ namespace systems
 		m_music.setVolume(volume);
 		m_music.setLoop(isLooping);
 		m_music.play();
+		m_currentMusic = name;
 	}
 	
 	void SoundSystem::StopMusic()

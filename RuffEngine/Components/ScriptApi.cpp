@@ -185,6 +185,19 @@ namespace components
 		m_spawnSystem->DespawnEntity(GetParent());
 	}
 
+	void ScriptComponent::SceneDespawn()
+	{
+		SceneDespawnAt(-1, *m_parent->GetTags().begin());
+	}
+
+	void ScriptComponent::SceneDespawnAt(int sceneId, const std::string& name)
+	{
+		util::SceneDespawnEvent event;
+		event.sceneId = sceneId;
+		event.name = name;
+		SendEvent(&event);
+	}
+
 	void ScriptComponent::SetSceneLayer(const std::string& layer)
 	{
 		systems::SpawnSystem::SetSceneLayer(layer);
@@ -280,5 +293,20 @@ namespace components
 		util::SetPauseEvent event;
 		event.value = value;
 		SendEvent(&event);
+	}
+
+	void ScriptComponent::SetRenderColor(int r, int g, int b, int a)
+	{
+		auto rc = m_parent->GetComponent<RenderComponent>();
+		if (rc) rc->SetColor(r, g, b, a);
+	}
+
+	void ScriptComponent::SetComponentActive(const std::string& type, bool value)
+	{
+		if (type == "render")
+		{
+			auto rc = m_parent->GetComponent<RenderComponent>();
+			if (rc) rc->SetIsActive(value);
+		}
 	}
 }

@@ -50,6 +50,7 @@ namespace ruff_engine
 		systems::SoundSystem* m_soundSystemPtr;
 		systems::PhysicsSystem* m_physicsSystemPtr;
 
+		int m_currentSceneId;
 		int m_nextSceneId;
 		bool m_isPaused;
 
@@ -64,5 +65,6 @@ namespace ruff_engine
 
 		void OnChangeSceneEvent(const util::ChangeSceneEvent* event);
 		void OnSetPauseEvent(const util::SetPauseEvent* event);
+		void OnSceneDespawn(const util::SceneDespawnEvent* event);
 	};
 };

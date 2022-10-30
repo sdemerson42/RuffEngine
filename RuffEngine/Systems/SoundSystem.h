@@ -38,6 +38,8 @@ namespace systems
 		};
 
 		std::string m_soundPath;
+		std::string m_currentMusic;
+
 		std::unordered_map<std::string, sf::SoundBuffer> m_soundBuffers;
 		std::vector<SoundData> m_soundData;
 		sf::Music m_music;

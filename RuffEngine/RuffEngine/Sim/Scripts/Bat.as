@@ -30,8 +30,6 @@ void Bat_OnCollision(ScriptComponent@ api, Entity@ collider, float xDir, float y
 		auto p = api.GetPosition();
 		api.PlaySound("Explosion.wav", 1, 50, 1.0f, 0.0f, 0.0f, 0.0f, false);
 		auto explosionEntity = api.SpawnEntity("Explosion", p.x, p.y);
-		gLogic.AddInt("batCount", -1);
-		gLogic.AddInt("score", 1);
 		api.Despawn();
 	}
 
