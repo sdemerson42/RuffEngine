@@ -53,6 +53,8 @@ namespace components
 		std::string GetString(const std::string& name);
 		void SetString(const std::string& name, const std::string& value);
 		std::string AddString(const std::string& name, const std::string& value);
+		void SetScript(const std::string& name, ScriptComponent& value);
+		ScriptComponent& GetScript(const std::string& name);
 
 		const sf::Vector2f& GetPosition() const;
 		void SetPosition(float x, float y);
@@ -120,5 +122,6 @@ namespace components
 		std::unordered_map<std::string, int> m_apiStateInt;
 		std::unordered_map<std::string, float> m_apiStateFloat;
 		std::unordered_map<std::string, std::string> m_apiStateStr;
+		std::unordered_map<std::string, ScriptComponent*> m_apiStateScript;
 	};
 };

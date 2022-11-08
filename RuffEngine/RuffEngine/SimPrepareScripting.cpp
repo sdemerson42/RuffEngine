@@ -203,6 +203,12 @@ namespace ruff_engine
 			"ScriptComponent", "string AddString(const string& in, const string& in)",
 			asMETHOD(components::ScriptComponent, AddString), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "ScriptComponent@ GetScript(const string& in)",
+			asMETHOD(components::ScriptComponent, GetScript), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetScript(const string& in, ScriptComponent@)",
+			asMETHOD(components::ScriptComponent, SetScript), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "Entity@ SpawnEntity(const string& in, float, float)",
 			asMETHOD(components::ScriptComponent, SpawnEntity), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(

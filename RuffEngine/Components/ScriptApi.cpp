@@ -89,6 +89,17 @@ namespace components
 		return m_apiStateStr[name];
 	}
 
+	ScriptComponent& ScriptComponent::GetScript(const std::string& name)
+	{
+		auto* sc = m_apiStateScript[name];
+		return *sc;
+	}
+
+	void ScriptComponent::SetScript(const std::string& name, ScriptComponent& value)
+	{
+		m_apiStateScript[name] = &value;
+	}
+
 	void ScriptComponent::SetPosition(float x, float y)
 	{
 		m_parent->SetPosition(x, y);

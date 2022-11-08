@@ -102,7 +102,7 @@ namespace systems
 
 		(*m_entities)[persistIndex].push_back(std::make_unique<ecs::Entity>());
 
-		util::Logger::Log("Info: Entity with primary tag " + name + " added to pool.");
+		//util::Logger::Log("Info: Entity with primary tag " + name + " added to pool.");
 
 		auto& entityUptr = (*m_entities)[persistIndex].back();
 		m_entityFactory->BuildEntityFromBlueprint(
