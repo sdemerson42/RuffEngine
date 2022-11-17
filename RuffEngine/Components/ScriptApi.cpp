@@ -89,6 +89,19 @@ namespace components
 		return m_apiStateStr[name];
 	}
 
+	std::string ScriptComponent::GetInts(const std::string& pattern)
+	{
+		std::string r;
+		for (const auto& pr : m_apiStateInt)
+		{
+			if (pr.first.find(pattern) != std::string::npos)
+			{
+				r += pr.first + "," + std::to_string(pr.second) + ",";
+			}
+		}
+		return r.substr(0, r.length() - 1);
+	}
+
 	ScriptComponent& ScriptComponent::GetScript(const std::string& name)
 	{
 		auto* sc = m_apiStateScript[name];
@@ -257,6 +270,12 @@ namespace components
 		}
 	}
 
+	void ScriptComponent::SetTextFillColor(int r, int g, int b, int a)
+	{
+		TextComponent* tc = m_parent->GetComponent<TextComponent>();
+		if (tc) tc->SetFillColor(sf::Color(sf::Uint8(r), sf::Uint8(g), sf::Uint8(b), sf::Uint8(a)));
+	}
+
 	void ScriptComponent::ChangeScene(int sceneId)
 	{
 		util::ChangeSceneEvent event;
@@ -319,5 +338,22 @@ namespace components
 			auto rc = m_parent->GetComponent<RenderComponent>();
 			if (rc) rc->SetIsActive(value);
 		}
+	}
+
+	void ScriptComponent::SetLightColor(float r, float g, float b)
+	{
+		LightComponent* lc = m_parent->GetComponent<LightComponent>();
+		if (lc) lc->SetColor(r, g, b);
+	}
+
+	void ScriptComponent::SetLightRadius(float value)
+	{
+		LightComponent* lc = m_parent->GetComponent<LightComponent>();
+		if (lc) lc->SetRadius(value);
+	}
+
+	std::string ScriptComponent::GetPrimaryTag()
+	{
+		return m_parent->GetPrimaryTag();
 	}
 }

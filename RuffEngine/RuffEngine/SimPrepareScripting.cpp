@@ -114,6 +114,9 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"Entity", "const Vector2f& GetPosition()",
 			asMETHOD(ecs::Entity, GetPosition), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"Entity", "string GetPrimaryTag()",
+			asMETHOD(ecs::Entity, GetPrimaryTag), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{
@@ -209,6 +212,9 @@ namespace ruff_engine
 			"ScriptComponent", "void SetScript(const string& in, ScriptComponent@)",
 			asMETHOD(components::ScriptComponent, SetScript), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "string GetInts(const string& in)",
+			asMETHOD(components::ScriptComponent, GetInts), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "Entity@ SpawnEntity(const string& in, float, float)",
 			asMETHOD(components::ScriptComponent, SpawnEntity), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -254,6 +260,9 @@ namespace ruff_engine
 			"ScriptComponent", "void SetTextString(const string& in)",
 			asMETHOD(components::ScriptComponent, SetTextString), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetTextFillColor(int, int, int, int)",
+			asMETHOD(components::ScriptComponent, SetTextFillColor), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void ChangeScene(int)",
 			asMETHOD(components::ScriptComponent, ChangeScene), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -271,6 +280,15 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void SetComponentActive(const string& in, bool)",
 			asMETHOD(components::ScriptComponent, SetComponentActive), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetLightColor(float, float, float)",
+			asMETHOD(components::ScriptComponent, SetLightColor), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetLightRadius(float)",
+			asMETHOD(components::ScriptComponent, SetLightRadius), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "string GetPrimaryTag()",
+			asMETHOD(components::ScriptComponent, GetPrimaryTag), asCALL_THISCALL), errMsg)) fail = true;
 
 		if (fail)
 		{

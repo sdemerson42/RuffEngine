@@ -55,6 +55,7 @@ namespace components
 		std::string AddString(const std::string& name, const std::string& value);
 		void SetScript(const std::string& name, ScriptComponent& value);
 		ScriptComponent& GetScript(const std::string& name);
+		std::string GetInts(const std::string& pattern);
 
 		const sf::Vector2f& GetPosition() const;
 		void SetPosition(float x, float y);
@@ -97,6 +98,7 @@ namespace components
 		void SetMusicVolume(float value);
 		int RandomRangeInt(int min, int max);
 		void SetTextString(const std::string& text);
+		void SetTextFillColor(int r, int g, int b, int a);
 		void ChangeScene(int sceneId);
 		void AddDynamicTileMap(int id, int tileSetId, int rowSize, const std::string& tiles, const std::string& tileColors,
 			const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers);
@@ -104,6 +106,9 @@ namespace components
 		void SetPause(bool value);
 		void SetRenderColor(int r, int g, int b, int a);
 		void SetComponentActive(const std::string& type, bool value);
+		void SetLightColor(float r, float g, float b);
+		void SetLightRadius(float value);
+		std::string GetPrimaryTag();
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

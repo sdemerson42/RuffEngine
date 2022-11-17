@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <typeindex>
 #include <string>
-#include <set>
 #include <memory>
 
 #include "ComponentBase.h"
@@ -81,19 +80,25 @@ namespace ecs
 			return m_transform;
 		}
 
-		inline const std::set<std::string>& GetTags() const
+		inline const std::vector<std::string>& GetTags() const
 		{
 			return m_tags;
 		}
 
+		inline std::string GetPrimaryTag() const
+		{
+			return m_tags.empty() ? "" : m_tags[0];
+		}
+
 		inline void AddTag(const std::string& tag)
 		{
-			m_tags.insert(tag);
+			m_tags.push_back(tag);
 		}
 
 		inline bool HasTag(const std::string& tag)
 		{
-			return m_tags.find(tag) != std::end(m_tags);
+			auto iter = std::find(m_tags.begin(), m_tags.end(), tag);
+			return iter != m_tags.end();
 		}
 
 		inline bool GetIsActive() const
@@ -165,7 +170,7 @@ namespace ecs
 	private:
 		ComponentVector m_components;
 		Transform m_transform;
-		std::set<std::string> m_tags;
+		std::vector<std::string> m_tags;
 		bool m_isActive;
 		std::string m_sceneLayer;
 		
