@@ -103,6 +103,15 @@ namespace components
 			m_isIgnoreGravity = value;
 		}
 
+		bool GetIsIgnoreScript() const
+		{
+			return m_isIgnoreScript;
+		}
+		void SetIsIgnoreScript(bool value)
+		{
+			m_isIgnoreScript = value;
+		}
+
 		void AddActiveCollisionLayer(const std::string& layer)
 		{
 			m_activeCollisionLayers.insert(layer);
@@ -130,6 +139,7 @@ namespace components
 
 		bool m_isSolid;
 		bool m_isIgnoreGravity;
+		bool m_isIgnoreScript;
 
 		std::unordered_set<std::string> m_activeCollisionLayers;
 	};

@@ -454,6 +454,9 @@ namespace systems
 			{
 				ComponentCollisionData* collisionData = (i == 0 ?
 					collision->a : collision->b);
+				
+				if (collisionData->component->GetIsIgnoreScript()) continue;
+				
 				ComponentCollisionData* otherCollisionData = (i == 0 ?
 					collision->b : collision->a);
 				components::ScriptComponent* script =

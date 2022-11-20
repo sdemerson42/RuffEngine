@@ -227,9 +227,16 @@ namespace data
 			for (int i = 0; i < totalComponents; ++i)
 			{
 				PhysicsComponent* physicsComponent = entity.GetComponent<PhysicsComponent>();
-				if (physicsComponent == nullptr)
+				if (totalComponents > 1)
 				{
 					physicsComponent = entity.AddComponent<PhysicsComponent>(false);
+				}
+				else
+				{
+					if (physicsComponent == nullptr)
+					{
+						physicsComponent = entity.AddComponent<PhysicsComponent>(false);
+					}
 				}
 				physicsComponent->Initialize();
 				physicsComponent->SetIsActive(true);
@@ -248,6 +255,8 @@ namespace data
 					std::stoi(queryResult.at("solid")[i]));
 				physicsComponent->SetIsIgnoreGravity(
 					std::stoi(queryResult.at("ignore_gravity")[i]));
+				physicsComponent->SetIsIgnoreScript(
+					std::stoi(queryResult.at("ignore_script")[i]));
 
 				auto collisionLayers =
 					Parse::ProcessMultiValueField(queryResult.at("collision_layers")[i]);
