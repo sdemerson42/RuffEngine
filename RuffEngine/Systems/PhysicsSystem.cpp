@@ -135,10 +135,10 @@ namespace systems
 				if (!sharedLayer) continue;
 
 				const auto& aabb = bData.aabb;
-				if (aabb.GetLeft() > aTl.x
-					&& aabb.GetRight() < aBr.x
-					&& aabb.GetTop() > aTl.y
-					&& aabb.GetBottom() < aBr.y)
+				if (aabb.GetRight() > aTl.x
+					&& aabb.GetLeft() < aBr.x
+					&& aabb.GetBottom() > aTl.y
+					&& aabb.GetTop() < aBr.y)
 				{
 					Collision collision;
 					collision.a = &aData;
