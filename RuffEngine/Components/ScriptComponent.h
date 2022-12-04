@@ -71,6 +71,8 @@ namespace components
 		void SetScale(float x, float y);
 		const sf::Vector2f& GetVelocity() const;
 		void SetVelocity(float x, float y);
+		void SetPhysicsCenter(float x, float y);
+		void SetPhysicsHalfSize(float x, float y);
 		const systems::InputSystem::InputData& GetInput() const;
 		const sf::Vector2f& GetViewCenter() const;
 		void SetViewCenter(float x, float y);
@@ -102,6 +104,8 @@ namespace components
 		void ChangeScene(int sceneId);
 		void AddDynamicTileMap(int id, int tileSetId, int rowSize, const std::string& tiles, const std::string& tileColors,
 			const std::string& tileAnimations, const std::string& renderLayer, const std::string& physicsLayers);
+		int GetTile(int x, int y, int z);
+		int GetTileAtPosition(float x, float y, int z);
 		std::string ReadFile(const std::string& fName);
 		void SetPause(bool value);
 		void SetRenderColor(int r, int g, int b, int a);
@@ -109,6 +113,10 @@ namespace components
 		void SetLightColor(float r, float g, float b);
 		void SetLightRadius(float value);
 		std::string GetPrimaryTag();
+
+		static std::vector<std::vector<int>> s_tileMaps;
+		static int s_tileMapRowSize;
+		static sf::Vector2f s_tileHalfSize;
 	private:
 		asIScriptContext* m_mainScriptContext{ nullptr };
 		asIScriptContext* m_collisionScriptContext{ nullptr };

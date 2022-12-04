@@ -4,6 +4,7 @@
 #include "../ECSPrimitives/Entity.h"
 #include "../Util/Time.h"
 #include "../Util/Events.h"
+#include "../Components/ScriptComponent.h"
 
 #include <unordered_set>
 
@@ -115,6 +116,7 @@ namespace components
 			SendEvent(&event);
 		}
 
+		StoreTileMapData(tiles, rowSize, tileSet.tileHalfSize);
 		m_topRenderLayer = renderLayer;
 	}
 
@@ -414,6 +416,22 @@ namespace components
 		}
 		util::Logger::Log("Info: TileMap physics layer created " +
 			std::to_string(logCount) + " physics components.");
+	}
+
+	void TileComponent::StoreTileMapData(const std::string& tiles, int rowSize, const sf::Vector2f& tileHalfSize)
+	{
+		auto tileVec = data::Parse::ProcessMultiValueField(tiles);
+		
+		components::ScriptComponent::s_tileMaps.push_back(std::vector<int>());
+		auto& cache = components::ScriptComponent::s_tileMaps[components::ScriptComponent::s_tileMaps.size() - 1];
+
+		for (const auto& s : tileVec)
+		{
+			cache.push_back(std::stoi(s));
+		}
+
+		components::ScriptComponent::s_tileMapRowSize = rowSize;
+		components::ScriptComponent::s_tileHalfSize = tileHalfSize;
 	}
 
 	void TileComponent::AddDynamicTileMap(int id, const data::SqlQueryResult& tileMap)

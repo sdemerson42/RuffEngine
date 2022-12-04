@@ -8,6 +8,10 @@
 
 namespace components
 {
+	std::vector<std::vector<int>> ScriptComponent::s_tileMaps;
+	int ScriptComponent::s_tileMapRowSize;
+	sf::Vector2f ScriptComponent::s_tileHalfSize;
+
 	ScriptComponent::ScriptComponent(ecs::Entity* parent,
 		const std::string& sceneLayer) :
 		ComponentBase{ parent }, Autolist<ScriptComponent>{ sceneLayer }

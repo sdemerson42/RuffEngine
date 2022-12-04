@@ -170,6 +170,12 @@ namespace ruff_engine
 			"ScriptComponent", "void SetVelocity(float, float)",
 			asMETHOD(components::ScriptComponent, SetVelocity), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetPhysicsCenter(float, float)",
+			asMETHOD(components::ScriptComponent, SetPhysicsCenter), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "void SetPhysicsHalfSize(float, float)",
+			asMETHOD(components::ScriptComponent, SetPhysicsHalfSize), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "const InputData& GetInput()",
 			asMETHOD(components::ScriptComponent, GetInput), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
@@ -268,6 +274,12 @@ namespace ruff_engine
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "void AddDynamicTileMap(int, int, int, const string& in, const string& in, const string& in, const string& in, const string& in)",
 			asMETHOD(components::ScriptComponent, AddDynamicTileMap), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "int GetTile(int, int, int)",
+			asMETHOD(components::ScriptComponent, GetTile), asCALL_THISCALL), errMsg)) fail = true;
+		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
+			"ScriptComponent", "int GetTileAtPosition(float, float, int)",
+			asMETHOD(components::ScriptComponent, GetTileAtPosition), asCALL_THISCALL), errMsg)) fail = true;
 		if (!ValidateScriptStep(m_scriptEngine->RegisterObjectMethod(
 			"ScriptComponent", "string ReadFile(const string& in)",
 			asMETHOD(components::ScriptComponent, ReadFile), asCALL_THISCALL), errMsg)) fail = true;

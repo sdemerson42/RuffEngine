@@ -70,6 +70,7 @@ namespace components
 		void BuildImageAndAnimations(const std::string& tiles, const std::string& animations, int rowSize,
 			const std::string& renderLayer, const std::string& colors);
 		void BuildPhysics(const std::string& tiles, const std::string& physicsLayers, int rowSize);
+		void StoreTileMapData(const std::string& tiles, int rowSize, const sf::Vector2f& tileHalfSize);
 		
 		std::string m_dbPathName;
 		int m_tileSetIndex;

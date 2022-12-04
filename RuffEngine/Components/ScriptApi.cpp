@@ -173,6 +173,26 @@ namespace components
 		}
 	}
 
+	void ScriptComponent::SetPhysicsCenter(float x, float y)
+	{
+		auto pc = m_parent->GetComponent<PhysicsComponent>();
+		if (pc)
+		{
+			const auto& box = pc->GetAABB();
+			pc->SetAABB(x, y, box.halfSize.x, box.halfSize.y);
+		}
+	}
+
+	void ScriptComponent::SetPhysicsHalfSize(float x, float y)
+	{
+		auto pc = m_parent->GetComponent<PhysicsComponent>();
+		if (pc)
+		{
+			const auto& box = pc->GetAABB();
+			pc->SetAABB(box.center.x, box.center.y, x, y);
+		}
+	}
+
 	const systems::InputSystem::InputData& ScriptComponent::GetInput() const
 	{
 		return systems::InputSystem::s_inputData;
@@ -296,6 +316,16 @@ namespace components
 		tileMap["physics_layers"].push_back(physicsLayers);
 
 		components::TileComponent::AddDynamicTileMap(id, tileMap);
+	}
+
+	int ScriptComponent::GetTile(int x, int y, int z)
+	{
+		return s_tileMaps[z][size_t(x) + size_t(y) * s_tileMapRowSize];
+	}
+
+	int ScriptComponent::GetTileAtPosition(float x, float y, int z)
+	{
+		return GetTile(int(x) / (int(s_tileHalfSize.x) * 2), int(y) / (int(s_tileHalfSize.y) * 2), z);
 	}
 
 	std::string ScriptComponent::ReadFile(const std::string& fName)
