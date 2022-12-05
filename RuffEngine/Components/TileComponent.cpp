@@ -27,6 +27,7 @@ namespace components
 	void TileComponent::PostInitialize(const std::vector<int>& tileMapIds, const std::vector<int>& dynamicTileMapIds)
 	{
 		m_renderTextureData.clear();
+		ScriptComponent::s_tileMaps.clear();
 
 		bool isDynamic = false;
 		if (!dynamicTileMapIds.empty())
